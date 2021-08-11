@@ -1,0 +1,166 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;修改发票冲红申请 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/select2/css/select2.min.css' %}" />
+  <!--customer css-->
+<!--  <link href="{% static 'project_stage/css/sample_record_add.css'  %}" rel="stylesheet" />-->
+{% endblock  %}
+
+{% block content %}
+
+  <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>修改发票作废冲红申请</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-secondary">
+          <div class="card-header">
+            <h3 class="card-title">申请序号：&nbsp;{{ apply_info.serial_number }}</h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                <i class="fas fa-minus"></i></button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <p><span> 状态 </span>：{{ apply_info.get_status_display }} </p>
+              </div>
+              <div class="col">
+                <p><span class="link_info"> 申请日期 </span> ：{{ apply_info.c_time|date:"Y-m-d" }} </p>
+              </div>
+              <div class="col">
+                <p><span> 申请人 </span>：{{ apply_info.applicant }} </p>
+              </div>
+            </div>
+          </div> <!-- /.card-body -->
+        </div>
+        <div class="card card-info ">
+          <form class="form-horizontal" method="post" action="{% url 'invoice_manage:edit_void_red' apply_info.id %}" >
+              <!-- card-body -->
+              <div class="row">
+                <div class="col-md-8 offset-md-2">
+                  <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
+                    <div class="row">
+                    {% csrf_token %}
+                      <div class="col">
+                          <!--原发票号-->
+                          <div class="form-group row">
+                            {{ form.link_invoice.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.link_invoice }}
+                            </div>
+                          </div>
+                          <!--处理类型-->
+                          <div class="form-group row">
+                            {{ form.treat_type.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.treat_type }}
+                            </div>
+                          </div>
+                          <!--作废/冲红原因-->
+                          <div class="form-group row">
+                            {{ form.reason.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.reason }}
+                            </div>
+                          </div>
+                          <!--申请人-->
+                          <div style="display:none;">{{ form.applicant }}</div>
+                      </div>
+                    </div>  <!-- /.row-->
+                  </div>  <!-- /.card-body-->
+                </div>   <!-- /.col-->
+              </div>  <!-- /.row-->
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card-footer ">
+                    <div class="row">
+                      <div class="col-md-2 offset-md-5">
+                        <a href="{% url 'invoice_manage:void_red_info' %}" class="btn btn-secondary btn-sm">取消</a>
+                        <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
+                      </div>
+                    </div>
+                  </div>  <!-- /.card-footer-->
+                </div>  <!-- /.col-->
+              </div>   <!-- /.row-->
+          </form>
+
+        </div>  <!-- /.card-->
+      </div>   <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+
+{% block script %}
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+<!-- Select2 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/select2/js/select2.full.min.js' %}"></script>
+
+<script type="text/javascript">
+
+  // 给label加上class属性;input加上class;
+  $("form label").addClass("col-md-4 col-form-label");
+
+  // 给必填项添加*
+  var txt1 = '<span style="color:red"> *</span>';
+  $("[for='id_link_invoice']").append(txt1);
+
+  // 给select添加样式,<!-- Select2 -->
+  $("#id_link_invoice").addClass("select2");
+  $("#id_link_invoice").attr("style","width:100%;");
+  //Initialize Select2 Elements
+  $('.select2').select2();
+
+
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='repeat') {
+        toastr.error('该客户已存在！')
+      }else if (msgs=='info_error') {
+        toastr.error('添加失败！')
+      }
+    }
+    msgTip();
+
+</script>
+{% endblock %}

@@ -1,0 +1,214 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;申请开票 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/select2/css/select2.min.css' %}" />
+  <!--customer css-->
+<!--  <link href="{% static 'project_stage/css/sample_record_add.css'  %}" rel="stylesheet" />-->
+{% endblock  %}
+
+{% block content %}
+
+  <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>新建开票申请</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-info ">
+
+              <form class="form-horizontal" method="post" action="{% url 'invoice_manage:apply_invoice' %}" enctype="multipart/form-data">
+              <!-- card-body -->
+              <div class="row">
+                <div class="col-md-10 offset-md-1">
+                  <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
+                    <div class="row">
+                    {% csrf_token %}
+                        <div class="col">
+                          <!--关联合同-->
+                          <div class="form-group row">
+                            {{ form.related_contract.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.related_contract }}
+                            </div>
+                          </div>
+
+                          <!--开票单位-->
+                          <div class="form-group row">
+                            {{ form.unit_name.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.unit_name }}
+                            </div>
+                          </div>
+                          <!--开票金额-->
+                          <div class="form-group row">
+                            {{ form.invoice_sum.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.invoice_sum }}
+                            </div>
+                          </div>
+                          <!--开票张数-->
+                          <div class="form-group row">
+                            {{ form.sheet_num.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.sheet_num }}
+                            </div>
+                          </div>
+                          <!--开票要求-->
+                          <div class="form-group row">
+                            {{ form.invoice_require.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.invoice_require }}
+                            </div>
+                          </div>
+
+                          <!--报账附件-->
+                          <div class="form-group row">
+                            {{ form.file_input.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.file_input }}
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col">
+                          <!--开票类型-->
+                          <div class="form-group row">
+                            {{ form.invoice_type.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.invoice_type }}
+                            </div>
+                          </div>
+                          <!--联系人-->
+                          <div class="form-group row">
+                            {{ form.linkman.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.linkman }}
+                            </div>
+                          </div>
+                          <!--电话-->
+                          <div class="form-group row">
+                            {{ form.phone.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.phone }}
+                            </div>
+                          </div>
+                          <!--收件地址-->
+                          <div class="form-group row">
+                            {{ form.address_linkman.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.address_linkman }}
+                            </div>
+                          </div>
+                          <!--备注-->
+                          <div class="form-group row">
+                            {{ form.note.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.note }}
+                            </div>
+                          </div>
+                          <!--申请人-->
+                          <div class="form-group row">
+                            {{ form.applicant.label_tag }}
+                            <div class="col-md-7">
+                              <input  type="text" name="applicant" class="form-control" value="{{ request.session.user_name }}" readonly="readonly" id="id_creator" />
+                            </div>
+                          </div>
+                        </div>
+                    </div>  <!-- /.row-->
+                  </div>  <!-- /.card-body-->
+                </div>   <!-- /.col-->
+              </div>  <!-- /.row-->
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card-footer ">
+                    <div class="row">
+                      <div class="col-md-2 offset-md-5">
+                        <a href="{% url 'invoice_manage:apply_invoice_record' %}" class="btn btn-secondary btn-sm">取消</a>
+                        <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
+                      </div>
+                    </div>
+                  </div>  <!-- /.card-footer-->
+                </div>  <!-- /.col-->
+              </div>   <!-- /.row-->
+              </form>
+
+        </div>  <!-- /.card-->
+      </div>   <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+
+{% block script %}
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+<!-- Select2 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/select2/js/select2.full.min.js' %}"></script>
+
+<script type="text/javascript">
+
+  // 给label加上class属性;input加上class;
+  $("form label").addClass("col-md-4 col-form-label");
+
+  // 给必填项添加*
+  var txt1 = '<span style="color:red"> *</span>';
+  $("[for='id_related_contract']").append(txt1);
+  $("[for='id_unit_name']").append(txt1);
+  $("[for='id_invoice_sum']").append(txt1);
+  $("[for='id_sheet_num']").append(txt1);
+
+  // 给select添加样式,<!-- Select2 -->
+  $("#id_related_contract").addClass("select2");
+  $("#id_related_contract").attr("style","width:100%;");
+  $("#id_unit_name").addClass("select2");
+  $("#id_unit_name").attr("style","width:100%;");
+  //Initialize Select2 Elements
+  $('.select2').select2();
+
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='repeat') {
+        toastr.error('该客户已存在！')
+      }else if (msgs=='info_error') {
+        toastr.error('添加失败！')
+      }
+    }
+    msgTip();
+
+</script>
+{% endblock %}

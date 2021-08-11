@@ -1,0 +1,232 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;前处理详情页 {% endblock %}
+
+{% block css %}
+    <link href="{% static 'project_stage/css/pretreat_stage_detail.css'  %}" rel="stylesheet" />
+{% endblock  %}
+
+{% block content %}
+  <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>前处理详细信息</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <!-- card-header -->
+          <div class="card-header ">
+            <h5 class="m-0"><strong class="btn btn-info">项目：{{ record.project_num }}</strong></h5>
+          </div>
+          <!-- card-body -->
+          <div class="card-body  pb-1  "> <!--pt-0 pl-1 pr-1-->
+            <div class="row">
+              <div class="col-md-12">
+                <h6><b>基本信息:</b></h6>
+                <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
+                  <thead>
+                    <tr>
+                        <th>项目类型</th>
+                        <th>样本类型</th>
+                        <th>机时类型</th>
+                        <th>样本数量</th>
+                        <th>优先级</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ record.project_type.project_name }}</td>
+                      <td>{{ record.sample_type.type_name }}</td>
+                      <td>
+                        {% if record.machine_time %}
+                          <span>{{ record.machine_time.time_type }}</span>
+                        {% else %}
+                          <span>-</span>
+                        {% endif %}
+                      </td>
+                      <td>{{ record.sample_amount }}</td>
+                      <td>{{ record.get_priority_display }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
+              <div class="col-md-8">
+              <h6><b>送样人:</b></h6>
+              <table border="1" class="table " style="border-left:3px solid orangered;border-bottom:1px solid orangered" >
+                <thead>
+                  <tr>
+                      <th>姓名</th>
+                      <th>单位</th>
+                      <th>送样终端</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{ record.sample_sender.customer_name }}</td>
+                    <td>
+                      {% if record.sample_sender.unit %}
+                        <span>{{ record.sample_sender.unit.unit_name }}</span>
+                      {% else %}
+                        <span>-</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {{ record.sample_sender.leading_official|default:"-" }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              </div>  <!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
+              <div class="col-md-11">
+                <h6><b>时间节点:</b></h6>
+                <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
+                <thead>
+                  <tr>
+                      <th>项目启动时间</th>
+                      <th>预实验完成时间</th>
+                      <th>前处理完成时间</th>
+                      <th>启动截止时间</th>
+                      <th>预实验截止时间</th>
+                      <th>前处理截止时间</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{ record.start_date|default_if_none:"-" }}</td>
+                    <td>{{ record.preexperiment_finish_date|default_if_none:"-" }}</td>
+                    <td>{{ record.pretreat_finish_date|default_if_none:"-" }}</td>
+                    <td>{{ record.start_deadline|default_if_none:"-" }}</td>
+                    <td>{{ record.preexperiment_deadline|default_if_none:"-" }}</td>
+                    <td>{{ record.pretreat_deadline|default_if_none:"-" }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
+              <div class="col-md-8">
+                <h6><b>实验人员:</b></h6>
+                <table border="1" class="table " style="border-left:3px solid orangered;border-bottom:1px solid orangered" >
+                <thead>
+                  <tr>
+                      <th>步骤一</th>
+                      <th>步骤二</th>
+                      <th>步骤三</th>
+                      <th>步骤四</th>
+                      <th>跑胶</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      {% for item in record.first_operate_person.all %}
+                        <span class="badge badge-warning">{{ item.operate_person }}</span>  <!--4.3中label已废除-->
+                      {% empty %}
+                          -
+                      {% endfor %}
+                    </td>
+                    <td>
+                      {% for item in record.second_operate_person.all %}
+                        <span class="badge badge-warning">{{ item.operate_person }}</span>
+                      {% empty %}
+                          -
+                      {% endfor %}
+                    </td>
+                    <td>
+                      {% for item in record.third_operate_person.all %}
+                        <span class="badge badge-warning">{{ item.operate_person }}</span>
+                      {% empty %}
+                          -
+                      {% endfor %}
+                    </td>
+                    <td>
+                      {% for item in record.fourth_operate_person.all %}
+                        <span class="badge badge-warning">{{ item.operate_person }}</span>
+                      {% empty %}
+                          -
+                      {% endfor %}
+                    </td>
+                    <td>
+                      {% for item in record.page_person.all %}
+                        <span class="badge badge-warning">{{ item.operate_person }}</span>
+                      {% empty %}
+                          -
+                      {% endfor %}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
+              <div class="col-md-7">
+                <h6><b>其它:</b></h6>
+                <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
+                <thead>
+                  <tr>
+                      <th>样本剩余</th>
+                      <th>剩余样本状态</th>
+                      <th>项目中断类型</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      {% if record.sample_overplus is None %}
+                        <span>未知</span>
+                      {% elif record.sample_overplus  %}
+                        <span>是</span>
+                      {% else  %}
+                        <span>否</span>
+                      {% endif  %}
+                    </td>
+                    <td>
+                      {% for item in record.sample_overplus_status.all %}
+                        <span class="badge badge-warning">{{ item.status_type }}</span>  <!--4.3中label已废除-->
+                      {% empty %}
+                          -
+                      {% endfor %}
+                    </td>
+                    <td>
+                      {% if record.project_interrupt %}
+                        <span>{{ record.project_interrupt.interrupt_type }}</span>
+                      {% else %}
+                        <span>-</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+
+          </div>  <!-- /.card-body-->
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-md-12">
+                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'project_stage:pretreat_stage'%}" style="color:green;"><strong>返回前处理进度表</strong></a>
+              </div>  <!--/.col-->
+            </div>
+          </div>  <!--/.row-->
+        </div>  <!-- /.card-->
+      </div> <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}

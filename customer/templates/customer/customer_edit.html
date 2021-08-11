@@ -1,0 +1,159 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;修改客户信息 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/select2/css/select2.min.css' %}" />
+  <!--customer css-->
+  <!--  <link href="{% static 'css/unit_list.css'  %}" rel="stylesheet" />-->
+{% endblock  %}
+
+{% block content %}
+
+  <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>修改客户信息</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-info ">
+
+              <form class="form-horizontal" method="post" action="{% url 'customer:customer_edit' customer_info.id %}">
+              <!-- card-body -->
+              <div class="row">
+                <div class="col-md-6 offset-md-3">
+                  <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
+
+                    {% csrf_token %}
+                      <!--客户姓名-->
+                      <div class="form-group row">
+                        {{ form.customer_name.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.customer_name }}
+                        </div>
+                      </div>
+                      <!--联系方式-->
+                      <div class="form-group row">
+                        {{ form.contact_info.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.contact_info }}
+                        </div>
+                      </div>
+                      <!--单位-->
+                      <div class="form-group row">
+                        {{ form.unit.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.unit }}
+                        </div>
+                      </div>
+                      <!--科室/院系-->
+                      <div class="form-group row">
+                        {{ form.department.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.department }}
+                        </div>
+                      </div>
+                      <!--负责人-->
+                      <div class="form-group row">
+                        {{ form.leading_official.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.leading_official }}
+                        </div>
+                      </div>
+                      <!--备注-->
+                      <div class="form-group row">
+                        {{ form.note.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.note }}
+                        </div>
+                      </div>
+                      <!--添加人-->
+                      <div class="row" hidden>
+                        {{ form.person_add }}
+                      </div>
+
+                  </div>  <!-- /.card-body-->
+                </div>   <!-- /.col-->
+              </div>  <!-- /.row-->
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card-footer ">
+                    <div class="row">
+                      <div class="col-md-2 offset-md-5">
+                        <a href="{% url 'customer:customer_list' %}" class="btn btn-secondary btn-sm">取消</a>
+                        <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
+                      </div>
+                    </div>
+                  </div>  <!-- /.card-footer-->
+                </div>  <!-- /.col-->
+              </div>   <!-- /.row-->
+              </form>
+
+        </div>  <!-- /.card-->
+      </div>   <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+
+{% block script %}
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+<!-- Select2 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/select2/js/select2.full.min.js' %}"></script>
+
+<script type="text/javascript">
+
+  // 给label加上class属性;input加上class;
+  $("form label").addClass("col-md-5 col-form-label");
+
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='failed') {
+        toastr.error('该客户已存在！')
+      }
+    }
+    msgTip();
+
+  // 给select添加样式,<!-- Select2 -->
+  $("#id_unit").addClass("select2");
+  $("#id_unit ").attr("style","width:100%;");
+  //Initialize Select2 Elements
+  $('.select2').select2();
+
+</script>
+{% endblock %}

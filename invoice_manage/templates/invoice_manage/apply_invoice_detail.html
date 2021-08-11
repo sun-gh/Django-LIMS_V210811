@@ -1,0 +1,202 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;开票申请详情 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <link href="{% static 'invoice_manage/css/apply_invoice_detail.css'  %}" rel="stylesheet" />
+{% endblock  %}
+
+{% block content %}
+  <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>开票申请详细信息</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <!-- card-header -->
+          <div class="card-header ">
+            <h5 class="m-0"><strong class="btn btn-info">申请序号：{{ apply.serial_number }}</strong></h5>
+          </div>
+          <!-- card-body -->
+          <div class="card-body  pb-1  "> <!--pt-0 pl-1 pr-1-->
+            <div class="row">
+              <div class="col-md-12">
+                <h6><b>基本信息:</b></h6>
+                <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
+                  <thead>
+                    <tr>
+                      <th>关联合同</th>
+                      <th>开票单位</th>
+                      <th>开票金额</th>
+                      <th>开票张数</th>
+                      <th>开票类型</th>
+                      <th>申请人</th>
+                      <th>申请日期</th>
+                      <th>状态</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ apply.related_contract.contract_num }}</td>
+                      <td>{{ apply.unit }}</td>
+                      <td>{{ apply.invoice_sum }}</td>
+                      <td>{{ apply.sheet_num }}</td>
+                      <td>{{ apply.get_invoice_type_display }}</td>
+                      <td>{{ apply.applicant }}</td>
+                      <td>{{ apply.c_time|date:"Y-m-d" }}</td>
+                      <td>{{ apply.get_status_display }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
+              <div class="col-md-12">
+                <h6><b>开票要求:</b></h6>
+                <p>
+                  {% for item in apply.invoice_require.all %}
+                    <span class="badge badge-warning">{{ item.require_content }}</span>  <!--4.3中label已废除-->
+                  {% empty %}
+                      -
+                  {% endfor %}
+                </p>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
+              <div class="col-md-8">
+              <h6><b>联系人:</b></h6>
+              <table border="1" class="table " style="border-left:3px solid orangered;border-bottom:1px solid orangered" >
+                <thead>
+                  <tr>
+                    <th>姓名</th>
+                    <th>电话</th>
+                    <th>收件地址</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{ apply.linkman|default:"-" }}</td>
+                    <td>
+                      {{ apply.phone|default:"-" }}
+                    </td>
+                    <td>
+                      {{ apply.address_linkman|default:"-" }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              </div>  <!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
+              <div class="col-md-12">
+                <h6><b>备注:</b></h6>
+                <p>{{ apply.note|default:"-" }}</p>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
+              <div class="col-md-12">
+                <h6><b>相关文件:</b></h6>
+                <div>
+                  {% for file in apply.reimburse_file.all %}
+                    <div><a href="/media/{{ file.file.name }}">{{ file.file.name }}</a>&nbsp;</div>
+                  {% empty %}  <!--增加files为空的判断-->
+                  {% endfor %}
+                </div>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+
+          </div>  <!-- /.card-body-->
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-md-6">
+                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'invoice_manage:apply_invoice_record'%}" style="color:green;"><strong>返回开票申请列表</strong></a>
+              </div>  <!--/.col-->
+              <div class="col-md-3">
+                {% if perms.invoice_manage.approve_apply_invoice %}
+                  <a class="btn btn-info btn-sm" href="{% url 'invoice_manage:approve_apply_invoice' apply.id %}" name="approve_apply" role="button" >同意开票</a>
+                  <a class="btn btn-danger btn-sm" href="{% url 'invoice_manage:untread_apply_invoice' apply.id %}" name="untread_apply" role="button" >退回</a>
+                {% endif %}
+              </div>
+              <div class="col-md-3">
+                {% if perms.invoice_manage.file_apply_invoice %}
+                  <a class="btn btn-success btn-sm" href="{% url 'invoice_manage:file_apply_invoice' apply.id %}" name="file_apply" role="button" >归档</a>
+                {% endif %}
+              </div>
+            </div>
+          </div>  <!--/.row-->
+        </div>  <!-- /.card-->
+      </div> <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+{% block script %}
+
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+
+<script type="text/javascript">
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 定义message显示函数
+  function msgTip(){
+    var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+
+    if (msgs=='untread_failed') {
+      toastr.error('退回失败！');
+    }else if (msgs=='untread_forbid') {
+      toastr.error('已开票无法退回！');
+    }
+  }
+  msgTip();
+
+  // 根据status决定是否禁用“同意开票”；
+    var status_val=new Number;
+    status_val = {{ apply.status }};
+    //console.log(status_val);
+
+    if (status_val == 1 || status_val == 3){
+      document.getElementsByName("approve_apply")[0].className += ' disabled';
+      };
+  // 根据status决定是否禁用“退回”；
+    if (status_val > 1 ){
+      document.getElementsByName("untread_apply")[0].className += ' disabled';
+      };
+  // 根据status决定是否禁用“归档”；
+    if (status_val != 1 ){
+      document.getElementsByName("file_apply")[0].className += ' disabled';
+      };
+
+</script>
+
+{% endblock %}

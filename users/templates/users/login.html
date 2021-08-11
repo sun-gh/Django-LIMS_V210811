@@ -1,0 +1,117 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>谱度众合</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- jQuery -->
+  <script src="{% static 'AdminLTE-3.0.2/plugins/jquery/jquery.min.js' %}"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/fontawesome-free/css/all.min.css' %}">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/dist/css/adminlte.min.css' %}">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <link rel="stylesheet" href="{% static 'users/css/login.css'  %}" >
+</head>
+<body class="hold-transition login-page">
+<div class="login-box">
+  <div class="login-logo">
+    <b>项目管理系统</b>
+  </div>
+  <!-- /.login-logo -->
+  <div class="card">
+    <div class="card-body login-card-body">
+      <p class="login-box-msg">谱度众合生命科技有限公司</p>
+
+      <form action="{% url 'users:login' %}" method="post">
+        {% csrf_token  %}
+<!--        {% if message %}-->
+<!--          <p class="mb-2 text-center" id="login-error">{{ message }}</p>-->
+<!--        {% endif %}-->
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" name="username" placeholder="Username">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-user"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="password" class="form-control" name="pwd" placeholder="Password">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-8">
+            <div class="icheck-primary">
+              <input type="checkbox" id="remember">
+              <label for="remember">
+                Remember Me
+              </label>
+            </div>
+          </div>
+          <!-- /.col -->
+          <div class="col-4">
+            <button type="submit" class="btn btn-primary btn-block">登录</button>
+          </div>
+          <!-- /.col -->
+        </div>
+      </form>
+    </div>
+    <!-- /.login-card-body -->
+  </div>
+</div>
+<!-- /.login-box -->
+
+<!-- Bootstrap 4 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'AdminLTE-3.0.2/dist/js/adminlte.min.js' %}"></script>
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+
+<script type="text/javascript">
+// 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+// 定义message显示
+    function msgTip(){
+
+      var msgs = '{{message}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='error') {
+        toastr.error('用户名或密码错误！')
+      }
+
+    }
+    msgTip();
+
+</script>
+
+</body>
+</html>

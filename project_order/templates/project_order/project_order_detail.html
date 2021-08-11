@@ -1,0 +1,157 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;项目结算详情 {% endblock %}
+
+{% block css %}
+    <link href="{% static 'project_order/css/project_order_detail.css'  %}" rel="stylesheet" />
+{% endblock  %}
+
+{% block content %}
+  <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>项目结算详细信息</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <!-- card-header -->
+          <div class="card-header ">
+            <h5 class="m-0"><strong class="btn btn-info">项目：{{ record.project_order.project_num }}</strong></h5>
+          </div>
+          <!-- card-body -->
+          <div class="card-body  pb-1  "> <!--pt-0 pl-1 pr-1-->
+            <div class="row">
+              <div class="col-md-12">
+                <h6><b>基本信息:</b></h6>
+                <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
+                  <thead>
+                    <tr>
+                        <th>项目类型</th>
+                        <th>样本类型</th>
+                        <th>机时类型</th>
+                        <th>样本数量</th>
+                        <th>销售人员</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ record.project_order.project_type.project_name }}</td>
+                      <td>{{ record.project_order.sample_type.type_name }}</td>
+                      <td>
+                        {% if record.project_order.machine_time %}
+                          <span>{{ record.project_order.machine_time.time_type }}</span>
+                        {% else %}
+                          <span>-</span>
+                        {% endif %}
+                      </td>
+                      <td>{{ record.project_order.sample_amount }}</td>
+                      <td>
+                        {% if record.project_order.sale_person %}
+                          <span>{{ record.project_order.sale_person.name_person }}</span>
+                        {% else %}
+                          <span>-</span>
+                        {% endif %}
+                      </td>
+
+                    </tr>
+                  </tbody>
+                </table>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
+              <div class="col-md-8">
+              <h6><b>送样人:</b></h6>
+              <table border="1" class="table " style="border-left:3px solid orangered;border-bottom:1px solid orangered" >
+                <thead>
+                  <tr>
+                      <th>姓名</th>
+                      <th>单位</th>
+                      <th>送样终端</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{ record.project_order.sample_sender.customer_name }}</td>
+                    <td>
+                      {% if record.project_order.sample_sender.unit %}
+                        <span>{{ record.project_order.sample_sender.unit.unit_name }}</span>
+                      {% else %}
+                        <span>-</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ record.project_order.sample_sender.leading_official|default:"-" }}</td>
+
+                  </tr>
+                </tbody>
+              </table>
+              </div>  <!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
+              <div class="col-md-8">
+              <h6><b>结算信息:</b></h6>
+              <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
+                <thead>
+                  <tr>
+                      <th>附加费用</th>
+                      <th>项目金额</th>
+                      <th>结算方式</th>
+                      <th>合同记录</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                        {% for item in record.project_order.addition_item.all %}
+                        <span class="badge badge-warning">{{ item.item_type }}</span>  <!--4.3中label已废除-->
+                        {% empty %}
+                            -
+                        {% endfor %}
+                      </td>
+                    <td>{{ record.project_sum|default_if_none:"-" }}</td>
+                    <td>
+                      {% if record.pay_type %}
+                        <span>{{ record.pay_type.type_name }}</span>
+                      {% else %}
+                        <span>-</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ record.contract_record|yesno:"有,无,maybe" }}</td>
+
+                  </tr>
+                </tbody>
+              </table>
+              </div>  <!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
+              <div class="col-md-12">
+                <h6><b>备注:</b></h6>
+                <p>{{ record.note|default_if_none:"-" }}</p>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+
+          </div>  <!-- /.card-body-->
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-md-12">
+                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'project_order:project_order_page'%}" style="color:green;"><strong>返回项目结算列表</strong></a>
+              </div>  <!--/.col-->
+            </div>
+          </div>  <!--/.row-->
+        </div>  <!-- /.card-->
+      </div> <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}

@@ -1,0 +1,12 @@
+#mytab tbody tr td {
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.table .thead-blue th {
+    color: #fff;
+    background-color: #3195f1;
+    border-color: #0d7adf;
+}

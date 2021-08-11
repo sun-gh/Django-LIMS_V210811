@@ -1,0 +1,183 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;修改项目结算信息 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/select2/css/select2.min.css' %}" />
+  <!--customer css-->
+  <link href="{% static 'project_order/css/project_order_edit.css'  %}" rel="stylesheet" />
+{% endblock  %}
+
+{% block content %}
+
+  <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>项目结算信息修改</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-secondary">
+        <div class="card-header">
+          <h3 class="card-title">项目号：&nbsp;{{ project_order.project_order.project_num }}</h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+              <i class="fas fa-minus"></i></button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <p><span> 项目类型 </span>：{{ project_order.project_order.project_type.project_name }} </p>
+              <p><span> 样本数量 </span>：{{ project_order.project_order.sample_amount }} </p>
+              <p><span> 附加费用 </span>：
+                {% for item in project_order.project_order.addition_item.all %}
+                    <span class="addition_item">{{ item.item_type }} &nbsp;</span>
+                {% empty %}
+                    -
+                {% endfor %}
+              </p>
+            </div>
+            <div class="col">
+              <p><span class="link_info"> 送样人 </span> ：{{ project_order.project_order.sample_sender.customer_name }} </p>
+              <p><span class="link_info"> 单位 </span> ：
+                {% if project_order.project_order.sample_sender.unit %}
+                  <span>{{ project_order.project_order.sample_sender.unit.unit_name }}</span>
+                {% else %}
+                  <span>-</span>
+                {% endif %}
+              </p>
+              <p><span class="link_info"> 负责人 </span> ：{{ project_order.project_order.sample_sender.leading_official|default:"-" }} </p>
+            </div>
+          </div>
+
+        </div> <!-- /.card-body -->
+        </div>
+
+        <div class="card card-info ">
+
+              <form class="form-horizontal" method="post" action="{% url 'project_order:project_order_edit' project_order.id %}">
+              <!-- card-body -->
+              <div class="row">
+                <div class="col-md-10 offset-md-1">
+                  <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
+
+                    {% csrf_token %}
+                    <div class="row ">
+                      <div class="col-md-8 offset-md-2">
+                          <!--项目金额-->
+                          <div class="form-group row">
+                            {{ form.project_sum.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.project_sum }}
+                            </div>
+                          </div>
+                          <!--销售人员-->
+                          <div class="form-group row">
+                            {{ form.sale_person.label_tag }}
+                            <div class="col-md-7" id="unit">
+                              {{ form.sale_person }}
+                            </div>
+                          </div>
+                          <!--结算方式-->
+                          <div class="form-group row">
+                            {{ form.pay_type.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.pay_type }}
+                            </div>
+                          </div>
+                          <!--备注-->
+                          <div class="form-group row">
+                            {{ form.note.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.note }}
+                            </div>
+                          </div>
+                          <!--合同记录-->
+                          <div style="display:none;">{{  form.contract_record }}</div>
+                      </div>    <!-- /.col-->
+                      </div>   <!-- /.row-->
+                  </div>  <!-- /.card-body-->
+                </div>   <!-- /.col-->
+              </div>  <!-- /.row-->
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card-footer ">
+                    <div class="row">
+                      <div class="col-md-2 offset-md-5">
+                        <a href="{% url 'project_order:project_order_page' %}" class="btn btn-secondary btn-sm">取消</a>
+                        <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
+                      </div>
+                    </div>
+                  </div>  <!-- /.card-footer-->
+                </div>  <!-- /.col-->
+              </div>   <!-- /.row-->
+              </form>
+
+        </div>  <!-- /.card-->
+      </div>   <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+
+{% block script %}
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+<!-- Select2 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/select2/js/select2.full.min.js' %}"></script>
+
+<script type="text/javascript">
+
+  $(document).ready(function() {
+
+  // 给label加上class属性;input加上class;
+  $("form label").addClass("col-md-4 col-form-label");
+
+
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='failed') {
+        toastr.error('修改失败！')
+      }
+    }
+    msgTip();
+
+  });  // .ready
+
+</script>
+{% endblock %}

@@ -1,0 +1,251 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;修改前处理信息 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/select2/css/select2.min.css' %}" />
+  <!--customer css-->
+<!--  <link href="{% static 'project_stage/css/sample_record_add.css'  %}" rel="stylesheet" />-->
+{% endblock  %}
+
+{% block content %}
+
+  <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>前处理信息修改</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-secondary">
+        <div class="card-header">
+          <h3 class="card-title">项目号：&nbsp;{{ project_info.project_num }}</h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+              <i class="fas fa-minus"></i></button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <p><span> 项目类型 </span>： {{ project_info.project_type.project_name }}</p>
+              <p><span> 样本类型 </span>：{{ project_info.sample_type.type_name }} </p>
+            </div>
+            <div class="col">
+              <p><span class="link_info"> 单位 </span> ：
+                  {% if project_info.sample_sender.unit %}
+                    {{ project_info.sample_sender.unit.unit_name }}
+                  {% else  %}
+                    -
+                  {% endif  %}
+              </p>
+              <p><span class="link_info"> 送样人 </span> ：{{ project_info.sample_sender.customer_name }} </p>
+            </div>
+          </div>
+
+        </div> <!-- /.card-body -->
+        </div>
+
+        <div class="card card-info ">
+
+              <form class="form-horizontal" method="post" action="{% url 'project_stage:pretreat_stage_edit' project_info.id %}">
+              <!-- card-body -->
+              <div class="row">
+                <div class="col-md-10 offset-md-1">
+                  <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
+
+                    {% csrf_token %}
+                    <div class="row ">
+                      <div class="col">
+                          <!--项目启动时间-->
+                          <div class="form-group row">
+                            {{ form.start_date.label_tag }}
+                            <div class="col-md-7" id="unit">
+                              {{ form.start_date }}
+                            </div>
+                          </div>
+                          <!--预实验完成时间-->
+                          <div class="form-group row">
+                            {{ form.preexperiment_finish_date.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.preexperiment_finish_date }}
+                            </div>
+                          </div>
+                          <!--前处理完成时间-->
+                          <div class="form-group row">
+                            {{ form.pretreat_finish_date.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.pretreat_finish_date }}
+                            </div>
+                          </div>
+                          <!--步骤一-->
+                          <div class="form-group row">
+                            {{ form.first_operate_person.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.first_operate_person }}
+                            </div>
+                          </div>
+                          <!--步骤二-->
+                          <div class="form-group row">
+                            {{ form.second_operate_person.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.second_operate_person }}
+                            </div>
+                          </div>
+                          <!--步骤三-->
+                          <div class="form-group row">
+                            {{ form.third_operate_person.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.third_operate_person }}
+                            </div>
+                          </div>
+                          <!--步骤四-->
+                          <div class="form-group row">
+                            {{ form.fourth_operate_person.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.fourth_operate_person }}
+                            </div>
+                          </div>
+                      </div>
+
+                      <div class="col">
+                          <!--跑胶-->
+                          <div class="form-group row">
+                            {{ form.page_person.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.page_person }}
+                            </div>
+                          </div>
+                          <!--样本剩余-->
+                          <div class="form-group row">
+                            {{ form.sample_overplus.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.sample_overplus }}
+                            </div>
+                          </div>
+                          <!--剩余样本状态-->
+                          <div class="form-group row">
+                            {{ form.sample_overplus_status.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.sample_overplus_status }}
+                            </div>
+                          </div>
+                          <!--优先级-->
+                          <div class="form-group row">
+                            {{ form.priority.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.priority }}
+                            </div>
+                          </div>
+                          <!--项目中断类型-->
+                          <div class="form-group row">
+                            {{ form.project_interrupt.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.project_interrupt }}
+                            </div>
+                          </div>
+
+                      </div>    <!-- /.col-->
+                      </div>   <!-- /.row-->
+                  </div>  <!-- /.card-body-->
+                </div>   <!-- /.col-->
+              </div>  <!-- /.row-->
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card-footer ">
+                    <div class="row">
+                      <div class="col-md-2 offset-md-5">
+                        <a href="{% url 'project_stage:pretreat_stage' %}" class="btn btn-secondary btn-sm">取消</a>
+                        <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
+                      </div>
+                    </div>
+                  </div>  <!-- /.card-footer-->
+                </div>  <!-- /.col-->
+              </div>   <!-- /.row-->
+              </form>
+
+        </div>  <!-- /.card-->
+      </div>   <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+
+{% block script %}
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+<!-- Select2 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/select2/js/select2.full.min.js' %}"></script>
+
+<script type="text/javascript">
+
+  $(document).ready(function() {
+
+  // 给label加上class属性;input加上class;
+  $("form label").addClass("col-md-4 col-form-label");
+
+  // 给select添加样式,<!-- Select2 -->
+  $("#id_sample_sender").addClass("select2");
+  $("#id_sample_sender ").attr("style","width:100%;");
+  $("#id_first_operate_person").addClass("select2");
+  $("#id_first_operate_person").attr("style","width:100%;");
+  $("#id_second_operate_person").addClass("select2");
+  $("#id_second_operate_person").attr("style","width:100%;");
+  $("#id_third_operate_person").addClass("select2");
+  $("#id_third_operate_person").attr("style","width:100%;");
+  $("#id_fourth_operate_person").addClass("select2");
+  $("#id_fourth_operate_person").attr("style","width:100%;");
+  $("#id_page_person").addClass("select2");
+  $("#id_page_person").attr("style","width:100%;");
+
+  //Initialize Select2 Elements
+  $('.select2').select2();
+
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='failed') {
+        toastr.error('修改失败！')
+      }else if (msgs=='info_error') {
+        toastr.error('添加失败！')
+      }
+    }
+    msgTip();
+
+  });  // .ready
+
+</script>
+{% endblock %}

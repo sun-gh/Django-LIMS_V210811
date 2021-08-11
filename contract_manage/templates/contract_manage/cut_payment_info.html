@@ -1,0 +1,483 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;预付款扣款信息 {% endblock %}
+
+{% block css %}
+  <!--bootstrap-table-->
+  <link rel="stylesheet" href="{% static 'bootstrap-table-1.17.0/dist/bootstrap-table.min.css' %}">
+  <!--bootstrap-table fixed columns-->
+  <link rel="stylesheet" href="{% static 'bootstrap-table-1.17.0/dist/extensions/fixed-columns/bootstrap-table-fixed-columns.min.css' %}">
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <link href="{% static 'contract_manage/css/cut_payment_info.css'  %}" rel="stylesheet" />
+
+{% endblock  %}
+
+{% block content %}
+
+    <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>预付款扣款信息</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- card部分 -->
+  <section class="content">
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <!-- card-body -->
+          <div class="card-body pt-0 pb-1 pl-1 pr-1">
+
+            <table id="mytab" class="table table-sm table-bordered table-striped table-hover " style="table-layout:fixed;">
+            </table>
+
+            <div id="toolbar">
+
+              {% if perms.contract_manage.add_cutpayment %}
+                <a class="btn btn-primary btn-sm" href="#" role="button" onclick="add_apply()" >扣款申请</a>&nbsp;
+              {% endif %}
+              {% if perms.contract_manage.change_cutpayment %}
+                <a class="btn btn-info btn-sm" href="#" role="button" id="edit-apply" >修改</a>&nbsp;
+              {% endif %}
+              {% if perms.contract_manage.delete_cutpayment %}
+                <a class="btn btn-secondary btn-sm" href="#" role="button" id="del-apply" >删除</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div> <!-- /.col-->
+    </div>  <!-- /.row-->
+
+  </section>
+
+{% endblock %}
+
+{% block script %}
+<!--popper定位库-->
+<script src="{% static 'popper-core-1.14.7/dist/umd/popper.min.js' %}" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<!-- bootstrap table -->
+<script src="{% static 'bootstrap-table-1.17.0/dist/bootstrap-table.min.js' %}"></script>
+<!-- bootstrap table fixed columns-->
+<script src="{% static 'bootstrap-table-1.17.0/dist/extensions/fixed-columns/bootstrap-table-fixed-columns.min.js' %}"></script>
+<!-- tableExport-->
+<script src="{% static 'tableExport.min.js' %}"></script>
+<!-- bootstrap table export-->
+<script src="{% static 'bootstrap-table-1.17.0/dist/extensions/export/bootstrap-table-export.min.js' %}"></script>
+<!-- bootstrap table cookie-->
+<script src="{% static 'bootstrap-table-1.17.0/dist/extensions/cookie/bootstrap-table-cookie.min.js' %}"></script>
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+
+<script type="text/javascript">
+
+    // 获取csrf
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+    function csrfSafeMethod(method) {
+      // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    };
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+      }
+    });
+
+    $(function () {
+        initBSTable()
+    });
+    $table = $("#mytab");
+
+    function initBSTable() {
+
+      // num=1是为了规定Num为数字类型
+      var pageSize = sessionStorage.getItem("pageSize");
+      var pageNum = sessionStorage.getItem("pageNum");
+      var num=1;
+      num = pageNum==null?1:parseInt(pageNum);
+      //console.log(pageNum);
+
+      $table.bootstrapTable({
+      {#全部参数#}
+
+        url:"{% url 'contract_manage:cut_payment_table' %}",
+        method: 'get',                      //请求方式（*）
+        //iconSize:"sm",                     // 1,设置修改图标  sm小图标 lg大图标
+        cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+        //cookie: true,                       //是否启用cookie
+        //cookieExpire: '2h',                //cookie过期时间
+        //cookieIdTable: 'unit_list',        //cookie的唯一标识符
+
+        pagination: true,                   //是否显示分页（*）
+        sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+        pageNumber: num,                       //初始化加载第一页，默认第一页;原始值为1
+        pageSize: 10,                       //每页的记录行数（*）
+        pageList: [5, 10, 20, 50, 100, 'All'],        //可供选择的每页的行数（*）
+        smartDisplay: false,               //自动判断显示分页信息和 card 视图
+        paginationLoop: false,             //是否启用分页条无限循环
+        queryParams: getParams,
+
+        search: true,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+        searchOnEnterKey: true,              //按回车触发搜索方法
+
+        showColumns: true,                  //是否显示所有的列
+        toolbar: "#toolbar",                //一个jQuery 选择器，指明自定义的 toolbar
+
+        showRefresh: true,                  //是否显示刷新按钮
+        showExport: true,                    //显示导出按钮
+        exportTypes:['excel','csv'],  //导出文件类型
+
+        exportOptions: {
+          fileName: '预付款扣款信息',  //文件名称设置
+          worksheetName: 'sheet1',  //表格工作区名称
+          tableName: '预付款扣款信息',
+          excelstyles: ['background-color', 'color', 'font-size', 'font-weight'],
+
+        },
+        //height: 500,                        //行高，如果没有设置height属性，表格自动高度
+        //theadClasses: "thead-light",       //设置thead-blue为表头样式
+
+        showToggle: false,                    //是否显示详细视图和列表视图的切换按钮
+        cardView: false,                    //是否显示详细视图,使用fixed-columns需要设为false
+        detailView: false,                  //开启详情树形图模式,使用fixed-columns需要设为false
+        showFooter: false,                  //显示摘要页脚行,使用fixed-columns需要设为false
+        fixedColumns: true,
+        fixedNumber: 3,  //固定列数
+        uniqueId: 'apply_id',     //为每一行指定唯一的标识符
+
+        //自定义分页字符串显示为中文
+        formatShowingRows:function(pageFrom, pageTo, totalRows) {
+          return "第"+pageFrom+"-"+pageTo+"行，共"+totalRows+"行";
+        },
+        //自定义分页字符串显示为中文
+        formatRecordsPerPage:function(pageNumber) {
+          return pageNumber+' 行/页';
+        },
+        //定义Search placeholder
+        formatSearch:function() {
+          return  "申请序号";
+        },
+
+        columns: [
+          { checkbox:true, },
+          {
+            field: 'num',  　　　　　　//返回数据rows数组中的每个字典的键名与此处的field值要保持一致
+            title: '序号',
+            width: 55,
+            align: 'center',
+            formatter: function(value,row,index){
+              var pageSize=$('#mytab').bootstrapTable('getOptions').pageSize;//通过表的#id 可以得到每页多少条
+              if (pageSize == 'All'){
+                  var totalRows = $('#mytab').bootstrapTable('getOptions').totalRows;
+                  pageSize = totalRows;
+              };
+              var pageNumber=$('#mytab').bootstrapTable('getOptions').pageNumber;//通过表的#id 可以得到当前第几页
+              return pageSize * (pageNumber - 1) + index + 1;    //返回每条的序号： 每页条数 * （当前页 - 1 ）+ 序号
+            },
+
+          },
+          {
+            field: 'serial_number',
+            title: '申请序号',
+            width: 100,
+            align: 'center',
+            formatter: function (value,row,index) {
+              var result = "";
+              result += "<a href='#'  class='view_detail' id='btn-" +row.apply_id +"' >" + value + "</a>";
+
+              return result;
+            },
+          },
+          {
+            field: 'link_contract',
+            title: '关联合同',
+            width: 90,
+            align: 'center',
+          },
+          {
+            field: 'unused_sum',
+            title: '剩余金额',
+            width: 90,
+            align: 'center',
+          },
+          {
+            field: 'cut_sum',
+            title: '扣款金额',
+            width: 90,
+            align: 'center',
+          },
+          {
+            field: 'cut_date',
+            title: '扣款日期',
+            width: 100,
+            align: 'center',
+          },
+          {
+            field: 'applicant',
+            title: '申请人',
+            width: 90,
+            align: 'center',
+          },
+          {
+            field: 'apply_date',
+            title: '申请日期',
+            width: 100,
+            align: 'center',
+          },
+          {
+            field: 'link_order',
+            title: '关联项目',
+            width: 100,
+            align: 'center',
+            formatter: paramsMatter,
+          },
+          {
+            field: 'note',
+            title: '备注',
+            width: 100,
+            align: 'center',
+            formatter: paramsMatter,
+          },
+          {
+            field: 'status',
+            title: '状态',
+            width: 90,
+            align: 'center',
+            formatter: function (value,row,index) {
+              var result = "";
+              if (value==1) {
+                result += '<span class="badge badge-warning">已退回</span>';
+              }else if (value==2) {
+                result += '<span class="badge badge-info">已审批</span>';
+              }else {
+                result += '<span class="badge badge-danger">待审批</span>';
+              }
+              return result;
+            },
+          },
+
+        ],
+
+      });  //. $table
+
+    }  //.initBSTable
+
+
+  //定义向后台传递参数的函数
+    function getParams(params) {
+
+      //获取sessionStorage中param的value
+      var param = sessionStorage.getItem("param");
+      if(param!=null){
+          param=param;
+          //将param添加到搜索框中
+          $("input.search-input").val(param);
+      }else {
+          param=$("input.search-input").val();
+      }
+
+      //获取sessionStorage
+      var pageSize = sessionStorage.getItem("pageSize");
+      var pageNum = sessionStorage.getItem("pageNum");
+      var temp = {      //这里的pageSize、pageNum、search必须和Controller改成一样的
+          pageSize: pageSize==null?params.limit:pageSize,                      //页面大小
+          pageNum: pageNum==null?(params.offset / params.limit) + 1:pageNum,   //页码
+          //在进行模糊查询的参数
+          search:param
+          // sort: params.sort,      //排序列名
+          // sortOrder: params.order //排位命令（desc，asc）
+
+      };
+      //在sessionStorage中清除这三个数据
+      sessionStorage.removeItem("pageSize");
+      sessionStorage.removeItem("pageNum");
+      sessionStorage.removeItem("param");
+      return temp;
+    }  //.getParams
+
+  // 定义鼠标悬停显示内容函数
+  function paramsMatter(value,row,index) {
+    var span=document.createElement('span');
+    span.setAttribute('title',value);
+    span.innerHTML = value;
+    return span.outerHTML;
+  }
+
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+  // 定义message显示函数
+  function msgTip(){
+    var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+
+     if (msgs=='add_success') {
+      toastr.success('扣款申请成功！');
+    }else if (msgs=='edit_success') {
+      toastr.success('修改申请信息成功！');
+    }else if (msgs=='approve_success') {
+      toastr.success('审批成功！');
+    }else if (msgs=='untread_success') {
+      toastr.success('退回成功！');
+    }
+  }
+  msgTip();
+
+  //添加申请按钮函数
+  function add_apply() {
+    var param=$("input.search-input").val();
+    if(param!=null){
+        param=param;
+        sessionStorage.setItem("param", param);
+    }else {
+        param="";
+    }
+    sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
+    sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
+    window.location.href="/contract_manage/apply_cut_payment/";
+  }
+
+  //修改作废信息按钮函数
+  $("#edit-apply").on("click", function() {
+
+    var rows = $("#mytab").bootstrapTable('getSelections');// 获得要修改的数据
+    if (rows.length == 0) {  // 判断是否选中
+        //alert("请先选择要修改的记录!");
+        toastr.info('请先选择要修改的记录！');
+        return;
+    } else {
+      if (rows.length == 1) {
+        if (rows[0].status == 2){
+          toastr.info('已审批，无法修改！');
+          return;
+        }else{
+          var param=$("input.search-input").val();
+          if(param!=null){
+            param=param;
+            sessionStorage.setItem("param", param);
+          }else {
+            param="";
+          }
+          sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
+          sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
+
+          var apply_id = rows[0].apply_id;  // 获取客户id
+          var url="/contract_manage/cut_payment_edit/" + apply_id + "/"  ;
+
+          location.href=url;
+        }
+      } else {
+        //alert("一次只能修改一条记录!");
+        toastr.info('一次只能修改一条记录！');
+        return;
+      }
+    }
+  })  // btn.on
+
+  // 删除按钮事件
+    $("#del-apply").on("click", function() {
+
+      var rows = $("#mytab").bootstrapTable('getSelections');// 获得要删除的数据
+      if (rows.length == 0) {  // rows 主要是为了判断是否选中
+        toastr.info('请先选择要删除的记录！');
+        return;
+      }else if(rows.length > 1){
+        toastr.info('一次只能删除一条记录！');
+        return;
+      } else {
+        if (rows[0].status == 2 ){
+          toastr.info('已审批无法删除！');
+          return;
+        }else{
+          if (confirm("是否确认删除？") == true) {
+            var id = new Number;// 声明一个数字变量
+            id = rows[0].apply_id;
+            deleteMs(id);
+          } else {
+            return false;
+          }
+        }
+      }
+    })  // btn.on
+  //定义ajax请求函数
+    function deleteMs(id) {
+      $.post(
+        "/contract_manage/cut_payment_del/",
+        {
+        "ids": id ,
+        "method":"post",
+        },
+        function(data,status) {
+          if (data == 'del_success') {
+            toastr.success('删除成功！');
+            $('#mytab').bootstrapTable('refresh', {
+            url : "/contract_manage/cut_payment_table/"
+          });
+          }  //.if
+        }  //. function
+      )  //.post
+    }
+
+  //查看详情页函数
+    $(document).on("click", "a.view_detail", function(){
+        //将分页等信息保持到缓存
+        var param=$("input.search-input").val();
+        if(param!=null){
+            param=param;
+            sessionStorage.setItem("param", param);
+        }else {
+            param="";
+        }
+        sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
+        sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
+
+        var btn_id = $(this).attr("id");
+        var str_arry = btn_id.split('-');
+        //var apply_id = parseInt(str_arry[1]);  // 将string转换为Int
+        var apply_id = str_arry[1];
+        window.location.href="/contract_manage/cut_payment_detail/" + apply_id + "/";
+
+    } );  // .on
+
+</script>
+
+{% endblock %}

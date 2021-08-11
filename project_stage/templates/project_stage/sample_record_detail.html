@@ -1,0 +1,141 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;样本登记详情 {% endblock %}
+
+{% block css %}
+    <link href="{% static 'project_stage/css/sample_record_detail.css'  %}" rel="stylesheet" />
+{% endblock  %}
+
+{% block content %}
+  <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>样本详细信息</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <!-- card-header -->
+          <div class="card-header ">
+            <h5 class="m-0"><strong class="btn btn-info">项目：{{ record.project_num }}</strong></h5>
+          </div>
+          <!-- card-body -->
+          <div class="card-body  pb-1  "> <!--pt-0 pl-1 pr-1-->
+            <div class="row">
+              <div class="col-md-12">
+                <h6><b>基本信息:</b></h6>
+                <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
+                  <thead>
+                    <tr>
+                        <th>项目类型</th>
+                        <th>样本类型</th>
+                        <th>机时类型</th>
+                        <th>样本数量</th>
+                        <th>样本质量</th>
+                        <th>收样日期</th>
+                        <th>附加项目</th>
+                        <th>项目来源</th>
+                        <th>登记人</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ record.project_type.project_name }}</td>
+                      <td>{{ record.sample_type.type_name }}</td>
+                      <td>
+                        {% if record.machine_time %}
+                          <span>{{ record.machine_time.time_type }}</span>
+                        {% else %}
+                          <span>-</span>
+                        {% endif %}
+                      </td>
+                      <td>{{ record.sample_amount }}</td>
+                      <td>{{ record.sample_quality.quality_type }}</td>
+                      <td>{{ record.receive_date }}</td>
+
+                      <td>
+                        {% for item in record.addition_item.all %}
+                        <span class="badge badge-warning">{{ item.item_type }}</span>  <!--4.3中label已废除-->
+                        {% empty %}
+                            -
+                        {% endfor %}
+                      </td>
+                      <td>{{ record.get_project_source_display }}</td>
+                      <td>{{ record.person_record }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
+              <div class="col-md-8">
+              <h6><b>送样人:</b></h6>
+              <table border="1" class="table " style="border-left:3px solid orangered;border-bottom:1px solid orangered" >
+                <thead>
+                  <tr>
+                      <th>姓名</th>
+                      <th>单位</th>
+                      <th>送样终端</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{ record.sample_sender.customer_name }}</td>
+                    <td>
+                      {% if record.sample_sender.unit %}
+                        <span>{{ record.sample_sender.unit.unit_name }}</span>
+                      {% else %}
+                        <span>-</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {{ record.sample_sender.leading_official|default:"-" }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              </div>  <!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
+              <div class="col-md-12">
+                <h6><b>备注:</b></h6>
+                <p>{{ record.note }}</p>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
+              <div class="col-md-12">
+                <h6><b>相关文件:</b></h6>
+                <div>
+                  {% for file in record.files.all %}
+                    <div><a href="/media/{{ file.file.name }}">{{ file.file.name }}</a>&nbsp;</div>
+                  {% empty %}  <!--增加files为空的判断-->
+                  {% endfor %}
+                </div>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+
+          </div>  <!-- /.card-body-->
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-md-12">
+                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'project_stage:sample_record'%}" style="color:green;"><strong>返回样本登记列表</strong></a>
+              </div>  <!--/.col-->
+            </div>
+          </div>  <!--/.row-->
+        </div>  <!-- /.card-->
+      </div> <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}

@@ -1,0 +1,247 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;修改样本信息 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/select2/css/select2.min.css' %}" />
+  <!--customer css-->
+<!--  <link href="{% static 'project_stage/css/sample_record_add.css'  %}" rel="stylesheet" />-->
+{% endblock  %}
+
+{% block content %}
+
+  <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>样本信息修改</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-secondary">
+          <div class="card-header">
+            <h3 class="card-title">项目编号：&nbsp;{{ project_info.project_num }}</h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                <i class="fas fa-minus"></i></button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="card card-info ">
+          <form class="form-horizontal" method="post" action="{% url 'project_stage:sample_record_edit' project_info.id %}" enctype="multipart/form-data">
+          <!-- card-body -->
+          <div class="row">
+            <div class="col-md-10 offset-md-1">
+              <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
+                {% csrf_token %}
+                <div class="row ">
+                  <div class="col">
+                      <!--项目类型-->
+                      <div class="form-group row">
+                        {{ form.project_type.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.project_type }}
+                        </div>
+                      </div>
+                      <!--样本类型-->
+                      <div class="form-group row">
+                        {{ form.sample_type.label_tag }}
+                        <div class="col-md-7" id="unit">
+                          {{ form.sample_type }}
+                        </div>
+                      </div>
+                      <!--机时类型-->
+                      <div class="form-group row">
+                        {{ form.machine_time.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.machine_time }}
+                        </div>
+                      </div>
+                      <!--样本数量-->
+                      <div class="form-group row">
+                        {{ form.sample_amount.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.sample_amount }}
+                        </div>
+                      </div>
+                      <!--送样人-->
+                      <div class="form-group row">
+                        {{ form.sample_sender.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.sample_sender }}
+                        </div>
+                      </div>
+                      <!--样本质量-->
+                      <div class="form-group row">
+                        {{ form.sample_quality.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.sample_quality }}
+                        </div>
+                      </div>
+                      <!--收样日期-->
+                      <div class="form-group row">
+                        {{ form.receive_date.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.receive_date }}
+                        </div>
+                      </div>
+                  </div>
+
+                  <div class="col">
+                      <!--附加项目-->
+                      <div class="form-group row">
+                        {{ form.addition_item.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.addition_item }}
+                        </div>
+                      </div>
+
+                      <!--项目来源-->
+                      <div class="form-group row">
+                        {{ form.project_source.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.project_source }}
+                        </div>
+                      </div>
+                      <!--备注-->
+                      <div class="form-group row">
+                        {{ form.note.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.note }}
+                        </div>
+                      </div>
+                      <!--相关文件-->
+                      <div class="form-group row">
+                        {{ form.file_input.label_tag }}
+                        <div class="col-md-7">
+                          <div id="pro_files" style="display:none;">{{  form.files }}</div>
+                          <div id="file_cyc">
+                            {% for file in project_info.files.all %}
+                              <div><a href="/media/{{ file.file.name }}">{{ file.file.name }}</a>&nbsp;<button
+                                    type="button" class="btn_del btn-xs" id="btn-{{ file.id }}">删除</button></div>
+                            {% empty %}  <!--增加files为空的判断-->
+                            {% endfor %}
+                          </div>
+                          <div>添加：</div>
+                          {{ form.file_input }}
+                        </div>
+                      </div>
+                      <!--登记人-->
+                      <div style="display:none;">{{  form.person_record }}</div>
+
+                  </div>    <!-- /.col-->
+                  </div>   <!-- /.row-->
+              </div>  <!-- /.card-body-->
+            </div>   <!-- /.col-->
+          </div>  <!-- /.row-->
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card-footer ">
+                <div class="row">
+                  <div class="col-md-2 offset-md-5">
+                    <a href="{% url 'project_stage:sample_record' %}" class="btn btn-secondary btn-sm">取消</a>
+                    <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
+                  </div>
+                </div>
+              </div>  <!-- /.card-footer-->
+            </div>  <!-- /.col-->
+          </div>   <!-- /.row-->
+          </form>
+        </div>  <!-- /.card-->
+      </div>   <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+
+{% block script %}
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+<!-- Select2 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/select2/js/select2.full.min.js' %}"></script>
+
+<script type="text/javascript">
+
+  $(document).ready(function() {
+
+  // 给label加上class属性;input加上class;
+  $("form label").addClass("col-md-4 col-form-label");
+
+  // 给必填项添加*
+  var txt1 = '<span style="color:red"> *</span>';
+  $("[for='id_project_type']").append(txt1);
+  $("[for='id_sample_type']").append(txt1);
+  $("[for='id_sample_amount']").append(txt1);
+  $("[for='id_sample_sender']").append(txt1);
+  $("[for='id_sample_quality']").append(txt1);
+  $("[for='id_receive_date']").append(txt1);
+
+  // 给select添加样式,<!-- Select2 -->
+  $("#id_sample_sender").addClass("select2");
+  $("#id_sample_sender ").attr("style","width:100%;");
+  //Initialize Select2 Elements
+  $('.select2').select2();
+
+  //文件删除按钮函数
+  $(".btn_del").each( function(index, domEle){
+    $(this).click(function() {
+        var btn_id = $(this).attr("id");
+        var str_arry = btn_id.split('-');
+        //var file_id = parseInt(str_arry[1]);  // 将string转换为Int
+        var file_id = str_arry[1];
+        $(this).parent().remove();
+        //console.log(file_id);
+        //在select中将相应文件删除
+        $("#pro_files select option[value=" + file_id + "]").removeAttr("selected");
+
+    } );  // click
+  });  // .btn_del
+
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='failed') {
+        toastr.error('修改失败！')
+      }else if (msgs=='info_error') {
+        toastr.error('添加失败！')
+      }
+    }
+    msgTip();
+
+  });  // .ready
+
+</script>
+{% endblock %}

@@ -1,0 +1,155 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;发票信息详情 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <link href="{% static 'invoice_manage/css/apply_invoice_detail.css'  %}" rel="stylesheet" />
+{% endblock  %}
+
+{% block content %}
+  <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>发票详细信息</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <!-- card-header -->
+          <div class="card-header ">
+            <h5 class="m-0"><strong class="btn btn-info">发票号：{{ invoice.invoice_num|default:"待开票" }}</strong></h5>
+          </div>
+          <!-- card-body -->
+          <div class="card-body  pb-1  "> <!--pt-0 pl-1 pr-1-->
+            <div class="row">
+              <div class="col-md-12">
+                <h6><b>基本信息:</b></h6>
+                <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
+                  <thead>
+                    <tr>
+                      <th>关联合同</th>
+                      <th>开票单位</th>
+                      <th>发票金额</th>
+                      <th>开票日期</th>
+                      <th>申请人</th>
+                      <th>作废/冲红</th>
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ invoice.link_apply.related_contract.contract_num }}</td>
+                      <td>{{ invoice.unit_invoice }}</td>
+                      <td>{{ invoice.invoice_sum|default:"-" }}</td>
+                      <td>
+                        {% if invoice.invoice_date %}
+                          {{ invoice.invoice_date|date:"Y-m-d" }}
+                        {% else %}
+                          {{ invoice.invoice_date|default:"-" }}
+                        {% endif %}
+                      </td>
+                      <td>{{ invoice.applicant }}</td>
+                      <td>{{ invoice.get_void_red_display }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+
+            <div class="row">
+              <div class="col-md-8">
+              <h6><b>回款信息:</b></h6>
+              <table border="1" class="table " style="border-left:3px solid orangered;border-bottom:1px solid orangered" >
+                <thead>
+                  <tr>
+                    <th>回款日期</th>
+                    <th>回款金额</th>
+                    <th>备注</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      {% if invoice.payment_date %}
+                        {{ invoice.payment_date|date:"Y-m-d" }}
+                      {% else %}
+                        {{ invoice.payment_date|default:"-" }}
+                      {% endif  %}
+                    </td>
+                    <td>
+                      {{ invoice.payment_sum|default:"-" }}
+                    </td>
+                    <td>
+                      {{ invoice.note|default:"-" }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              </div>  <!--/.col-->
+            </div>  <!--/.row-->
+
+          </div>  <!-- /.card-body-->
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-md-6">
+                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'invoice_manage:invoice_info'%}" style="color:green;"><strong>返回已开发票信息表</strong></a>
+              </div>  <!--/.col-->
+
+            </div>
+          </div>  <!--/.row-->
+        </div>  <!-- /.card-->
+      </div> <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+{% block script %}
+
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+
+<script type="text/javascript">
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 定义message显示函数
+  function msgTip(){
+    var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+
+    if (msgs=='untread_failed') {
+      toastr.error('退回失败！');
+    }
+  }
+  msgTip();
+
+
+</script>
+
+{% endblock %}

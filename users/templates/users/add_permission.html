@@ -1,0 +1,112 @@
+{% extends "customer/base.html" %}
+{% load static %}
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <!-- Select2 -->
+<!--  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/select2/css/select2.min.css' %}" />-->
+  <!--customer css-->
+  <!--  <link href="{% static 'css/unit_add.css'  %}" rel="stylesheet" />-->
+{% endblock  %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>添加权限</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+<section class="content">
+  <div class="row">
+      <div class="col-md-12">
+         <div class="card card-info ">
+
+         <form action="{% url 'users:add_permission' %}" method="post">
+             {% csrf_token  %}
+             <div class="row">
+             <div class="col-md-6 offset-md-3">
+             <div class="card-body ">
+             <!--模型名称-->
+             <div class="form-group row">
+                 <label class="col-md-4 col-form-label">模型名称:</label>
+                 <div class="col-md-8">
+                     {{form.model_name}}
+                 </div>
+             </div>
+             <!--权限名称-->
+             <div class="form-group row">
+                 <label class="col-md-4 col-form-label">权限名称:</label>
+                 <div class="col-md-8">
+                     {{form.permission_name}}
+                 </div>
+             </div>
+             <!--权限描述-->
+             <div class="form-group row">
+                 <label class="col-md-4 col-form-label">权限描述:</label>
+                 <div class="col-md-8">
+                     {{form.permission_describe}}
+                 </div>
+             </div>
+             </div>
+             </div>  <!-- /.col-->
+             </div>  <!-- /.row-->
+             <div class="row">
+                <div class="col-md-12">
+                  <div class="card-footer ">
+                      <div class="row">
+                      <div class="col-md-2 offset-md-5">
+                        <a href="{% url 'customer:index' %}" class="btn btn-secondary btn-sm">取消</a>
+                        <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
+                      </div>
+                      </div>
+                  </div>  <!-- /.card-footer-->
+                </div>  <!-- /.col-->
+              </div>   <!-- /.row-->
+         </form>
+
+         </div>
+      </div>  <!-- /.col-->
+  </div>  <!-- /.row-->
+</section>
+{% endblock content %}
+{% block script %}
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+<!-- Select2 -->
+<!--<script src="{% static 'AdminLTE-3.0.2/plugins/select2/js/select2.full.min.js' %}"></script>-->
+
+<script type="text/javascript">
+ // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='add_failed') {
+        toastr.error('添加失败！')
+      }
+    }
+    msgTip();
+</script>
+{% endblock %}

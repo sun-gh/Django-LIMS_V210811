@@ -1,0 +1,255 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;修改开票申请 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/select2/css/select2.min.css' %}" />
+  <!--customer css-->
+<!--  <link href="{% static 'project_stage/css/sample_record_add.css'  %}" rel="stylesheet" />-->
+{% endblock  %}
+
+{% block content %}
+
+  <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>修改开票申请</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-secondary">
+          <div class="card-header">
+            <h3 class="card-title">申请序号：&nbsp;{{ apply_info.serial_number }}</h3>
+
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                <i class="fas fa-minus"></i></button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <p><span> 状态 </span>：{{ apply_info.get_status_display }} </p>
+              </div>
+              <div class="col">
+                <p><span class="link_info"> 申请日期 </span> ：{{ apply_info.c_time|date:"Y-m-d" }} </p>
+              </div>
+              <div class="col">
+                <p><span> 申请人 </span>：{{ apply_info.applicant }} </p>
+              </div>
+            </div>
+
+          </div> <!-- /.card-body -->
+        </div>
+
+        <div class="card card-info ">
+          <form class="form-horizontal" method="post" action="{% url 'invoice_manage:apply_invoice_edit' apply_info.id %}" enctype="multipart/form-data">
+            <!-- card-body -->
+            <div class="row">
+              <div class="col-md-10 offset-md-1">
+                <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
+                  <div class="row">
+                  {% csrf_token %}
+                      <div class="col">
+                        <!--关联合同-->
+                        <div class="form-group row">
+                          {{ form.related_contract.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.related_contract }}
+                          </div>
+                        </div>
+
+                        <!--开票单位-->
+                        <div class="form-group row">
+                          {{ form.unit_name.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.unit_name }}
+                          </div>
+                        </div>
+                        <!--开票金额-->
+                        <div class="form-group row">
+                          {{ form.invoice_sum.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.invoice_sum }}
+                          </div>
+                        </div>
+                        <!--开票张数-->
+                        <div class="form-group row">
+                          {{ form.sheet_num.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.sheet_num }}
+                          </div>
+                        </div>
+                        <!--开票要求-->
+                        <div class="form-group row">
+                          {{ form.invoice_require.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.invoice_require }}
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col">
+                        <!--开票类型-->
+                        <div class="form-group row">
+                          {{ form.invoice_type.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.invoice_type }}
+                          </div>
+                        </div>
+                        <!--联系人-->
+                        <div class="form-group row">
+                          {{ form.linkman.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.linkman }}
+                          </div>
+                        </div>
+                        <!--电话-->
+                        <div class="form-group row">
+                          {{ form.phone.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.phone }}
+                          </div>
+                        </div>
+                        <!--收件地址-->
+                        <div class="form-group row">
+                          {{ form.address_linkman.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.address_linkman }}
+                          </div>
+                        </div>
+                        <!--备注-->
+                        <div class="form-group row">
+                          {{ form.note.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.note }}
+                          </div>
+                        </div>
+                        <!--报账附件-->
+                        <div class="form-group row">
+                          {{ form.file_input.label_tag }}
+                          <div class="col-md-7">
+                            <div id="apply_files" style="display:none;">{{  form.reimburse_file }}</div>
+                            <div id="file_cyc">
+                              {% for file in apply_info.reimburse_file.all %}
+                                <div><a href="/media/{{ file.file.name }}">{{ file.file.name }}</a>&nbsp;<button
+                                      type="button" class="btn_del btn-xs" id="btn-{{ file.id }}">删除</button></div>
+                              {% empty %}  <!--增加files为空的判断-->
+                              {% endfor %}
+                            </div>
+                            <div>添加：</div>
+                            {{ form.file_input }}
+                          </div>
+                        </div>
+                        <!--申请人-->
+                        <div style="display:none;">{{ form.applicant }}</div>
+                      </div>
+                  </div>  <!-- /.row-->
+                </div>  <!-- /.card-body-->
+              </div>   <!-- /.col-->
+            </div>  <!-- /.row-->
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card-footer ">
+                  <div class="row">
+                    <div class="col-md-2 offset-md-5">
+                      <a href="{% url 'invoice_manage:apply_invoice_record' %}" class="btn btn-secondary btn-sm">取消</a>
+                      <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
+                    </div>
+                  </div>
+                </div>  <!-- /.card-footer-->
+              </div>  <!-- /.col-->
+            </div>   <!-- /.row-->
+          </form>
+
+        </div>  <!-- /.card-->
+      </div>   <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+
+{% block script %}
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+<!-- Select2 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/select2/js/select2.full.min.js' %}"></script>
+
+<script type="text/javascript">
+
+  // 给label加上class属性;input加上class;
+  $("form label").addClass("col-md-4 col-form-label");
+
+  // 给必填项添加*
+  var txt1 = '<span style="color:red"> *</span>';
+  $("[for='id_related_contract']").append(txt1);
+  $("[for='id_unit_name']").append(txt1);
+  $("[for='id_invoice_sum']").append(txt1);
+  $("[for='id_sheet_num']").append(txt1);
+
+  // 给select添加样式,<!-- Select2 -->
+  $("#id_related_contract").addClass("select2");
+  $("#id_related_contract").attr("style","width:100%;");
+  $("#id_unit_name").addClass("select2");
+  $("#id_unit_name").attr("style","width:100%;");
+  //Initialize Select2 Elements
+  $('.select2').select2();
+
+  //文件删除按钮函数
+  $(".btn_del").each( function(index, domEle){
+    $(this).click(function() {
+        var btn_id = $(this).attr("id");
+        var str_arry = btn_id.split('-');
+        //var file_id = parseInt(str_arry[1]);  // 将string转换为Int
+        var file_id = str_arry[1];
+        $(this).parent().remove();
+        //在select中将相应文件删除
+        $("#apply_files select option[value=" + file_id + "]").removeAttr("selected");
+
+    } );  // click
+  });  // .btn_del
+
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='repeat') {
+        toastr.error('该客户已存在！')
+      }else if (msgs=='info_error') {
+        toastr.error('添加失败！')
+      }
+    }
+    msgTip();
+
+</script>
+{% endblock %}

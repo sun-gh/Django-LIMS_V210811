@@ -1,0 +1,156 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;添加单位 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <!--customer css-->
+  <link href="{% static 'css/unit_add.css'  %}" rel="stylesheet" />
+{% endblock  %}
+
+{% block content %}
+
+  <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>添加单位</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-info ">
+
+              <form class="form-horizontal" method="post" action="{% url 'customer:unit_add' %}">
+              <!-- card-body -->
+              <div class="row">
+                <div class="col-md-6 offset-md-3">
+                  <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
+
+                    {% csrf_token %}
+                      <!--单位名称-->
+                      <div class="form-group row">
+                        {{ form.unit_name.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.unit_name }}
+                        </div>
+                      </div>
+                      <!--税号-->
+                      <div class="form-group row">
+                        {{ form.duty_paragraph.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.duty_paragraph }}
+                        </div>
+                      </div>
+                      <!--开户行-->
+                      <div class="form-group row">
+                        {{ form.bank.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.bank }}
+                        </div>
+                      </div>
+                      <!--银行账号-->
+                      <div class="form-group row">
+                        {{ form.account.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.account }}
+                        </div>
+                      </div>
+                      <!--单位地址-->
+                      <div class="form-group row">
+                        {{ form.address.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.address }}
+                        </div>
+                      </div>
+                      <!--联系电话-->
+                      <div class="form-group row">
+                        {{ form.phone.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.phone }}
+                        </div>
+                      </div>
+                      <!--添加人-->
+                      <div class="form-group row">
+                        {{ form.person_add.label_tag }}
+                        <div class="col-md-7">
+                          <input  type="text" name="person_add" class="form-control" value="{{ request.session.user_name }}" readonly="readonly" id="id_person_add" />
+                        </div>
+                      </div>
+
+                  </div>  <!-- /.card-body-->
+                </div>   <!-- /.col-->
+              </div>  <!-- /.row-->
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card-footer ">
+                    <div class="row">
+                      <div class="col-md-2 offset-md-5">
+                        <a href="{% url 'customer:unit_list' %}" class="btn btn-secondary btn-sm">取消</a>
+                        <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
+                      </div>
+                    </div>
+                  </div>  <!-- /.card-footer-->
+                </div>  <!-- /.col-->
+              </div>   <!-- /.row-->
+              </form>
+
+        </div>  <!-- /.card-->
+      </div>   <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+
+{% block script %}
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+
+<script type="text/javascript">
+
+  // 给label加上class属性;input加上class;
+  $("form label").addClass("col-md-5 col-form-label");
+
+  // 给必填项添加*
+  var txt1 = '<span style="color:red"> *</span>';
+  $("[for='id_unit_name']").append(txt1);
+
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='repeat') {
+        toastr.error('该单位已存在！')
+      }
+    }
+    msgTip();
+
+</script>
+{% endblock %}

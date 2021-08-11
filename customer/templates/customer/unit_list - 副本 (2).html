@@ -1,0 +1,564 @@
+{% extends "projects/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;单位信息 {% endblock %}
+
+{% block css %}
+  <!--bootstrap-table-->
+  <link rel="stylesheet" href="{% static 'bootstrap-table-1.17.0/dist/bootstrap-table.min.css' %}">
+  <!--bootstrap-table fixed columns-->
+  <link rel="stylesheet" href="{% static 'bootstrap-table-1.17.0/dist/extensions/fixed-columns/bootstrap-table-fixed-columns.min.css' %}">
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <link href="{% static 'css/unit_list.css'  %}" rel="stylesheet" />
+{% endblock  %}
+
+{% block content %}
+  <!--"添加"模态框-->
+  <form id="add_unit_form" action="#" method="post" class="form-horizontal" role="form">
+  <div class="modal fade " tabindex="-1" role="dialog" id="addModal">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">添加单位</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group row">
+            <label for="unit_name" class="col-sm-3 col-form-label">单位名称：</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="unit_name" name="unit_name" required="required" placeholder="请输入单位全称！">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="duty_paragraph" class="col-sm-3 col-form-label">税号：</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="duty_paragraph" name="duty_paragraph" >
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="bank" class="col-sm-3 col-form-label">开户行：</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="bank" name="bank">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="account" class="col-sm-3 col-form-label">银行账号：</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="account" name="account">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="address" class="col-sm-3 col-form-label">单位地址：</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="address" name="address">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="phone" class="col-sm-3 col-form-label">联系电话：</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="phone" name="phone">
+            </div>
+          </div>
+        </div>  <!--/.modal-body-->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+<!--          <button type="button" class="btn btn-primary">Save changes</button>-->
+          <input type="button" data-dissmiss="modal" onclick="add_unit()" class="btn btn-primary" id="modal_submit" value="提交">
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+  </form>
+
+  <!-- 单位详情模态框 -->
+  <div class="modal fade " tabindex="-1" role="dialog" id="detailModal">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">单位信息</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+           <div class="table-responsive">
+                <table class="table">
+
+                  <tr>
+                    <th style="width:50%">税号：</th>
+                    <td id="detail_duty_paragraph"></td>
+                  </tr>
+                  <tr>
+                    <th>开户行：</th>
+                    <td id="detail_bank"></td>
+                  </tr>
+                  <tr>
+                    <th>银行账号：</th>
+                    <td id="detail_account"></td>
+                  </tr>
+                  <tr>
+                    <th>单位地址：</th>
+                    <td id="detail_address"></td>
+                  </tr>
+                  <tr>
+                    <th>联系电话：</th>
+                    <td id="detail_phone"></td>
+                  </tr>
+                </table>
+           </div>  <!--/.table-responsive-->
+
+        </div>  <!--/.modal-body-->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
+  <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>单位信息</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- card部分 -->
+  <section class="content">
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <!-- card-body -->
+          <div class="card-body pt-0 pb-1 pl-1 pr-1">
+
+            <table id="mytab" class="table table-sm table-bordered table-striped table-hover " style="table-layout:fixed;">
+            </table>
+
+            <div id="toolbar">
+              {% if perms.projects.add_unitinvoice %}
+<!--                <a class="btn btn-success btn-sm" href="{% url 'projects:unit_add' %}" role="button">添加</a>-->
+                <a class="btn btn-success btn-sm" href="#addModal" role="button" id="add-btn" data-toggle="modal" >添加</a>
+              {% endif %}
+              {% if perms.projects.change_unitinvoice %}
+<!--                <a class="btn btn-info btn-sm" href="#" role="button" id="edit-btn">修改</a>-->
+                <a class="btn btn-info btn-sm" href="#" role="button" id="edit-btn" >修改</a>
+              {% endif %}
+              {% if perms.projects.delete_unitinvoice %}
+                <button type="button" class="btn btn-danger btn-sm" id="remove-btn">删除</button>
+              {% endif %}
+              <input type="hidden" id="get-url" name="next" value="{{ request.path }}">
+            </div>
+          </div>
+        </div>
+      </div> <!-- /.col-->
+    </div>  <!-- /.row-->
+
+  </section>
+
+{% endblock %}
+
+{% block script %}
+<!--popper定位库-->
+<script src="{% static 'popper-core-1.14.7/dist/umd/popper.min.js' %}" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<!-- bootstrap table -->
+<script src="{% static 'bootstrap-table-1.17.0/dist/bootstrap-table.min.js' %}"></script>
+<!-- bootstrap table fixed columns-->
+<script src="{% static 'bootstrap-table-1.17.0/dist/extensions/fixed-columns/bootstrap-table-fixed-columns.min.js' %}"></script>
+<!-- tableExport-->
+<script src="{% static 'tableExport.min.js' %}"></script>
+<!-- bootstrap table export-->
+<script src="{% static 'bootstrap-table-1.17.0/dist/extensions/export/bootstrap-table-export.min.js' %}"></script>
+<!-- bootstrap table cookie-->
+<script src="{% static 'bootstrap-table-1.17.0/dist/extensions/cookie/bootstrap-table-cookie.min.js' %}"></script>
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+
+
+<script type="text/javascript">
+
+  $(document).ready(function() {
+    // 获取csrf
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+    function csrfSafeMethod(method) {
+      // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    };
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+      }
+    });
+
+
+    $('#mytab').bootstrapTable('destroy').bootstrapTable({
+    {#全部参数#}
+
+      url:"{% url 'projects:unit_list_table' %}",
+      method: 'get',                      //请求方式（*）
+      //iconSize:"sm",                     // 1,设置修改图标  sm小图标 lg大图标
+      cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+      //cookie: true,                       //是否启用cookie
+      //cookieExpire: '2h',                //cookie过期时间
+      //cookieIdTable: 'unit_list',        //cookie的唯一标识符
+
+      pagination: true,                   //是否显示分页（*）
+      sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+      pageNumber: 1,                       //初始化加载第一页，默认第一页
+      pageSize: 5,                       //每页的记录行数（*）
+      pageList: [5, 10, 25, 50, 100],        //可供选择的每页的行数（*）
+      smartDisplay: false,               //自动判断显示分页信息和 card 视图
+      paginationLoop: false,             //是否启用分页条无限循环
+      queryParams: function(params) {     //上传服务器的参数
+        var temp = {
+            offset: params.offset + 0,     // SQL语句起始索引(当前页的起始索引)
+            limit: params.limit,          // 每页显示数量
+            search: params.search          //搜索关键词
+        };
+        return temp;                      //传递参数（*）oTableInit.
+      },
+
+      search: true,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+      searchOnEnterKey: true,              //按回车触发搜索方法
+
+      showColumns: true,                  //是否显示所有的列
+      toolbar: "#toolbar",                //一个jQuery 选择器，指明自定义的 toolbar
+
+      showRefresh: true,                  //是否显示刷新按钮
+      showExport: true,                    //显示导出按钮
+      exportTypes:['excel','csv'],  //导出文件类型
+      exportOptions: {
+        fileName: '单位信息',  //文件名称设置
+        worksheetName: 'sheet1',  //表格工作区名称
+        tableName: '单位信息',
+        excelstyles: ['background-color', 'color', 'font-size', 'font-weight'],
+
+      },
+      //height: 500,                        //行高，如果没有设置height属性，表格自动高度
+      // theadClasses: "thead-light",       //设置thead-blue为表头样式
+
+      showToggle: false,                    //是否显示详细视图和列表视图的切换按钮
+      cardView: false,                    //是否显示详细视图,使用fixed-columns需要设为false
+      detailView: false,                  //开启详情树形图模式,使用fixed-columns需要设为false
+      showFooter: false,                  //显示摘要页脚行,使用fixed-columns需要设为false
+      fixedColumns: true,
+      fixedNumber: 3,  //固定列数
+      uniqueId: 'unit_id',     //为每一行指定唯一的标识符
+
+      //自定义分页字符串显示为中文
+        formatShowingRows:function(pageFrom, pageTo, totalRows) {
+          return "第"+pageFrom+"-"+pageTo+"行，共"+totalRows+"行";
+        },
+      //自定义分页字符串显示为中文
+        formatRecordsPerPage:function(pageNumber) {
+          return pageNumber+' 行/页';
+        },
+      //定义Search placeholder
+      formatSearch:function()
+        {
+        return  "单位全称";
+      },
+
+      columns: [
+        { checkbox:true, },
+
+        {
+            field: 'num',  　　　　　　//返回数据rows数组中的每个字典的键名与此处的field值要保持一致
+            title: '序号',
+            width: 65,
+            align: 'center',
+            formatter: function(value,row,index){
+              //return index+1;
+              var pageSize=$('#mytab').bootstrapTable('getOptions').pageSize;//通过表的#id 可以得到每页多少条
+              var pageNumber=$('#mytab').bootstrapTable('getOptions').pageNumber;//通过表的#id 可以得到当前第几页
+              return pageSize * (pageNumber - 1) + index + 1;    //返回每条的序号： 每页条数 * （当前页 - 1 ）+ 序号
+            },
+        },
+        {
+            field: 'unit_name',
+            title: '单位名称',
+            width: 290,  //原宽度290
+            align: 'center',
+            formatter: viewFormatter,
+            //cellStyle: {
+            //  css:{'color':'#007bff'}
+            //},
+        },
+        {
+            field: 'duty_paragraph',
+            title: '税号',
+            width: 170,
+            align: 'center',
+        },
+        {
+            field: 'bank',
+            title: '开户行',
+            width: 130,
+            align: 'center',
+            formatter: paramsMatter,
+         },
+         {
+            field: 'account',
+            title: '银行账号',
+            width: 180,
+            align: 'center',
+        },
+        {
+            field: 'address',
+            title: '单位地址',
+            width: 140,
+            align: 'center',
+            formatter: paramsMatter,
+        },
+        {
+            field: 'phone',
+            title: '联系电话',
+            width: 130,
+            align: 'center',
+        },
+
+      ],
+
+    });  //. #mytab
+    
+  });  // ready
+
+  // 定义鼠标悬停显示内容函数
+  function paramsMatter(value,row,index) {
+    var span=document.createElement('span');
+    span.setAttribute('title',value);
+    span.innerHTML = value;
+    return span.outerHTML;
+  }
+
+  // 定义单位名称处理为链接形式函数
+  function viewFormatter(value,row,index) {
+    var id = index;
+    var data = JSON.stringify(row);
+    var result = "";
+    //result += "<a href='/projects/unit_detail/" + row.unit_id + "/'>" + value + "</a>";
+
+    result += "<a href='#detailModal' data-toggle='modal' data-whatever='" +row.unit_id +"' >" + value + "</a>";
+
+    return result;
+  }
+
+  // 设置弹出提示框属性
+  toastr.options = {
+    closeButton: true,
+    debug: true,
+    progressBar: false,
+    positionClass: "toast-center-center",
+    onclick: null,
+    showDuration: "300",
+    hideDuration: "1000",
+    timeOut: "2000",
+    extendedTimeOut: "1000",
+    showEasing: "swing",
+    hideEasing: "linear",
+    showMethod: "fadeIn",
+    hideMethod: "fadeOut"
+  };
+
+  // 删除按钮事件
+    $("#remove-btn").on("click", function() {
+
+      var rows = $("#mytab").bootstrapTable('getSelections');// 获得要删除的数据
+      if (rows.length == 0) {  // rows 主要是为了判断是否选中
+          //alert("请先选择要删除的记录!");
+          toastr.info('请先选择要删除的记录！');
+          return;
+      } else {
+        if (confirm("是否确认删除？") == true) {
+          var ids = new Array();// 声明一个数组
+          $(rows).each(function() {  // 通过循环获得选中的记录
+              ids.push(this.unit_name);
+              //alert(ids);
+          });
+          deleteMs(ids);
+        } else {
+          return false;
+        }
+      }
+    })  // btn.on
+  //定义ajax请求函数
+    function deleteMs(ids) {
+      $.post(
+        "/projects/unit_del/",
+        {
+        "ids": JSON.stringify(ids) ,
+        "method":"post",
+        },
+        function(data,status) {
+
+          if (data == 'del_success') {
+            toastr.success('删除成功！');
+            $('#mytab').bootstrapTable('refresh', {
+            url : "/projects/unit_list_table/"
+          });
+          }  //.if
+        }  //. function
+      )  //.post
+    }
+
+  //修改按钮函数
+  $("#edit-btn").on("click", function() {
+
+    var rows = $("#mytab").bootstrapTable('getSelections');// 获得要删除的数据
+    if (rows.length == 0) {  // rows 主要是为了判断是否选中
+        //alert("请先选择要修改的记录!");
+        toastr.info('请先选择要修改的记录！');
+        return;
+    } else {
+      if (rows.length == 1) {
+
+        $('#addModal').on('show.bs.modal', function () {
+          var unit_id = rows[0].unit_id;// 获得要删除的数据
+          var modal = $(this)
+          modal.find('.modal-title').text('修改单位')
+          modal.find('.modal-body #unit_name').val(rows[0].unit_name)
+          modal.find('.modal-body #duty_paragraph').val(rows[0].duty_paragraph)
+          modal.find('.modal-body #bank').val(rows[0].bank)
+          modal.find('.modal-body #account').val(rows[0].account)
+          modal.find('.modal-body #address').val(rows[0].address)
+          modal.find('.modal-body #phone').val(rows[0].phone)
+          modal.find('.modal-footer #modal_submit').attr("onclick","saveEdit(" + unit_id + ")");
+        })
+        $('#addModal').modal('show');
+
+        //var name = rows[0].unit_id;  // 获取单位名称
+        //var url="/projects/unit_edit/" + name + "/"  ;
+        // alert(url);
+        //location.href=url;
+      } else {
+        //alert("一次只能修改一条记录!");
+        toastr.info('一次只能修改一条记录！');
+        return;
+      }
+    }
+  })  // btn.on
+
+  //保存修改按钮
+  function saveEdit(unit_id){
+    $.ajax({
+      //几个参数需要注意一下
+      cache:false,
+      type: "POST", //方法类型
+      dataType: "json", //预期服务器返回的数据类型
+      url: "/projects/unit_edit/" + unit_id + "/" , //url
+      data: $('#add_unit_form').serialize(), //将模态框的form表单数据序列化，以便提交到后台
+      async:false,  //必须要为false,必须必须
+
+      success: function (data) {
+          //console.log(data);//打印服务端返回的数据(调试用)
+          if(data.status == "edit_success"){
+
+              {#关闭模态框并清除框内数据，否则下次打开还是上次的数据#}
+              document.getElementById("add_unit_form").reset();
+              $('#addModal').modal('hide');
+
+              {# 判断确实正确入库后提示#}
+              toastr.success('修改数据成功');
+
+              {#刷新表格数据#}
+              $("#mytab").bootstrapTable('refresh');
+
+           }else {
+              toastr.warning("该单位已存在！");
+           }
+       },
+      error : function() {
+          toastr.warning("该单位已存在");
+      }
+    });
+  }
+  //添加按钮函数
+  function add_unit () {
+    $.ajax({
+      //几个参数需要注意一下
+      cache:false,
+      type: "POST", //方法类型
+      dataType: "json", //预期服务器返回的数据类型
+      url: "/projects/unit_add/" , //url
+      data: $('#add_unit_form').serialize(), //将模态框的form表单数据序列化，以便提交到后台
+      async:false,  //必须要为false,必须必须
+
+      success: function (data) {
+          //console.log(data);//打印服务端返回的数据(调试用)
+          if(data.status == "add_success"){
+
+              {#关闭模态框并清除框内数据，否则下次打开还是上次的数据#}
+              document.getElementById("add_unit_form").reset();
+              $('#addModal').modal('hide');
+
+              {# 判断确实正确入库后提示#}
+              toastr.success('添加数据成功');
+
+              {#刷新表格数据#}
+              $("#mytab").bootstrapTable('refresh');
+
+           }
+       },
+      error : function() {
+          toastr.warning("该单位已存在");
+      }
+    });
+  }
+
+  //详情页模态框函数
+  $('#detailModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    var recipient = button.data('whatever') // Extract info from data-* attributes
+    var rows = $("#mytab").bootstrapTable('getRowByUniqueId', recipient);// 获得要删除的数据
+    //console.log(rows);
+
+    var modal = $(this)
+    modal.find('.modal-title').text(rows.unit_name)
+    modal.find('.modal-body #detail_duty_paragraph').text(rows.duty_paragraph)
+    modal.find('.modal-body #detail_bank').text(rows.bank)
+    modal.find('.modal-body #detail_account').text(rows.account)
+    modal.find('.modal-body #detail_address').text(rows.address)
+    modal.find('.modal-body #detail_phone').text(rows.phone)
+  })
+
+
+  // 定义message显示函数
+  function msgTip(){
+    var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+    if (msgs=='edit_success') {
+      toastr.success('修改成功！')
+    }
+
+  }
+  msgTip();
+
+</script>
+
+
+{% endblock %}

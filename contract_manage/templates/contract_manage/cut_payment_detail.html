@@ -1,0 +1,148 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;预付款扣款申请详情 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <link href="{% static 'invoice_manage/css/apply_invoice_detail.css'  %}" rel="stylesheet" />
+{% endblock  %}
+
+{% block content %}
+  <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>预付款扣款详情</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <!-- card-header -->
+          <div class="card-header ">
+            <h5 class="m-0"><strong class="btn btn-info">申请序号：{{ apply_detail.serial_number }}</strong></h5>
+          </div>
+          <!-- card-body -->
+          <div class="card-body  pb-1  "> <!--pt-0 pl-1 pr-1-->
+            <div class="row">
+              <div class="col-md-12">
+                <h6><b>基本信息:</b></h6>
+                <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
+                  <thead>
+                    <tr>
+                      <th>关联合同</th>
+                      <th>剩余金额</th>
+                      <th>关联项目</th>
+                      <th>扣款金额</th>
+
+                      <th>扣款日期</th>
+                      <th>申请人</th>
+                      <th>申请日期</th>
+                      <th>状态</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ apply_detail.link_contract.contract_num }}</td>
+                      <td>{{ apply_detail.link_contract.unused_sum|default:"-" }}</td>
+                      <td>
+                        {% for order in apply_detail.link_order.all %}
+                          <span>{{ order.project_order.project_num }}</span>
+                        {% endfor  %}
+                      </td>
+                      <td>{{ apply_detail.cut_sum }}</td>
+
+                      <td>{{ apply_detail.cut_date|date:"Y-m-d" }}</td>
+                      <td>{{ apply_detail.applicant }}</td>
+                      <td>{{ apply_detail.c_time|date:"Y-m-d" }}</td>
+                      <td>{{ apply_detail.get_status_display }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+
+            <div class="row">
+              <div class="col-md-8">
+              <h6><b>备注:</b></h6>
+              <p>{{ apply_detail.note|default:"-" }}</p>
+              </div>  <!--/.col-->
+            </div>  <!--/.row-->
+
+          </div>  <!-- /.card-body-->
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-md-6">
+                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'contract_manage:cut_payment_info'%}" style="color:green;"><strong>返回预付款扣款信息</strong></a>
+              </div>  <!--/.col-->
+              <div class="col-md-6">
+                {% if perms.contract_manage.approve_cut_payment %}
+                  <a class="btn btn-info btn-sm" href="{% url 'contract_manage:approve_cut_payment' apply_detail.id %}" name="approve_apply" role="button" >审批</a>&nbsp;
+                  <a class="btn btn-danger btn-sm" href="{% url 'contract_manage:untread_cut_payment' apply_detail.id %}" name="untread_apply" role="button" >退回</a>
+                {% endif %}
+              </div>
+            </div>
+          </div>  <!--/.row-->
+        </div>  <!-- /.card-->
+      </div> <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+{% block script %}
+
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+
+<script type="text/javascript">
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 定义message显示函数
+  function msgTip(){
+    var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+
+    if (msgs=='untread_failed') {
+      toastr.error('退回失败！');
+    }
+  }
+  msgTip();
+
+  // 根据status决定是否禁用“审批”；
+    var status_val=new Number;
+    status_val = {{ apply_detail.status }};
+    if (status_val == 2 ){
+      document.getElementsByName("approve_apply")[0].className += ' disabled';
+      };
+  // 根据status决定是否禁用“退回”；
+    if (status_val == 1 ){
+      document.getElementsByName("untread_apply")[0].className += ' disabled';
+      };
+
+</script>
+
+{% endblock %}

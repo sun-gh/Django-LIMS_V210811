@@ -1,0 +1,156 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;预付款扣款申请 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/select2/css/select2.min.css' %}" />
+  <!--customer css-->
+<!--  <link href="{% static 'project_stage/css/sample_record_add.css'  %}" rel="stylesheet" />-->
+{% endblock  %}
+
+{% block content %}
+
+  <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>预付款扣款申请</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-info ">
+
+              <form class="form-horizontal" method="post" action="{% url 'contract_manage:apply_cut_payment' %}" >
+              <!-- card-body -->
+              <div class="row">
+                <div class="col-md-6 offset-md-3">
+                  <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
+                    {% csrf_token %}
+                          <!--关联合同-->
+                          <div class="form-group row">
+                            {{ form.link_contract.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.link_contract }}
+                            </div>
+                          </div>
+                          <!--扣款金额-->
+                          <div class="form-group row">
+                            {{ form.cut_sum.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.cut_sum }}
+                            </div>
+                          </div>
+                          <!--关联项目-->
+                          <div class="form-group row">
+                            {{ form.link_order.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.link_order }}
+                            </div>
+                          </div>
+                          <!--备注-->
+                          <div class="form-group row">
+                            {{ form.note.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.note }}
+                            </div>
+                          </div>
+                          <!--申请人-->
+                          <div class="form-group row">
+                            {{ form.applicant.label_tag }}
+                            <div class="col-md-7">
+                              <input  type="text" name="applicant" class="form-control" value="{{ request.session.user_name }}" readonly="readonly" id="id_creator" />
+                            </div>
+                          </div>
+                  </div>  <!-- /.card-body-->
+                </div>   <!-- /.col-->
+              </div>  <!-- /.row-->
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card-footer ">
+                    <div class="row">
+                      <div class="col-md-2 offset-md-5">
+                        <a href="{% url 'contract_manage:cut_payment_info' %}" class="btn btn-secondary btn-sm">取消</a>
+                        <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
+                      </div>
+                    </div>
+                  </div>  <!-- /.card-footer-->
+                </div>  <!-- /.col-->
+              </div>   <!-- /.row-->
+              </form>
+
+        </div>  <!-- /.card-->
+      </div>   <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+
+{% block script %}
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+<!-- Select2 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/select2/js/select2.full.min.js' %}"></script>
+
+<script type="text/javascript">
+
+  // 给label加上class属性;input加上class;
+  $("form label").addClass("col-md-4 col-form-label");
+
+  // 给必填项添加*
+  var txt1 = '<span style="color:red"> *</span>';
+  $("[for='id_link_contract']").append(txt1);
+  $("[for='id_cut_sum']").append(txt1);
+  $("[for='id_link_order']").append(txt1);
+
+  // 给select添加样式,<!-- Select2 -->
+  $("#id_link_contract").addClass("select2");
+  $("#id_link_contract").attr("style","width:100%;");
+  $("#id_link_order").addClass("select2");
+  $("#id_link_order").attr("style","width:100%;");
+  //Initialize Select2 Elements
+  $('.select2').select2();
+
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='info_error') {
+        toastr.error('添加失败！')
+      }else if (msgs=='repeat') {
+        toastr.error('该客户已存在！')
+      }
+    }
+    msgTip();
+
+</script>
+{% endblock %}
