@@ -8,6 +8,7 @@ class SalePerson(models.Model):
 
     # 定义销售人员
     name_person = models.CharField(verbose_name="销售人员", max_length=64)
+    valid = models.BooleanField(verbose_name="有效", default=True)
 
     def __str__(self):
 
