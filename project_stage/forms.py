@@ -60,19 +60,19 @@ class PretreatStageForm(forms.ModelForm):
     pretreat_finish_date = forms.DateField(label="前处理完成时间", required=False, widget=forms.DateInput(
         format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
     # 以下4个元素为步骤1-4
-    first_operate_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.all(), label="步骤一",
+    first_operate_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.filter(valid=True), label="步骤一",
                                                           required=False,
                                                           widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
-    second_operate_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.all(), label="步骤二",
+    second_operate_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.filter(valid=True), label="步骤二",
                                                            required=False,
                                                            widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
-    third_operate_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.all(), label="步骤三",
+    third_operate_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.filter(valid=True), label="步骤三",
                                                           required=False,
                                                           widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
-    fourth_operate_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.all(), label="步骤四",
+    fourth_operate_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.filter(valid=True), label="步骤四",
                                                            required=False,
                                                            widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
-    page_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.all(), label="跑胶", required=False,
+    page_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.filter(valid=True), label="跑胶", required=False,
                                                  widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
     sample_overplus = forms.NullBooleanField(label="样本剩余",
                                              widget=forms.NullBooleanSelect(attrs={'class': 'form-control'}))

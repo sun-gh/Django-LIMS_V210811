@@ -7,7 +7,7 @@ class ProjectOrderForm(forms.ModelForm):
 
     project_sum = forms.IntegerField(label="项目金额", required=False,
                                      widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    sale_person = forms.ModelChoiceField(queryset=SalePerson.objects.all(), label="销售人员", required=False,
+    sale_person = forms.ModelChoiceField(queryset=SalePerson.objects.filter(valid=True), label="销售人员", required=False,
                                          widget=forms.Select(attrs={'class': 'form-control'}))
     pay_type = forms.ModelChoiceField(queryset=PayType.objects.all(), label="结算方式", required=False,
                                       widget=forms.Select(attrs={'class': 'form-control'}))

@@ -31,7 +31,9 @@ def project_contract_table(request):
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
         if search:  # 判断是否有搜索字
-            all_contracts = ProjectContract.objects.filter(contract_num=search, contract_type=0)
+            all_contracts = ProjectContract.objects.filter(Q(contract_type=0),
+                                                           Q(contract_num=search) | Q(linkman=search) |
+                                                           Q(unit_name__contains=search))
         else:
             all_contracts = ProjectContract.objects.filter(contract_type=0)
 
@@ -262,7 +264,8 @@ def advancepay_contract_table(request):
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
         if search:  # 判断是否有搜索字
-            all_contracts = ProjectContract.objects.filter(contract_num=search, contract_type__gt=0)
+            all_contracts = ProjectContract.objects.filter(Q(contract_type__gt=0), Q(contract_num=search) |
+                                                           Q(linkman=search) | Q(unit_name__contains=search))
         else:
             all_contracts = ProjectContract.objects.filter(contract_type__gt=0)
 
@@ -437,7 +440,8 @@ def cut_payment_table(request):
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
         if search:  # 判断是否有搜索字
-            all_apply = CutPayment.objects.filter(serial_number=search)
+            all_apply = CutPayment.objects.filter(Q(link_order__project_order__project_num=search) |
+                                                  Q(link_contract__contract_num=search))
         else:
             all_apply = CutPayment.objects.all()
 

@@ -7,7 +7,7 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse
 import json
 from customer.models import UnitInvoice
-from contract_manage.models import ProjectContract
+from django.db.models import Q
 
 # Create your views here.
 
@@ -79,9 +79,10 @@ def apply_invoice_table(request):
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
         if search:  # 判断是否有搜索字
-            all_apply = ApplyInvoice.objects.filter(serial_number=search)
+            all_apply = ApplyInvoice.objects.filter(Q(unit__contains=search) | Q(linkman=search) |
+                                                    Q(related_contract__contract_num=search))
         else:
-            all_apply = ApplyInvoice.objects.filter()
+            all_apply = ApplyInvoice.objects.all()
 
         all_apply_count = all_apply.count()
         if not pageNum:
@@ -332,9 +333,10 @@ def invoice_info_table(request):
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
         if search:  # 判断是否有搜索字
-            all_invoice = InvoiceInfo.objects.filter(invoice_num=search)
+            all_invoice = InvoiceInfo.objects.filter(Q(invoice_num=search) | Q(unit_invoice__contains=search) |
+                                                     Q(link_apply__related_contract__contract_num=search))
         else:
-            all_invoice = InvoiceInfo.objects.filter()
+            all_invoice = InvoiceInfo.objects.all()
 
         invoice_count = all_invoice.count()
         if not pageNum:
@@ -539,9 +541,9 @@ def void_red_info_table(request):
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
         if search:  # 判断是否有搜索字
-            all_apply = VoidRedInfo.objects.filter(serial_number=search)
+            all_apply = VoidRedInfo.objects.filter(Q(serial_number=search) | Q(link_invoice__invoice_num=search))
         else:
-            all_apply = VoidRedInfo.objects.filter()
+            all_apply = VoidRedInfo.objects.all()
 
         apply_count = all_apply.count()
         if not pageNum:
@@ -673,4 +675,3 @@ def untread_apply_void(request, apply_id):
     else:
         msg = "untread_failed"
         return render(request, 'invoice_manage/void_red_detail.html', {'apply': apply_obj, 'msg': msg})
-

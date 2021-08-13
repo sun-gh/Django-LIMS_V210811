@@ -86,7 +86,7 @@ class InvoiceInfo(models.Model):
         (1, "冲红"),
         (2, "作废"),
     )
-    invoice_num = models.PositiveIntegerField(verbose_name="发票号", blank=True, null=True, unique=True)
+    invoice_num = models.CharField(max_length=32, verbose_name="发票号", blank=True, null=True, unique=True)
     link_apply = models.ForeignKey(ApplyInvoice, verbose_name="关联开票申请", on_delete=models.SET_NULL, null=True)
     unit_invoice = models.CharField(max_length=64, verbose_name="开票单位", default="开票单位")
     applicant = models.CharField(max_length=32, verbose_name="申请人", default="销售")
@@ -104,7 +104,7 @@ class InvoiceInfo(models.Model):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return str(self.invoice_num)
+        return self.invoice_num
 
 
 class VoidRedInfo(models.Model):

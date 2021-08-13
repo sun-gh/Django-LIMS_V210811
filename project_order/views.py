@@ -10,6 +10,7 @@ import json
 from django.dispatch import receiver
 from project_stage.views import sample_record_add, add_success
 from contract_manage.views import project_contract_add, contract_add_success
+from django.db.models import Q
 
 # Create your views here.
 
@@ -55,7 +56,8 @@ def project_order_table(request):
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
         if search:  # 判断是否有搜索字
-            all_projects = SampleRecord.objects.filter(project_num=search)
+            all_projects = SampleRecord.objects.filter(Q(project_num=search) | Q(sample_sender__customer_name=search) |
+                                                       Q(sample_sender__unit__unit_name__contains=search))
         else:
             all_projects = SampleRecord.objects.all()
 
