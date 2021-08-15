@@ -45,6 +45,7 @@
                       <th>创建人</th>
                       <th>已开票金额</th>
                       <th>未开票金额</th>
+                      <th>回款金额</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -54,8 +55,9 @@
                       <td>{{ contract.contract_sum }}</td>
                       <td>{{ contract.callback_date|default_if_none:"-" }}</td>
                       <td>{{ contract.creator }}</td>
-                      <td>{{ contract.used_sum }}</td>
-                      <td>{{ contract.unused_sum|default_if_none:"-" }}</td>
+                      <td>{{ contract.makeout_invoice_sum }}</td>
+                      <td>{{ contract.not_makeout_invoice_sum }}</td>
+                      <td>{{ contract.payment_sum }}</td>
                     </tr>
                   </tbody>
                 </table>

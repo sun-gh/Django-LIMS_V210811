@@ -76,7 +76,9 @@ class ApplyInvoice(models.Model):
         return self.serial_number
 
     def get_invoice(self):
-        pass
+        # 定义对应发票
+        link_invoice = InvoiceInfo.objects.filter(link_apply_id=self.id)
+        return link_invoice
 
 
 class InvoiceInfo(models.Model):

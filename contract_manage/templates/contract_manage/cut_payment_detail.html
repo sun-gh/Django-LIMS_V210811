@@ -41,7 +41,7 @@
                   <thead>
                     <tr>
                       <th>关联合同</th>
-                      <th>剩余金额</th>
+                      <th>扣款前剩余金额</th>
                       <th>关联项目</th>
                       <th>扣款金额</th>
 
@@ -54,7 +54,7 @@
                   <tbody>
                     <tr>
                       <td>{{ apply_detail.link_contract.contract_num }}</td>
-                      <td>{{ apply_detail.link_contract.unused_sum|default:"-" }}</td>
+                      <td>{{ apply_detail.surplus_sum }}</td>
                       <td>
                         {% for order in apply_detail.link_order.all %}
                           <span>{{ order.project_order.project_num }}</span>
@@ -62,7 +62,13 @@
                       </td>
                       <td>{{ apply_detail.cut_sum }}</td>
 
-                      <td>{{ apply_detail.cut_date|date:"Y-m-d" }}</td>
+                      <td>
+                        {% if apply_detail.cut_date %}
+                          {{ apply_detail.cut_date|date:"Y-m-d" }}
+                        {% else %}
+                          -
+                        {% endif %}
+                      </td>
                       <td>{{ apply_detail.applicant }}</td>
                       <td>{{ apply_detail.c_time|date:"Y-m-d" }}</td>
                       <td>{{ apply_detail.get_status_display }}</td>

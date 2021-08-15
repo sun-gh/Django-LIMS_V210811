@@ -115,11 +115,24 @@
                   {% for file in apply.reimburse_file.all %}
                     <div><a href="/media/{{ file.file.name }}">{{ file.file.name }}</a>&nbsp;</div>
                   {% empty %}  <!--增加files为空的判断-->
+                    -
                   {% endfor %}
                 </div>
               </div><!--/.col-->
             </div>  <!--/.row-->
-
+            <div class="row">
+              <div class="col-md-12">
+                <h6><b>发票号:</b></h6>
+                <p>
+                  <span>共{{ apply.get_invoice.count }}张：</span>
+                  {% for invoice in apply.get_invoice %}
+                    <span>{{ invoice.invoice_num|default:"" }}</span>
+                  {% empty %}
+                    待开票
+                  {% endfor %}
+                </p>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
           </div>  <!-- /.card-body-->
           <div class="card-footer">
             <div class="row">

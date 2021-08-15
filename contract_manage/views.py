@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from .models import ProjectContract, CutPayment
 from .forms import AddProjectContractForm, EditProjectContractForm, AdvancepayContractForm, CutPaymentForm
 from customer.models import UnitInvoice
-from project_order.models import ProjectOrder
+# from project_order.models import ProjectOrder
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 import json
@@ -98,6 +98,7 @@ def project_contract_table(request):
                 "creator": contract.creator,
                 "makeout_invoice_sum": contract.makeout_invoice_sum,
                 "not_makeout_invoice_sum": contract.not_makeout_invoice_sum,
+                "payment_sum": contract.payment_sum,
                 "note": note,
             })
 
@@ -292,12 +293,6 @@ def advancepay_contract_table(request):
                 call_date = back_date.strftime('%Y-%m-%d')
             else:
                 call_date = "-"
-            # 定义剩余金额
-            unused_sum = contract.unused_sum
-            if unused_sum:
-                sum_num = unused_sum
-            else:
-                sum_num = "-"
             # 定义备注
             note_content = contract.note
             if note_content:
@@ -317,8 +312,8 @@ def advancepay_contract_table(request):
                 "makeout_invoice_sum": contract.makeout_invoice_sum,
                 "not_makeout_invoice_sum": contract.not_makeout_invoice_sum,
                 # 预付款合同特有字段
+                "payment_sum": contract.payment_sum,
                 "used_sum": contract.used_sum,
-                "unused_sum": sum_num,
                 "note": note,
             })
 
@@ -456,10 +451,9 @@ def cut_payment_table(request):
         response_data = {'total': all_apply_count, 'rows': []}
         for apply in paginator.page(pageNum):
             # 下面这些key，都是我们在前端定义好了的，前后端必须一致，前端才能接受到数据并且请求.
-            # 定义合同剩余金额
+            # 定义关联合同
             related_contract = apply.link_contract
             contract_num = related_contract.contract_num
-            unused_sum = related_contract.unused_sum
             # 要将date对象转化为字符串，才能进行json转换
             cut_date = apply.cut_date
             if cut_date:
@@ -483,7 +477,7 @@ def cut_payment_table(request):
                 "apply_id": apply.id,
                 "serial_number": apply.serial_number,
                 "link_contract": contract_num,
-                "unused_sum": unused_sum,
+                "unused_sum": apply.surplus_sum,
                 "cut_sum": apply.cut_sum,
                 "cut_date": cut_payment_date,
                 "applicant": apply.applicant,
@@ -517,6 +511,9 @@ def apply_cut_payment(request):
             else:
                 serial_num = date_today.strftime('%Y%m%d') + '01'
             apply_instance.serial_number = serial_num
+            # 定义剩余金额
+            link_contract = apply_form.cleaned_data.get('link_contract')
+            apply_instance.surplus_sum = link_contract.payment_sum - link_contract.used_sum
 
             apply_instance.save()
             apply_form.save_m2m()
@@ -540,8 +537,12 @@ def cut_payment_edit(request, apply_id):
     if request.method == 'POST':
         apply_form = CutPaymentForm(request.POST, instance=apply_info)
         if apply_form.is_valid():
-            # change_list = project_info_form.changed_data
+            change_list = apply_form.changed_data
             apply_form.save(commit=False)
+            if "link_contract" in change_list:
+                # 定义修改剩余金额
+                link_contract = apply_form.cleaned_data.get('link_contract')
+                apply_info.surplus_sum = link_contract.payment_sum - link_contract.used_sum
             # 修改状态
             apply_info.status = 0
             apply_info.save()
@@ -588,15 +589,17 @@ def approve_cut_payment(request, apply_id):
 
     link_contract = apply_detail.link_contract
 
-    # 修改发票对应合同的使用和剩余金额
+    # 修改发票对应合同的使用
     contract_sum = link_contract.contract_sum
     old_used_sum = link_contract.used_sum
     link_contract.used_sum = old_used_sum + apply_detail.cut_sum
-    link_contract.unused_sum = contract_sum - old_used_sum - apply_detail.cut_sum
+    # link_contract.unused_sum = contract_sum - old_used_sum - apply_detail.cut_sum
     link_contract.save()
 
-    # 修改作废申请状态
+    # 修改作废申请状态及扣款日期
+    date_today = date.today()
     apply_detail.status = 2
+    apply_detail.cut_date = date_today
     apply_detail.save()
     msg = "approve_success"
     return render(request, 'contract_manage/cut_payment_info.html', {'msg': msg})
@@ -612,10 +615,11 @@ def untread_cut_payment(request, apply_id):
         link_contract = apply_obj.link_contract
 
         link_contract.used_sum -= apply_obj.cut_sum
-        link_contract.unused_sum += apply_obj.cut_sum
+        # link_contract.unused_sum += apply_obj.cut_sum
         link_contract.save()
 
         apply_obj.status = 1
+        apply_obj.cut_date = None
         apply_obj.save()
     else:
         # 修改作废申请状态

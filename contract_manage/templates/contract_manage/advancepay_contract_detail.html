@@ -67,16 +67,16 @@
                   <tr>
                     <th>已开票金额</th>
                     <th>未开票金额</th>
+                    <th>回款金额</th>
                     <th>使用金额</th>
-                    <th>剩余金额</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>{{ contract.makeout_invoice_sum }}</td>
                     <td>{{ contract.not_makeout_invoice_sum }}</td>
+                    <td>{{ contract.payment_sum }}</td>
                     <td>{{ contract.used_sum }}</td>
-                    <td>{{ contract.unused_sum|default_if_none:"-" }}</td>
                   </tr>
                 </tbody>
               </table>

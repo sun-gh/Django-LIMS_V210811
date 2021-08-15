@@ -459,10 +459,20 @@ def edit_pay_info(request, invoice_id):
     invoice = InvoiceInfo.objects.get(id=invoice_id)
 
     if request.method == 'POST':
+
+        old_payment_sum = invoice.payment_sum
         invoice_form = forms.EditPayInfoForm(request.POST, instance=invoice)
         if invoice_form.is_valid():
             # change_list = invoice_form.changed_data
-            # new_sum = invoice_form.cleaned_data.get('invoice_sum')
+            # 要修改对应合同回款金额
+            link_contract = invoice.link_apply.related_contract
+            new_payment_sum = invoice_form.cleaned_data.get('payment_sum')
+            if old_payment_sum:   # 则为修改回款信息
+                difference = new_payment_sum - old_payment_sum
+                link_contract.payment_sum += difference
+            else:   # 则为添加回款信息
+                link_contract.payment_sum += new_payment_sum
+            link_contract.save()
             invoice_form.save()
             msg = "edit_payment_success"
             return render(request, 'invoice_manage/invoice_info.html', {'msg': msg})

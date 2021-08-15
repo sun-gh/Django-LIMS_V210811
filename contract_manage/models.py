@@ -24,10 +24,9 @@ class ProjectContract(models.Model):
     makeout_invoice_sum = models.PositiveIntegerField(verbose_name="已开票金额", default=0)
     not_makeout_invoice_sum = models.PositiveIntegerField(verbose_name="未开票金额")
     note = models.CharField(max_length=128, verbose_name="备注", blank=True, null=True)
+    payment_sum = models.PositiveIntegerField(verbose_name="回款金额", default=0)
     # 以下为预付款字段
-    used_sum = models.PositiveIntegerField(verbose_name="使用金额", default=0)
-    unused_sum = models.PositiveIntegerField(verbose_name="剩余金额", null=True, blank=True)
-    # note_advancepay_contract = models.CharField(max_length=128, verbose_name="备注", blank=True, null=True)
+    used_sum = models.PositiveIntegerField(verbose_name="已使用金额", default=0)
     c_time = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
 
     class Meta:
@@ -48,6 +47,7 @@ class CutPayment(models.Model):
     )
     serial_number = models.CharField(max_length=32, verbose_name="申请序号", unique=True)
     link_contract = models.ForeignKey(ProjectContract, verbose_name="关联预付款合同", on_delete=models.SET_NULL, null=True)
+    surplus_sum = models.PositiveIntegerField(verbose_name="扣款前剩余金额", default=0)
     cut_sum = models.PositiveIntegerField(verbose_name="扣款金额")
     cut_date = models.DateField(verbose_name="扣款日期", blank=True, null=True)
     applicant = models.CharField(max_length=32, verbose_name="申请人", default="销售")
