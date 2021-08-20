@@ -49,8 +49,8 @@
                 <p><span> 合同类型 </span>：{{ contract.get_contract_type_display }} </p>
               </div>
               <div class="col">
-                <p><span class="link_info"> 使用金额 </span> ：{{ contract.used_sum }} </p>
-                <p><span class="link_info"> 剩余金额 </span> ：{{ contract.unused_sum|default_if_none:"-" }} </p>
+                <p><span class="link_info"> 回款金额 </span> ：{{ contract.payment_sum }} </p>
+                <p><span class="link_info"> 已使用金额 </span> ：{{ contract.used_sum }} </p>
                 <p><span class="link_info"> 创建人 </span> ：{{ contract.creator }} </p>
               </div>
             </div>

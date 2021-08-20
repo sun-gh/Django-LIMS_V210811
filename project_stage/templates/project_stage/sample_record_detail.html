@@ -62,7 +62,7 @@
                       </td>
                       <td>{{ record.sample_amount }}</td>
                       <td>{{ record.sample_quality.quality_type }}</td>
-                      <td>{{ record.receive_date }}</td>
+                      <td>{{ record.receive_date|date:"Y-m-d" }}</td>
 
                       <td>
                         {% for item in record.addition_item.all %}

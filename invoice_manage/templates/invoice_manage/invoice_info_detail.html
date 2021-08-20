@@ -58,7 +58,7 @@
                         {% if invoice.invoice_date %}
                           {{ invoice.invoice_date|date:"Y-m-d" }}
                         {% else %}
-                          {{ invoice.invoice_date|default:"-" }}
+                          -
                         {% endif %}
                       </td>
                       <td>{{ invoice.applicant }}</td>
@@ -86,7 +86,7 @@
                       {% if invoice.payment_date %}
                         {{ invoice.payment_date|date:"Y-m-d" }}
                       {% else %}
-                        {{ invoice.payment_date|default:"-" }}
+                        -
                       {% endif  %}
                     </td>
                     <td>

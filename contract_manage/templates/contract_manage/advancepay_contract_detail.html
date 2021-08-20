@@ -50,7 +50,13 @@
                       <td>{{ contract.unit_name }}</td>
                       <td>{{ contract.linkman }}</td>
                       <td>{{ contract.contract_sum }}</td>
-                      <td>{{ contract.callback_date|default_if_none:"-" }}</td>
+                      <td>
+                        {% if contract.callback_date %}
+                          {{ contract.callback_date|date:"Y-m-d" }}
+                        {% else %}
+                          -
+                        {% endif  %}
+                      </td>
                       <td>{{ contract.creator }}</td>
 
                     </tr>

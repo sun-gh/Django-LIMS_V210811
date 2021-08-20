@@ -216,6 +216,23 @@
             },
           },
           {
+            field: 'status',
+            title: '状态',
+            width: 80,
+            align: 'center',
+            formatter: function (value,row,index) {
+              var result = "";
+              if (value==1) {
+                result += '<span class="badge badge-warning">已退回</span>';
+              }else if (value==2) {
+                result += '<span class="badge badge-info">已审批</span>';
+              }else {
+                result += '<span class="badge badge-danger">待审批</span>';
+              }
+              return result;
+            },
+          },
+          {
             field: 'link_contract',
             title: '关联合同',
             width: 90,
@@ -264,23 +281,6 @@
             width: 100,
             align: 'center',
             formatter: paramsMatter,
-          },
-          {
-            field: 'status',
-            title: '状态',
-            width: 90,
-            align: 'center',
-            formatter: function (value,row,index) {
-              var result = "";
-              if (value==1) {
-                result += '<span class="badge badge-warning">已退回</span>';
-              }else if (value==2) {
-                result += '<span class="badge badge-info">已审批</span>';
-              }else {
-                result += '<span class="badge badge-danger">待审批</span>';
-              }
-              return result;
-            },
           },
 
         ],

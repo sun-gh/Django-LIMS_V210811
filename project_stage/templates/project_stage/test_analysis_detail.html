@@ -115,12 +115,48 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td>{{ record.date_test|default_if_none:"-" }}</td>
-                    <td>{{ record.date_searchlib|default_if_none:"-" }}</td>
-                    <td>{{ record.date_send_report|default_if_none:"-" }}</td>
-                    <td>{{ record.date_send_rawdata|default_if_none:"-" }}</td>
-                    <td>{{ record.test_deadline|default_if_none:"-" }}</td>
-                    <td>{{ record.pro_deadline|default_if_none:"-" }}</td>
+                    <td>
+                      {% if record.date_test %}
+                        {{ record.date_test|date:"Y-m-d" }}
+                      {% else %}
+                        -
+                      {% endif  %}
+                    </td>
+                    <td>
+                      {% if record.date_searchlib %}
+                        {{ record.date_searchlib|date:"Y-m-d" }}
+                      {% else %}
+                        -
+                      {% endif  %}
+                    </td>
+                    <td>
+                      {% if record.date_send_report %}
+                        {{ record.date_send_report|date:"Y-m-d" }}
+                      {% else %}
+                        -
+                      {% endif  %}
+                    </td>
+                    <td>
+                      {% if record.date_send_rawdata %}
+                        {{ record.date_send_rawdata|date:"Y-m-d" }}
+                      {% else %}
+                        -
+                      {% endif  %}
+                    </td>
+                    <td>
+                      {% if record.test_deadline %}
+                        {{ record.test_deadline|date:"Y-m-d" }}
+                      {% else %}
+                        -
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if record.pro_deadline %}
+                        {{ record.pro_deadline|date:"Y-m-d" }}
+                      {% else %}
+                        -
+                      {% endif  %}
+                    </td>
                   </tr>
                 </tbody>
               </table>

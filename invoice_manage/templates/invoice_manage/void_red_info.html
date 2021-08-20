@@ -21,7 +21,7 @@
     <div class="container-fluid">
       <div class="row mb-0">
         <div class="col-sm-6">
-          <h5>发票作废/冲红信息</h5>
+          <h5>发票作废冲红信息</h5>
         </div>
         <div class="col-sm-6">
 
@@ -216,6 +216,23 @@
             },
           },
           {
+            field: 'status',
+            title: '状态',
+            width: 80,
+            align: 'center',
+            formatter: function (value,row,index) {
+              var result = "";
+              if (value==1) {
+                result += '<span class="badge badge-warning">已退回</span>';
+              }else if (value==2) {
+                result += '<span class="badge badge-info">已审批</span>';
+              }else {
+                result += '<span class="badge badge-danger">待审批</span>';
+              }
+              return result;
+            },
+          },
+          {
             field: 'invoice_num',
             title: '原发票号',
             width: 90,
@@ -251,23 +268,6 @@
             title: '申请日期',
             width: 100,
             align: 'center',
-          },
-          {
-            field: 'status',
-            title: '状态',
-            width: 90,
-            align: 'center',
-            formatter: function (value,row,index) {
-              var result = "";
-              if (value==1) {
-                result += '<span class="badge badge-warning">已退回</span>';
-              }else if (value==2) {
-                result += '<span class="badge badge-info">已审批</span>';
-              }else {
-                result += '<span class="badge badge-danger">待审批</span>';
-              }
-              return result;
-            },
           },
 
         ],

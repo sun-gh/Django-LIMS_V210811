@@ -108,12 +108,46 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td>{{ record.start_date|default_if_none:"-" }}</td>
-                    <td>{{ record.preexperiment_finish_date|default_if_none:"-" }}</td>
-                    <td>{{ record.pretreat_finish_date|default_if_none:"-" }}</td>
-                    <td>{{ record.start_deadline|default_if_none:"-" }}</td>
-                    <td>{{ record.preexperiment_deadline|default_if_none:"-" }}</td>
-                    <td>{{ record.pretreat_deadline|default_if_none:"-" }}</td>
+                    <td>
+                      {% if record.start_date %}
+                        {{ record.start_date|date:"Y-m-d" }}
+                      {% else %}
+                        -
+                      {% endif  %}
+                    </td>
+                    <td>
+                      {% if record.preexperiment_finish_date %}
+                        {{ record.preexperiment_finish_date|date:"Y-m-d" }}
+                      {% else %}
+                        -
+                      {% endif  %}
+                    </td>
+                    <td>
+                      {% if record.pretreat_finish_date %}
+                        {{ record.pretreat_finish_date|date:"Y-m-d" }}</td>
+                      {% else %}
+                        -
+                      {% endif  %}
+                    <td>
+                      {% if record.start_deadline %}
+                        {{ record.start_deadline|date:"Y-m-d" }}</td>
+                      {% else %}
+                        -
+                      {% endif  %}
+                    <td>
+                      {% if record.preexperiment_deadline %}
+                        {{ record.preexperiment_deadline|date:"Y-m-d" }}
+                      {% else %}
+                        -
+                      {% endif  %}
+                    </td>
+                    <td>
+                      {% if record.pretreat_deadline %}
+                        {{ record.pretreat_deadline|date:"Y-m-d" }}
+                      {% else %}
+                        -
+                      {% endif  %}
+                    </td>
                   </tr>
                 </tbody>
               </table>
