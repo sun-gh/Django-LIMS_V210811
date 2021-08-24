@@ -30,8 +30,12 @@
                 <table class="table">
 
                   <tr style="border:none">
-                    <th style="width:30%;border:none">联系方式：</th>
-                    <td id="detail_contact_info" style="border:none"></td>
+                    <th style="width:30%;border:none">电话：</th>
+                    <td id="detail_phone" style="border:none"></td>
+                  </tr>
+                  <tr>
+                    <th>邮箱：</th>
+                    <td id="detail_mail"></td>
                   </tr>
                   <tr>
                     <th>单位：</th>
@@ -255,10 +259,18 @@
             formatter: viewFormatter,
         },
         {
-            field: 'contact_info',
-            title: '联系方式',
+            field: 'phone',
+            title: '电话',
             width: 140,
             align: 'center',
+            formatter: paramsMatter,
+        },
+        {
+            field: 'mail',
+            title: '邮箱',
+            width: 140,
+            align: 'center',
+            formatter: paramsMatter,
         },
         {
             field: 'unit_name',
@@ -373,7 +385,8 @@
 
     var modal = $(this)
     modal.find('.modal-title').text(rows.customer_name)
-    modal.find('.modal-body #detail_contact_info').text(rows.contact_info)
+    modal.find('.modal-body #detail_phone').text(rows.phone)
+    modal.find('.modal-body #detail_mail').text(rows.mail)
     modal.find('.modal-body #detail_unit').text(rows.unit_name)
     modal.find('.modal-body #detail_department').text(rows.department)
     modal.find('.modal-body #detail_leading_official').text(rows.leading_official)

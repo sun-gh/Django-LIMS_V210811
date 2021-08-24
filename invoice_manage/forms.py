@@ -67,6 +67,9 @@ class EditInvoiceInfoForm(forms.ModelForm):
     invoice_sum = forms.IntegerField(label="发票金额", widget=forms.NumberInput(attrs={'class': 'form-control'}))
     invoice_date = forms.DateField(label="开票日期", widget=forms.DateInput(
         format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
+    invoice_callback = forms.NullBooleanField(label="发票是否收回",
+                                              widget=forms.NullBooleanSelect(attrs={'class': 'form-control'}))
+    reason = forms.CharField(label="未收回原因", required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = InvoiceInfo
@@ -74,6 +77,8 @@ class EditInvoiceInfoForm(forms.ModelForm):
             'invoice_num',
             'invoice_sum',
             'invoice_date',
+            'invoice_callback',
+            'reason',
         ]
 
 

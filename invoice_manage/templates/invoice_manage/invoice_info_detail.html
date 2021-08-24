@@ -45,8 +45,6 @@
                       <th>发票金额</th>
                       <th>开票日期</th>
                       <th>申请人</th>
-                      <th>作废/冲红</th>
-
                     </tr>
                   </thead>
                   <tbody>
@@ -62,13 +60,42 @@
                         {% endif %}
                       </td>
                       <td>{{ invoice.applicant }}</td>
-                      <td>{{ invoice.get_void_red_display }}</td>
                     </tr>
                   </tbody>
                 </table>
               </div><!--/.col-->
             </div>  <!--/.row-->
-
+            <!--作废冲红信息-->
+            <div class="row">
+              <div class="col-md-8">
+              <h6><b>作废冲红信息:</b></h6>
+              <table border="1" class="table " style="border-left:3px solid orangered;border-bottom:1px solid orangered" >
+                <thead>
+                  <tr>
+                    <th>作废/冲红</th>
+                    <th>发票是否收回</th>
+                    <th>未收回原因</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{ invoice.get_void_red_display }}</td>
+                    <td>
+                      {% if invoice.invoice_callback is None %}
+                        <span>未知</span>
+                      {% elif invoice.invoice_callback  %}
+                        <span>是</span>
+                      {% else  %}
+                        <span>否</span>
+                      {% endif  %}
+                    </td>
+                    <td>{{ invoice.reason|default:"-" }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              </div>  <!--/.col-->
+            </div>  <!--/.row-->
+            <!--回款信息-->
             <div class="row">
               <div class="col-md-8">
               <h6><b>回款信息:</b></h6>

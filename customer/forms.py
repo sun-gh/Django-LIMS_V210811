@@ -31,8 +31,8 @@ class UnitForm(forms.ModelForm):
 class CustomerInfoForm(forms.ModelForm):
     # 定义客户信息表单
     customer_name = forms.CharField(label="客户姓名", widget=forms.TextInput(attrs={'class': 'form-control'}))
-    contact_info = forms.CharField(label="联系方式", required=False,
-                                   widget=forms.TextInput(attrs={'class': 'form-control'}))
+    phone = forms.CharField(label="电话", required=False, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    mail = forms.EmailField(label="邮箱", required=False, widget=forms.EmailInput(attrs={'class': 'form-control'}))
     unit = forms.ModelChoiceField(queryset=UnitInvoice.objects.all(), label="单位", required=False,
                                   widget=forms.Select(attrs={'class': 'form-control'}))
     department = forms.CharField(label="科室/院系", required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -45,7 +45,8 @@ class CustomerInfoForm(forms.ModelForm):
         model = CustomerInfo
         fields = [
             'customer_name',
-            'contact_info',
+            'phone',
+            'mail',
             'unit',
             'department',
             'leading_official',

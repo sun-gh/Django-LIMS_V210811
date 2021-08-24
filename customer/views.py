@@ -222,10 +222,14 @@ def customer_list_table(request):
             else:
                 unit_name = "-"
                 unit_id = 0  # id从1开始
-            if customer.contact_info:
-                contact_info = customer.contact_info
+            if customer.phone:
+                phone = customer.phone
             else:
-                contact_info = "-"
+                phone = "-"
+            if customer.mail:
+                mail = customer.mail
+            else:
+                mail = "-"
             if customer.department:
                 department = customer.department
             else:
@@ -244,8 +248,8 @@ def customer_list_table(request):
                 # "num": 1,
                 "customer_id": customer.id,
                 "customer_name": customer.customer_name,
-                "contact_info": contact_info,
-
+                "phone": phone,
+                "mail": mail,
                 "unit_id": unit_id,
                 "unit_name": unit_name,
                 "department": department,

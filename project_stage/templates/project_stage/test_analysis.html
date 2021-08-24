@@ -193,13 +193,13 @@
               return pageSize * (pageNumber - 1) + index + 1;    //返回每条的序号： 每页条数 * （当前页 - 1 ）+ 序号
             },
             cellStyle: function(value,row,index){
-        　　　if (row.priority=='1'){
-        　　　　　　return {css:{"color":"red","font-weight":"bold"}}
-        　　　}else if (row.priority=='2'){
-        　　　　　　return {css:{"color":"orange","font-weight":"bold"}}
-        　　　}else if (row.priority=='3'){
-        　　　　　　return {css:{"color":"yellow","font-weight":"bolder"}}
-        　　　}
+        　　　 if (row.priority=='1'){
+      　　　　　　return {css:{"background-color":"OrangeRed"}}
+        　　　 }else if (row.priority=='2'){
+      　　　　　　return {css:{"background-color":"orange"}}
+        　　　 }else if (row.priority=='3'){
+      　　　　　　return {css:{"background-color":"yellow"}}
+        　　　 }
               return {} ;
              },  //.function
           },

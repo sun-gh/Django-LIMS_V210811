@@ -62,7 +62,7 @@
                   <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
                     <div class="row">
                     {% csrf_token %}
-                      <div class="col">
+                      <div class="col-md-10 offset-md-1">
                           <!--原发票号-->
                           <div class="form-group row">
                             {{ form.link_invoice.label_tag }}
@@ -126,6 +126,7 @@
   // 给必填项添加*
   var txt1 = '<span style="color:red"> *</span>';
   $("[for='id_link_invoice']").append(txt1);
+  $("[for='id_treat_type']").append(txt1);
 
   // 给select添加样式,<!-- Select2 -->
   $("#id_link_invoice").addClass("select2");

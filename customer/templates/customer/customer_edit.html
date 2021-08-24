@@ -37,10 +37,11 @@
               <form class="form-horizontal" method="post" action="{% url 'customer:customer_edit' customer_info.id %}">
               <!-- card-body -->
               <div class="row">
-                <div class="col-md-6 offset-md-3">
+                <div class="col-md-10 offset-md-1">
                   <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
-
                     {% csrf_token %}
+                    <div class="row">
+                      <div class="col">
                       <!--客户姓名-->
                       <div class="form-group row">
                         {{ form.customer_name.label_tag }}
@@ -48,11 +49,18 @@
                           {{ form.customer_name }}
                         </div>
                       </div>
-                      <!--联系方式-->
+                      <!--电话-->
                       <div class="form-group row">
-                        {{ form.contact_info.label_tag }}
+                        {{ form.phone.label_tag }}
                         <div class="col-md-7">
-                          {{ form.contact_info }}
+                          {{ form.phone }}
+                        </div>
+                      </div>
+                      <!--邮箱-->
+                      <div class="form-group row">
+                        {{ form.mail.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.mail }}
                         </div>
                       </div>
                       <!--单位-->
@@ -62,6 +70,8 @@
                           {{ form.unit }}
                         </div>
                       </div>
+                      </div>
+                      <div class="col">
                       <!--科室/院系-->
                       <div class="form-group row">
                         {{ form.department.label_tag }}
@@ -87,7 +97,8 @@
                       <div class="row" hidden>
                         {{ form.person_add }}
                       </div>
-
+                      </div>
+                    </div>  <!-- /.row-->
                   </div>  <!-- /.card-body-->
                 </div>   <!-- /.col-->
               </div>  <!-- /.row-->
@@ -121,7 +132,17 @@
 <script type="text/javascript">
 
   // 给label加上class属性;input加上class;
-  $("form label").addClass("col-md-5 col-form-label");
+  $("form label").addClass("col-md-4 col-form-label");
+
+  // 给必填项添加*
+  var txt1 = '<span style="color:red"> *</span>';
+  $("[for='id_customer_name']").append(txt1);
+
+  // 给select添加样式,<!-- Select2 -->
+  $("#id_unit").addClass("select2");
+  $("#id_unit ").attr("style","width:100%;");
+  //Initialize Select2 Elements
+  $('.select2').select2();
 
   // 设置弹出提示框属性
     toastr.options = {
@@ -149,11 +170,6 @@
     }
     msgTip();
 
-  // 给select添加样式,<!-- Select2 -->
-  $("#id_unit").addClass("select2");
-  $("#id_unit ").attr("style","width:100%;");
-  //Initialize Select2 Elements
-  $('.select2').select2();
 
 </script>
 {% endblock %}

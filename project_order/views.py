@@ -164,7 +164,7 @@ def project_order_detail(request, pro_id):
     # 定义项目结算详情
     project_order = ProjectOrder.objects.get(id=pro_id)
 
-    return render(request, 'project_order/project_order_detail.html', {'record': project_order})
+    return render(request, 'project_order/project_order_detail.html', {'order': project_order})
 
 
 @login_required()

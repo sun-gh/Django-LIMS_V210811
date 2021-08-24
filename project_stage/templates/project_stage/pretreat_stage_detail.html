@@ -70,6 +70,7 @@
                 <thead>
                   <tr>
                       <th>姓名</th>
+                      <th>邮箱</th>
                       <th>单位</th>
                       <th>送样终端</th>
                   </tr>
@@ -77,6 +78,7 @@
                 <tbody>
                   <tr>
                     <td>{{ record.sample_sender.customer_name }}</td>
+                    <td>{{ record.sample_sender.mail|default:"-" }}</td>
                     <td>
                       {% if record.sample_sender.unit %}
                         <span>{{ record.sample_sender.unit.unit_name }}</span>

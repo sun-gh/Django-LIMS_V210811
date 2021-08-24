@@ -48,7 +48,11 @@
               <p><span> 样本数量 </span>：{{ project_order.project_order.sample_amount }} </p>
               <p><span> 附加费用 </span>：
                 {% for item in project_order.project_order.addition_item.all %}
-                    <span class="addition_item">{{ item.item_type }} &nbsp;</span>
+                  {% if forloop.last %}
+                    <span class="addition_item">{{ item.item_type }} </span>
+                  {% else %}
+                    <span class="addition_item">{{ item.item_type }} </span><span>、</span>
+                  {% endif %}
                 {% empty %}
                     -
                 {% endfor %}

@@ -28,7 +28,7 @@
         <div class="card">
           <!-- card-header -->
           <div class="card-header ">
-            <h5 class="m-0"><strong class="btn btn-info">项目：{{ record.project_order.project_num }}</strong></h5>
+            <h5 class="m-0"><strong class="btn btn-info">项目：{{ order.project_order.project_num }}</strong></h5>
           </div>
           <!-- card-body -->
           <div class="card-body  pb-1  "> <!--pt-0 pl-1 pr-1-->
@@ -47,19 +47,19 @@
                   </thead>
                   <tbody>
                     <tr>
-                      <td>{{ record.project_order.project_type.project_name }}</td>
-                      <td>{{ record.project_order.sample_type.type_name }}</td>
+                      <td>{{ order.project_order.project_type.project_name }}</td>
+                      <td>{{ order.project_order.sample_type.type_name }}</td>
                       <td>
-                        {% if record.project_order.machine_time %}
-                          <span>{{ record.project_order.machine_time.time_type }}</span>
+                        {% if order.project_order.machine_time %}
+                          <span>{{ order.project_order.machine_time.time_type }}</span>
                         {% else %}
                           <span>-</span>
                         {% endif %}
                       </td>
-                      <td>{{ record.project_order.sample_amount }}</td>
+                      <td>{{ order.project_order.sample_amount }}</td>
                       <td>
-                        {% if record.project_order.sale_person %}
-                          <span>{{ record.project_order.sale_person.name_person }}</span>
+                        {% if order.sale_person %}
+                          <span>{{ order.sale_person.name_person }}</span>
                         {% else %}
                           <span>-</span>
                         {% endif %}
@@ -83,15 +83,15 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td>{{ record.project_order.sample_sender.customer_name }}</td>
+                    <td>{{ order.project_order.sample_sender.customer_name }}</td>
                     <td>
-                      {% if record.project_order.sample_sender.unit %}
-                        <span>{{ record.project_order.sample_sender.unit.unit_name }}</span>
+                      {% if order.project_order.sample_sender.unit %}
+                        <span>{{ order.project_order.sample_sender.unit.unit_name }}</span>
                       {% else %}
                         <span>-</span>
                       {% endif %}
                     </td>
-                    <td>{{ record.project_order.sample_sender.leading_official|default:"-" }}</td>
+                    <td>{{ order.project_order.sample_sender.leading_official|default:"-" }}</td>
 
                   </tr>
                 </tbody>
@@ -113,21 +113,21 @@
                 <tbody>
                   <tr>
                     <td>
-                        {% for item in record.project_order.addition_item.all %}
+                        {% for item in order.project_order.addition_item.all %}
                         <span class="badge badge-warning">{{ item.item_type }}</span>  <!--4.3中label已废除-->
                         {% empty %}
                             -
                         {% endfor %}
                       </td>
-                    <td>{{ record.project_sum|default_if_none:"-" }}</td>
+                    <td>{{ order.project_sum|default_if_none:"-" }}</td>
                     <td>
-                      {% if record.pay_type %}
-                        <span>{{ record.pay_type.type_name }}</span>
+                      {% if order.pay_type %}
+                        <span>{{ order.pay_type.type_name }}</span>
                       {% else %}
                         <span>-</span>
                       {% endif %}
                     </td>
-                    <td>{{ record.contract_record|yesno:"有,无,maybe" }}</td>
+                    <td>{{ order.contract_record|yesno:"有,无,maybe" }}</td>
 
                   </tr>
                 </tbody>
@@ -137,7 +137,7 @@
             <div class="row">
               <div class="col-md-12">
                 <h6><b>备注:</b></h6>
-                <p>{{ record.note|default_if_none:"-" }}</p>
+                <p>{{ order.note|default_if_none:"-" }}</p>
               </div><!--/.col-->
             </div>  <!--/.row-->
 

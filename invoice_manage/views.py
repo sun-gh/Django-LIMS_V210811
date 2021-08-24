@@ -361,6 +361,18 @@ def invoice_info_table(request):
                 invoice_sum = invoice_sum
             else:
                 invoice_sum = "-"
+            # 定义发票是否收回
+            if invoice.invoice_callback is None:
+                invoice_callback = "未知"
+            elif invoice.invoice_callback:
+                invoice_callback = "是"
+            else:
+                invoice_callback = "否"
+            # 定义未收回原因
+            if invoice.reason:
+                reason = invoice.reason
+            else:
+                reason = "-"
             # 要将date对象转化为字符串，才能进行json转换
             invoice_date = invoice.invoice_date
             if invoice_date:
@@ -394,9 +406,10 @@ def invoice_info_table(request):
                 "invoice_date": invoice_date,
                 "payment_date": payment_date,
                 "void_red": invoice.get_void_red_display(),
+                "invoice_callback": invoice_callback,
+                "reason": reason,
                 "payment_sum": payment_sum,
                 "note": note,
-
             })
 
         return HttpResponse(json.dumps(response_data))  # 需要json处理下数据格式
