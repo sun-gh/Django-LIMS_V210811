@@ -84,22 +84,16 @@ def project_order_table(request):
                 machine_time = project.machine_time.time_type
             else:
                 machine_time = "-"
-            # 以下为送样人信息
-            if project.sample_sender:
-                sample_sender = project.sample_sender.customer_name
-                unit = project.sample_sender.unit
-                if unit:
-                    unit_name = unit.unit_name
-                else:
-                    unit_name = "-"
-                person = project.sample_sender.leading_official
-                if person:
-                    leading_official = person
-                else:
-                    leading_official = "-"
+            # 以下为单位和负责人不存在的情况
+            unit = project.unit
+            if unit:
+                unit_name = unit
             else:
-                sample_sender = "-"
                 unit_name = "-"
+            person = project.terminal
+            if person:
+                leading_official = person
+            else:
                 leading_official = "-"
 
             # addition_item为多对多，显示分多种情况
@@ -147,7 +141,7 @@ def project_order_table(request):
                 "sample_amount": project.sample_amount,
                 "leading_official": leading_official,
                 "unit": unit_name,
-                "sample_sender": sample_sender,
+                "sample_sender": project.sample_sender.customer_name,
                 "addition_item": addition_item,
                 "project_sum": project_sum,
                 "sale_person": sale_person,

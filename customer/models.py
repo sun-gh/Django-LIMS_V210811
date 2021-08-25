@@ -28,11 +28,11 @@ class CustomerInfo(models.Model):
 
     # 定义客户信息
     customer_name = models.CharField(max_length=32, verbose_name="客户姓名", default="姓名")
-    phone = models.CharField(max_length=64, verbose_name="电话", blank=True, null=True)
+    phone = models.CharField(max_length=32, verbose_name="电话", blank=True, null=True)
     mail = models.EmailField(max_length=64, verbose_name="邮箱", blank=True, null=True)
     # 当关联单位被删除时，unit为null
     unit = models.ForeignKey(UnitInvoice, verbose_name="单位", on_delete=models.SET_NULL, null=True, blank=True)
-    department = models.CharField(max_length=128, verbose_name="科室", blank=True, null=True)
+    department = models.CharField(max_length=128, verbose_name="科室/院系", blank=True, null=True)
     leading_official = models.CharField(max_length=32, verbose_name="负责人", blank=True, null=True)
     note = models.CharField(max_length=256, verbose_name="备注", blank=True, null=True)
     person_add = models.CharField(max_length=32, verbose_name="添加人", default="添加人")

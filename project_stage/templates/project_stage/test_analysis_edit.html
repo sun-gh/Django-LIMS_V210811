@@ -55,11 +55,7 @@
             </div>
             <div class="col">
               <p><span class="link_info"> 单位 </span> ：
-                  {% if project_info.sample_sender.unit %}
-                    {{ project_info.sample_sender.unit.unit_name }}
-                  {% else  %}
-                    -
-                  {% endif  %}
+                {{ project_info.unit|default:"-" }}
               </p>
               <p><span class="link_info"> 送样人 </span> ：{{ project_info.sample_sender.customer_name }} </p>
             </div>

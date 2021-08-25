@@ -156,16 +156,19 @@ class SampleRecord(models.Model):
         (0, "常规项目"),
         (1, "临床项目"),
     )
-    project_num = models.CharField(max_length=64, verbose_name="项目编号", unique=True)
+    project_num = models.CharField(max_length=32, verbose_name="项目编号", unique=True)
     project_type = models.ForeignKey(ProjectType, verbose_name="项目类型", on_delete=models.SET_NULL, null=True)
     sample_type = models.ForeignKey(SampleType, verbose_name="样本类型", on_delete=models.SET_NULL, null=True)
     machine_time = models.ForeignKey(MachineTime, verbose_name="机时类型", on_delete=models.SET_NULL, null=True, blank=True)
     sample_amount = models.PositiveSmallIntegerField(verbose_name="样本数量")
     sample_sender = models.ForeignKey(CustomerInfo, verbose_name="送样人", on_delete=models.SET_NULL, null=True)
+    # 将以下两个字段直接保存到记录
+    unit = models.CharField(max_length=128, verbose_name="单位", null=True, blank=True)
+    terminal = models.CharField(max_length=32, verbose_name="送样终端", blank=True, null=True)
     sample_quality = models.ForeignKey(SampleQuality, verbose_name="样本质量", on_delete=models.SET_NULL, null=True)
     addition_item = models.ManyToManyField(AdditionalItem, verbose_name="附加项目", blank=True)
     receive_date = models.DateField(verbose_name="收样日期")
-    person_record = models.CharField(max_length=64, verbose_name="登记人")
+    person_record = models.CharField(max_length=32, verbose_name="登记人")
     c_time = models.DateTimeField(verbose_name="登记时间", auto_now_add=True)
     project_source = models.SmallIntegerField(choices=source_choice, verbose_name="项目来源", default=0)
     note = models.CharField(max_length=256, verbose_name="备注", blank=True, null=True)

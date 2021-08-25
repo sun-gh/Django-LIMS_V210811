@@ -5,12 +5,39 @@ from .forms import SampleRecordForm, PretreatStageForm, TestAnalysisForm
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 import json
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta
 import django.dispatch
+from django.dispatch import receiver
+from customer.views import customer_edit, project_add_unit, project_add_terminal
 from django.db.models import Q
-# from django.core import serializers
 
 # Create your views here.
+
+
+# 定义样本登记中单位信息修改
+@receiver(project_add_unit, sender=customer_edit)
+def edit_project_unit(sender, **kwargs):
+    # print(kwargs['msg'])
+    sample_records = SampleRecord.objects.filter(sample_sender__id=kwargs['customer_id'])
+    for record in sample_records:
+        if record.unit is None:
+            record.unit = kwargs['unit_name']
+            record.save()
+
+    return sample_records
+
+
+# 定义样本登记中终端信息修改
+@receiver(project_add_terminal, sender=customer_edit)
+def edit_project_terminal(sender, **kwargs):
+    # print(kwargs['msg'])
+    sample_records = SampleRecord.objects.filter(sample_sender__id=kwargs['customer_id'])
+    for record in sample_records:
+        if record.terminal is None:
+            record.terminal = kwargs['terminal_name']
+            record.save()
+
+    return sample_records
 
 
 @login_required()
@@ -59,23 +86,18 @@ def sample_record_table(request):
                 machine_time = project.machine_time.time_type
             else:
                 machine_time = "-"
-            # 定义送样人相关
-            if project.sample_sender:
-                sample_sender = project.sample_sender.customer_name
-                unit = project.sample_sender.unit
-                if unit:
-                    unit_name = unit.unit_name
-                else:
-                    unit_name = "-"
-                person = project.sample_sender.leading_official
-                if person:
-                    leading_official = person
-                else:
-                    leading_official = "-"
+            # 定义单位和终端
+            unit = project.unit
+            if unit:
+                unit_name = unit
             else:
-                sample_sender = "-"
                 unit_name = "-"
+            person = project.terminal
+            if person:
+                leading_official = person
+            else:
                 leading_official = "-"
+
             if project.sample_quality:
                 sample_quality = project.sample_quality.quality_type
             else:
@@ -116,7 +138,7 @@ def sample_record_table(request):
                 "sample_amount": project.sample_amount,
                 "leading_official": leading_official,
                 "unit": unit_name,
-                "sample_sender": sample_sender,
+                "sample_sender": project.sample_sender.customer_name,
                 "sample_quality": sample_quality,
                 "addition_item": addition_item,
                 "receive_date": receive_date,
@@ -152,7 +174,14 @@ def sample_record_add(request):
             else:
                 project_num = date_today.strftime('%y%m%d') + '01'
             sample_rec.project_num = project_num
-
+            # 定义单位和送样终端
+            sample_sender = sample_rec_form.cleaned_data.get("sample_sender")
+            unit = sample_sender.unit
+            if unit:
+                sample_rec.unit = unit.unit_name
+            terminal = sample_sender.leading_official
+            if terminal:
+                sample_rec.terminal = terminal
             pro_type = ProjectType.objects.get(id=request.POST.get("project_type"))
             receive_date = sample_rec_form.cleaned_data.get("receive_date")
             # 定义启动截至日期
@@ -205,7 +234,20 @@ def sample_record_edit(request, project_id):
             # print(project_info_form.has_changed())
             change_list = project_info_form.changed_data
             project_info_form.save(commit=False)
-
+            # 定义修改单位和送样终端
+            if 'sample_sender' in change_list:
+                sample_sender = project_info_form.cleaned_data.get("sample_sender")
+                unit = sample_sender.unit
+                if unit:
+                    project_info.unit = unit.unit_name
+                else:
+                    project_info.unit = None
+                terminal = sample_sender.leading_official
+                if terminal:
+                    project_info.terminal = terminal
+                else:
+                    project_info.terminal = None
+            # 以下定义几个截止日期修改
             if 'project_type' in change_list or 'receive_date' in change_list:
 
                 pro_type = ProjectType.objects.get(id=request.POST.get("project_type"))
@@ -321,22 +363,16 @@ def pretreat_stage_table(request):
                 machine_time = project.machine_time.time_type
             else:
                 machine_time = "-"
-            # 定义送样人不存在的情况
-            if project.sample_sender:
-                sample_sender = project.sample_sender.customer_name
-                unit = project.sample_sender.unit
-                if unit:
-                    unit_name = unit.unit_name
-                else:
-                    unit_name = "-"
-                person = project.sample_sender.leading_official
-                if person:
-                    leading_official = person
-                else:
-                    leading_official = "-"
+            # 定义单位和负责人不存在的情况
+            unit = project.unit
+            if unit:
+                unit_name = unit
             else:
-                sample_sender = "-"
                 unit_name = "-"
+            person = project.terminal
+            if person:
+                leading_official = person
+            else:
                 leading_official = "-"
 
             # 以下为前处理阶段新添加字段
@@ -449,7 +485,7 @@ def pretreat_stage_table(request):
                 "sample_amount": project.sample_amount,
                 "leading_official": leading_official,
                 "unit": unit_name,
-                "sample_sender": sample_sender,
+                "sample_sender": project.sample_sender.customer_name,
                 # 以下为前处理阶段新添加字段
                 "priority": project.priority,
                 "start_date": start_date,
@@ -550,22 +586,16 @@ def test_analysis_table(request):
                 machine_time = project.machine_time.time_type
             else:
                 machine_time = "-"
-            # 定义送样人不存在的情况
-            if project.sample_sender:
-                sample_sender = project.sample_sender.customer_name
-                unit = project.sample_sender.unit
-                if unit:
-                    unit_name = unit.unit_name
-                else:
-                    unit_name = "-"
-                person = project.sample_sender.leading_official
-                if person:
-                    leading_official = person
-                else:
-                    leading_official = "-"
+            # 定义单位和负责人不存在的情况
+            unit = project.unit
+            if unit:
+                unit_name = unit
             else:
-                sample_sender = "-"
                 unit_name = "-"
+            person = project.terminal
+            if person:
+                leading_official = person
+            else:
                 leading_official = "-"
 
             # 以下为检测分析阶段新添加字段
@@ -608,7 +638,7 @@ def test_analysis_table(request):
                 "sample_amount": project.sample_amount,
                 "leading_official": leading_official,
                 "unit": unit_name,
-                "sample_sender": sample_sender,
+                "sample_sender": project.sample_sender.customer_name,
                 # 以下为检测分析阶段新添加字段
                 "priority": project.priority,
                 "instrument_type": instrument_type,

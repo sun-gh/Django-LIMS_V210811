@@ -86,16 +86,8 @@
                   <tr>
                     <td>{{ record.sample_sender.customer_name }}</td>
                     <td>{{ record.sample_sender.mail|default:"-" }}</td>
-                    <td>
-                      {% if record.sample_sender.unit %}
-                        <span>{{ record.sample_sender.unit.unit_name }}</span>
-                      {% else %}
-                        <span>-</span>
-                      {% endif %}
-                    </td>
-                    <td>
-                      {{ record.sample_sender.leading_official|default:"-" }}
-                    </td>
+                    <td>{{ record.unit|default:"-" }}</td>
+                    <td>{{ record.terminal|default:"-" }}</td>
                   </tr>
                 </tbody>
               </table>

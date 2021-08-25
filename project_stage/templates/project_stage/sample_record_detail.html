@@ -63,7 +63,6 @@
                       <td>{{ record.sample_amount }}</td>
                       <td>{{ record.sample_quality.quality_type }}</td>
                       <td>{{ record.receive_date|date:"Y-m-d" }}</td>
-
                       <td>
                         {% for item in record.addition_item.all %}
                         <span class="badge badge-warning">{{ item.item_type }}</span>  <!--4.3中label已废除-->
@@ -94,16 +93,8 @@
                   <tr>
                     <td>{{ record.sample_sender.customer_name }}</td>
                     <td>{{ record.sample_sender.mail|default:"-" }}</td>
-                    <td>
-                      {% if record.sample_sender.unit %}
-                        <span>{{ record.sample_sender.unit.unit_name }}</span>
-                      {% else %}
-                        <span>-</span>
-                      {% endif %}
-                    </td>
-                    <td>
-                      {{ record.sample_sender.leading_official|default:"-" }}
-                    </td>
+                    <td>{{ record.unit|default:"-" }}</td>
+                    <td>{{ record.terminal|default:"-" }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -112,7 +103,7 @@
             <div class="row">
               <div class="col-md-12">
                 <h6><b>备注:</b></h6>
-                <p>{{ record.note }}</p>
+                <p>{{ record.note|default:"-" }}</p>
               </div><!--/.col-->
             </div>  <!--/.row-->
             <div class="row">
@@ -122,6 +113,7 @@
                   {% for file in record.files.all %}
                     <div><a href="/media/{{ file.file.name }}">{{ file.file.name }}</a>&nbsp;</div>
                   {% empty %}  <!--增加files为空的判断-->
+                    -
                   {% endfor %}
                 </div>
               </div><!--/.col-->

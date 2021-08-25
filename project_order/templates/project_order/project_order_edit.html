@@ -61,13 +61,9 @@
             <div class="col">
               <p><span class="link_info"> 送样人 </span> ：{{ project_order.project_order.sample_sender.customer_name }} </p>
               <p><span class="link_info"> 单位 </span> ：
-                {% if project_order.project_order.sample_sender.unit %}
-                  <span>{{ project_order.project_order.sample_sender.unit.unit_name }}</span>
-                {% else %}
-                  <span>-</span>
-                {% endif %}
+                  <span>{{ project_order.project_order.unit|default:"-" }}</span>
               </p>
-              <p><span class="link_info"> 负责人 </span> ：{{ project_order.project_order.sample_sender.leading_official|default:"-" }} </p>
+              <p><span class="link_info"> 负责人 </span> ：{{ project_order.project_order.terminal|default:"-" }} </p>
             </div>
           </div>
 

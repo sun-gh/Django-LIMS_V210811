@@ -79,16 +79,8 @@
                   <tr>
                     <td>{{ record.sample_sender.customer_name }}</td>
                     <td>{{ record.sample_sender.mail|default:"-" }}</td>
-                    <td>
-                      {% if record.sample_sender.unit %}
-                        <span>{{ record.sample_sender.unit.unit_name }}</span>
-                      {% else %}
-                        <span>-</span>
-                      {% endif %}
-                    </td>
-                    <td>
-                      {{ record.sample_sender.leading_official|default:"-" }}
-                    </td>
+                    <td>{{ record.unit|default:"-" }}</td>
+                    <td>{{ record.terminal|default:"-" }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -103,6 +95,7 @@
                       <th>项目启动时间</th>
                       <th>预实验完成时间</th>
                       <th>前处理完成时间</th>
+
                       <th>启动截止时间</th>
                       <th>预实验截止时间</th>
                       <th>前处理截止时间</th>
@@ -126,16 +119,18 @@
                     </td>
                     <td>
                       {% if record.pretreat_finish_date %}
-                        {{ record.pretreat_finish_date|date:"Y-m-d" }}</td>
+                        {{ record.pretreat_finish_date|date:"Y-m-d" }}
                       {% else %}
                         -
                       {% endif  %}
+                    </td>
                     <td>
                       {% if record.start_deadline %}
-                        {{ record.start_deadline|date:"Y-m-d" }}</td>
+                        {{ record.start_deadline|date:"Y-m-d" }}
                       {% else %}
                         -
                       {% endif  %}
+                    </td>
                     <td>
                       {% if record.preexperiment_deadline %}
                         {{ record.preexperiment_deadline|date:"Y-m-d" }}

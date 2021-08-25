@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from . import forms
 import json
 from django.db.models import Q
-# import xlrd
+import django.dispatch
 
 # Create your views here.
 
@@ -295,15 +295,33 @@ def customer_del(request):
     return HttpResponse("非POST请求！")
 
 
+# 定义一个添加单位信号
+project_add_unit = django.dispatch.Signal()
+# 定义一个添加送样终端信号
+project_add_terminal = django.dispatch.Signal()
+
+
 @login_required()
 def customer_edit(request, customer_id):
-    # 定义单位编辑页面
+    # 定义客户编辑页面
     customer_info = CustomerInfo.objects.get(id=customer_id)
 
     if request.method == 'POST':
+        unit = customer_info.unit
+        leading_official = customer_info.leading_official
         customer_info_form = forms.CustomerInfoForm(request.POST, instance=customer_info)
         if customer_info_form.is_valid():
+            change_list = customer_info_form.changed_data
             customer_info_form.save()
+            # 修改关联项目的单位和终端信息
+            if unit is None and 'unit' in change_list:
+                new_unit = customer_info_form.cleaned_data.get("unit")
+                msg = "edit_project_unit"
+                project_add_unit.send(customer_edit, msg=msg, customer_id=customer_info.id, unit_name=new_unit.unit_name)
+            if not leading_official and 'leading_official' in change_list:
+                terminal = customer_info_form.cleaned_data.get("leading_official")
+                msg = "edit_project_terminal"
+                project_add_terminal.send(customer_edit, msg=msg, customer_id=customer_info.id, terminal_name=terminal)
             msg = "edit_success"
             return render(request, 'customer/customer_list.html', {'msg': msg})
         else:

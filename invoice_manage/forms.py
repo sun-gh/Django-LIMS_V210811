@@ -11,7 +11,8 @@ class ApplyInvoiceForm(forms.ModelForm):
     unit_name = forms.ModelChoiceField(queryset=UnitInvoice.objects.all(),
                                        label="开票单位", widget=forms.Select(attrs={'class': 'form-control'}))
     invoice_sum = forms.IntegerField(label="开票金额", widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    sheet_num = forms.IntegerField(label="开票张数", widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    sheet_num = forms.IntegerField(label="开票张数", max_value=10,
+                                   widget=forms.NumberInput(attrs={'class': 'form-control'}))
     invoice_require = forms.ModelMultipleChoiceField(queryset=InvoiceRequire.objects.all(), label="开票要求",
                                                      required=False,
                                                      widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
