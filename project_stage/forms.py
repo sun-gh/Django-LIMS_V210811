@@ -6,10 +6,9 @@ from customer.models import CustomerInfo
 
 class SampleRecordForm(forms.ModelForm):
     # 定义样本登记表单
-    # 项目编号为修改项目时需要
-    # project_num = forms.CharField(label="项目编号", widget=forms.TextInput(attrs={'class': 'form-control'}))
     project_type = forms.ModelChoiceField(queryset=ProjectType.objects.all(), label="项目类型",
                                           widget=forms.Select(attrs={'class': 'form-control'}))
+    # 样本类型为添加或修改时提供选项
     sample_type = forms.ModelChoiceField(queryset=SampleType.objects.all(), label="样本类型",
                                          widget=forms.Select(attrs={'class': 'form-control'}))
     machine_time = forms.ModelChoiceField(queryset=MachineTime.objects.all(), label="机时类型", required=False,
@@ -35,7 +34,7 @@ class SampleRecordForm(forms.ModelForm):
         fields = [
             # 'project_num',
             'project_type',
-            'sample_type',
+            # 'sample_type',
             'machine_time',
             'sample_amount',
             'sample_sender',

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .models import SampleRecord, FilesRelated, ProjectType
+from .models import SampleRecord, FilesRelated, ProjectType, SampleType
 from .forms import SampleRecordForm, PretreatStageForm, TestAnalysisForm
 from django.core.paginator import Paginator
 from django.http import HttpResponse
@@ -78,10 +78,7 @@ def sample_record_table(request):
                 project_type = project.project_type.project_name
             else:
                 project_type = "-"
-            if project.sample_type:
-                sample_type = project.sample_type.type_name
-            else:
-                sample_type = "-"
+            # 定义机时类型为空的情况
             if project.machine_time:
                 machine_time = project.machine_time.time_type
             else:
@@ -133,7 +130,7 @@ def sample_record_table(request):
                 "project_id": project.id,
                 "project_num": project.project_num,
                 "project_type": project_type,
-                "sample_type": sample_type,
+                "sample_type": project.sample_type,
                 "machine_time": machine_time,
                 "sample_amount": project.sample_amount,
                 "leading_official": leading_official,
@@ -174,6 +171,9 @@ def sample_record_add(request):
             else:
                 project_num = date_today.strftime('%y%m%d') + '01'
             sample_rec.project_num = project_num
+            # 定义样本类型
+            sample_type = sample_rec_form.cleaned_data.get("sample_type")
+            sample_rec.sample_type = sample_type.type_name
             # 定义单位和送样终端
             sample_sender = sample_rec_form.cleaned_data.get("sample_sender")
             unit = sample_sender.unit
@@ -231,9 +231,11 @@ def sample_record_edit(request, project_id):
     if request.method == 'POST':
         project_info_form = SampleRecordForm(request.POST, instance=project_info)
         if project_info_form.is_valid():
-            # print(project_info_form.has_changed())
             change_list = project_info_form.changed_data
             project_info_form.save(commit=False)
+            # 定义样本类型修改
+            sample_type = project_info_form.cleaned_data.get("sample_type")
+            project_info.sample_type = sample_type.type_name
             # 定义修改单位和送样终端
             if 'sample_sender' in change_list:
                 sample_sender = project_info_form.cleaned_data.get("sample_sender")
@@ -289,7 +291,8 @@ def sample_record_edit(request, project_id):
             return render(request, 'project_stage/sample_record_edit.html', {'form': project_info_form, 'msg': msg,
                                                                              'project_info': project_info})
     elif request.method == 'GET':
-        project_form = SampleRecordForm(instance=project_info)
+        sample_type = SampleType.objects.get(type_name=project_info.sample_type)
+        project_form = SampleRecordForm(initial={'sample_type': sample_type}, instance=project_info)
         return render(request, 'project_stage/sample_record_edit.html', {'form': project_form,
                                                                          'project_info': project_info})
 
@@ -355,10 +358,7 @@ def pretreat_stage_table(request):
                 project_type = project.project_type.project_name
             else:
                 project_type = "-"
-            if project.sample_type:
-                sample_type = project.sample_type.type_name
-            else:
-                sample_type = "-"
+            # 定义机时类型为空的情况
             if project.machine_time:
                 machine_time = project.machine_time.time_type
             else:
@@ -480,7 +480,7 @@ def pretreat_stage_table(request):
                 "project_id": project.id,
                 "project_num": project.project_num,
                 "project_type": project_type,
-                "sample_type": sample_type,
+                "sample_type": project.sample_type,
                 "machine_time": machine_time,
                 "sample_amount": project.sample_amount,
                 "leading_official": leading_official,
@@ -578,10 +578,7 @@ def test_analysis_table(request):
                 project_type = project.project_type.project_name
             else:
                 project_type = "-"
-            if project.sample_type:
-                sample_type = project.sample_type.type_name
-            else:
-                sample_type = "-"
+            # 定义机时类型为空的情况
             if project.machine_time:
                 machine_time = project.machine_time.time_type
             else:
@@ -633,7 +630,7 @@ def test_analysis_table(request):
                 "project_id": project.id,
                 "project_num": project.project_num,
                 "project_type": project_type,
-                "sample_type": sample_type,
+                "sample_type": project.sample_type,
                 "machine_time": machine_time,
                 "sample_amount": project.sample_amount,
                 "leading_official": leading_official,

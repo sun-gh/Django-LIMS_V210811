@@ -76,10 +76,7 @@ def project_order_table(request):
                 project_type = project.project_type.project_name
             else:
                 project_type = "-"
-            if project.sample_type:
-                sample_type = project.sample_type.type_name
-            else:
-                sample_type = "-"
+            # 定义机时类型为空的情况
             if project.machine_time:
                 machine_time = project.machine_time.time_type
             else:
@@ -136,7 +133,7 @@ def project_order_table(request):
                 "project_order_id": project.projectorder.id,
                 "project_num": project.project_num,
                 "project_type": project_type,
-                "sample_type": sample_type,
+                "sample_type": project.sample_type,
                 "machine_time": machine_time,
                 "sample_amount": project.sample_amount,
                 "leading_official": leading_official,
