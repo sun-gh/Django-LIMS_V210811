@@ -50,11 +50,7 @@
                       <td>{{ order.project_order.project_type.project_name }}</td>
                       <td>{{ order.project_order.sample_type }}</td>
                       <td>
-                        {% if order.project_order.machine_time %}
-                          <span>{{ order.project_order.machine_time.time_type }}</span>
-                        {% else %}
-                          <span>-</span>
-                        {% endif %}
+                        {{ order.project_order.machine_time|default:"-" }}
                       </td>
                       <td>{{ order.project_order.sample_amount }}</td>
                       <td>

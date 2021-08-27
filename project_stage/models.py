@@ -158,9 +158,9 @@ class SampleRecord(models.Model):
     )
     project_num = models.CharField(max_length=32, verbose_name="项目编号", unique=True)
     project_type = models.ForeignKey(ProjectType, verbose_name="项目类型", on_delete=models.SET_NULL, null=True)
-    # sample_type = models.ForeignKey(SampleType, verbose_name="样本类型", on_delete=models.SET_NULL, null=True)
     sample_type = models.CharField(max_length=32, verbose_name="样本类型")
-    machine_time = models.ForeignKey(MachineTime, verbose_name="机时类型", on_delete=models.SET_NULL, null=True, blank=True)
+    # machine_time = models.ForeignKey(MachineTime, verbose_name="机时类型", on_delete=models.SET_NULL, null=True, blank=True)
+    machine_time = models.CharField(max_length=48, verbose_name="机时类型", null=True, blank=True)
     sample_amount = models.PositiveSmallIntegerField(verbose_name="样本数量")
     sample_sender = models.ForeignKey(CustomerInfo, verbose_name="送样人", on_delete=models.SET_NULL, null=True)
     # 将以下两个字段直接保存到记录

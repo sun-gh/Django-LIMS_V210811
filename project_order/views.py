@@ -78,7 +78,7 @@ def project_order_table(request):
                 project_type = "-"
             # 定义机时类型为空的情况
             if project.machine_time:
-                machine_time = project.machine_time.time_type
+                machine_time = project.machine_time
             else:
                 machine_time = "-"
             # 以下为单位和负责人不存在的情况

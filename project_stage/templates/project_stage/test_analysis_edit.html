@@ -46,11 +46,7 @@
             <div class="col">
               <p><span> 项目类型 </span>： {{ project_info.project_type.project_name }}</p>
               <p><span> 机时类型 </span>：
-                {% if project_info.machine_time %}
-                  {{ project_info.machine_time.time_type }}
-                {% else  %}
-                  -
-                {% endif  %}
+                  {{ project_info.machine_time|default:"-" }}
               </p>
             </div>
             <div class="col">

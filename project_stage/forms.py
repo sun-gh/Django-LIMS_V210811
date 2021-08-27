@@ -35,7 +35,7 @@ class SampleRecordForm(forms.ModelForm):
             # 'project_num',
             'project_type',
             # 'sample_type',
-            'machine_time',
+            # 'machine_time',
             'sample_amount',
             'sample_sender',
             'sample_quality',
