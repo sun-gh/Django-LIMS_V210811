@@ -37,10 +37,11 @@
               <form class="form-horizontal" method="post" action="{% url 'contract_manage:project_contract_add' %}" enctype="multipart/form-data">
               <!-- card-body -->
               <div class="row">
-                <div class="col-md-6 offset-md-3">
+                <div class="col-md-10 offset-md-1">
                   <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
-
                     {% csrf_token %}
+                      <div class="row">
+                        <div class="col">
                           <!--合同编号-->
                           <div class="form-group row">
                             <label>合同编号：</label>
@@ -72,6 +73,8 @@
                               {{ form.linkman }}
                             </div>
                           </div>
+                        </div>
+                        <div class="col">
                           <!--合同附件-->
                           <div class="form-group row">
                             {{ form.contract_file.label_tag }}
@@ -93,7 +96,8 @@
                               <input  type="text" name="creator" class="form-control" value="{{ request.session.user_name }}" readonly="readonly" id="id_creator" />
                             </div>
                           </div>
-
+                        </div>
+                      </div>  <!-- /.row-->
                   </div>  <!-- /.card-body-->
                 </div>   <!-- /.col-->
               </div>  <!-- /.row-->

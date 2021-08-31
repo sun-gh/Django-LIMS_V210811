@@ -109,8 +109,7 @@ def sample_record_table(request):
                     addition_item = str(all_item.count()) + "个附加项"
             else:
                 addition_item = "-"
-            # 定义项目来源
-            project_source = project.get_project_source_display()
+            # 定义备注
             if project.note:
                 note = project.note
             else:
@@ -140,7 +139,6 @@ def sample_record_table(request):
                 "sample_quality": sample_quality,
                 "addition_item": addition_item,
                 "receive_date": receive_date,
-                "project_source": project_source,
                 "note": note,
                 "files": file_display,
             })
@@ -612,6 +610,8 @@ def test_analysis_table(request):
                 leading_official = "-"
 
             # 以下为检测分析阶段新添加字段
+            # 定义项目来源
+            project_source = project.get_project_source_display()
             if project.instrument_type:
                 instrument_type = project.instrument_type.instrument
             else:
@@ -654,6 +654,7 @@ def test_analysis_table(request):
                 "sample_sender": project.sample_sender.customer_name,
                 # 以下为检测分析阶段新添加字段
                 "priority": project.priority,
+                "project_source": project_source,
                 "instrument_type": instrument_type,
                 "date_test": date_test,
                 "date_searchlib": date_searchlib,

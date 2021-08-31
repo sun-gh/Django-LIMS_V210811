@@ -170,7 +170,6 @@ class SampleRecord(models.Model):
     receive_date = models.DateField(verbose_name="收样日期")
     person_record = models.CharField(max_length=32, verbose_name="登记人")
     c_time = models.DateTimeField(verbose_name="登记时间", auto_now_add=True)
-    project_source = models.SmallIntegerField(choices=source_choice, verbose_name="项目来源", default=0)
     note = models.CharField(max_length=256, verbose_name="备注", blank=True, null=True)
     files = models.ManyToManyField(FilesRelated, verbose_name="相关文件", blank=True)
     # 以下为前处理阶段
@@ -196,6 +195,7 @@ class SampleRecord(models.Model):
     preexperiment_deadline = models.DateField(verbose_name="预实验截止日期", null=True, blank=True)
     pretreat_deadline = models.DateField(verbose_name="制备截止日期", null=True, blank=True)
     # 以下为检测-数据分析阶段
+    project_source = models.SmallIntegerField(choices=source_choice, verbose_name="项目来源", default=0)
     instrument_type = models.ForeignKey(Machine, verbose_name="上机仪器", on_delete=models.SET_NULL, blank=True, null=True)
     date_test = models.DateField(verbose_name="上机日期", blank=True, null=True)
     date_searchlib = models.DateField(verbose_name="搜库日期", blank=True, null=True)

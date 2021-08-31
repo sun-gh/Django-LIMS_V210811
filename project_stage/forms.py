@@ -23,8 +23,8 @@ class SampleRecordForm(forms.ModelForm):
     receive_date = forms.DateField(label="收样日期",  widget=forms.DateInput(
         format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
     person_record = forms.CharField(label="登记人", widget=forms.TextInput(attrs={'class': 'form-control'}))
-    project_source = forms.IntegerField(label="项目来源", required=False, widget=forms.Select(
-        choices=SampleRecord.source_choice, attrs={'class': 'form-control'}))
+    # project_source = forms.IntegerField(label="项目来源", required=False, widget=forms.Select(
+    #     choices=SampleRecord.source_choice, attrs={'class': 'form-control'}))
     note = forms.CharField(label="备注", required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     file_input = forms.FileField(label="相关文件", required=False, widget=forms.ClearableFileInput(
                                 attrs={'multiple': True, 'class': 'form-control-file'}))
@@ -34,15 +34,12 @@ class SampleRecordForm(forms.ModelForm):
         fields = [
             # 'project_num',
             'project_type',
-            # 'sample_type',
-            # 'machine_time',
             'sample_amount',
             'sample_sender',
             'sample_quality',
             'addition_item',
             'receive_date',
             'person_record',
-            'project_source',
             'note',
             'files',
         ]
@@ -102,6 +99,8 @@ class PretreatStageForm(forms.ModelForm):
 
 class TestAnalysisForm(forms.ModelForm):
     # 定义检测分析信息修改表单
+    project_source = forms.IntegerField(label="项目来源", required=False, widget=forms.Select(
+        choices=SampleRecord.source_choice, attrs={'class': 'form-control'}))
     instrument_type = forms.ModelChoiceField(queryset=Machine.objects.all(), label="上机仪器",
                                              required=False, widget=forms.Select(attrs={'class': 'form-control'}))
     date_test = forms.DateField(label="上机日期", required=False, widget=forms.DateInput(
@@ -118,6 +117,7 @@ class TestAnalysisForm(forms.ModelForm):
     class Meta:
         model = SampleRecord
         fields = [
+            'project_source',
             'instrument_type',
             'date_test',
             'date_searchlib',

@@ -45,7 +45,6 @@
                         <th>样本质量</th>
                         <th>收样日期</th>
                         <th>附加项目</th>
-                        <th>项目来源</th>
                         <th>登记人</th>
                     </tr>
                   </thead>
@@ -72,7 +71,6 @@
                             -
                         {% endfor %}
                       </td>
-                      <td>{{ record.get_project_source_display }}</td>
                       <td>{{ record.person_record }}</td>
                     </tr>
                   </tbody>

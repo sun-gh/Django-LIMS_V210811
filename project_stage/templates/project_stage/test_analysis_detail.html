@@ -42,6 +42,7 @@
                         <th>样本类型</th>
                         <th>机时类型</th>
                         <th>样本数量</th>
+                        <th>项目来源</th>
                         <th>检测仪器</th>
                     </tr>
                   </thead>
@@ -53,6 +54,7 @@
                         {{ record.machine_time|default:"-" }}
                       </td>
                       <td>{{ record.sample_amount }}</td>
+                      <td>{{ record.get_project_source_display }}</td>
                       <td>
                         {% if record.instrument_type %}
                           <span>{{ record.instrument_type.instrument }}</span>

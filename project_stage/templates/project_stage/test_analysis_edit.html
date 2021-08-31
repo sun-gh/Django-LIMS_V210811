@@ -68,51 +68,58 @@
                   <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
                     {% csrf_token %}
                     <div class="row ">
-                      <div class="col-md-8 offset-md-2">
-
-                          <!--上机仪器-->
-                          <div class="form-group row">
-                            {{ form.instrument_type.label_tag }}
-                            <div class="col-md-7">
-                              {{ form.instrument_type }}
-                            </div>
+                      <div class="col">
+                        <!--项目来源-->
+                        <div class="form-group row">
+                          {{ form.project_source.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.project_source }}
                           </div>
-                          <!--上机日期-->
-                          <div class="form-group row">
-                            {{ form.date_test.label_tag }}
-                            <div class="col-md-7" id="unit">
-                              {{ form.date_test }}
-                            </div>
+                        </div>
+                        <!--上机仪器-->
+                        <div class="form-group row">
+                          {{ form.instrument_type.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.instrument_type }}
                           </div>
-                          <!--搜库日期-->
-                          <div class="form-group row">
-                            {{ form.date_searchlib.label_tag }}
-                            <div class="col-md-7">
-                              {{ form.date_searchlib }}
-                            </div>
+                        </div>
+                        <!--上机日期-->
+                        <div class="form-group row">
+                          {{ form.date_test.label_tag }}
+                          <div class="col-md-7" id="unit">
+                            {{ form.date_test }}
                           </div>
-                          <!--报告发送日期-->
-                          <div class="form-group row">
-                            {{ form.date_send_report.label_tag }}
-                            <div class="col-md-7">
-                              {{ form.date_send_report }}
-                            </div>
+                        </div>
+                        <!--搜库日期-->
+                        <div class="form-group row">
+                          {{ form.date_searchlib.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.date_searchlib }}
                           </div>
-                          <!--原始数据发送日期-->
-                          <div class="form-group row">
-                            {{ form.date_send_rawdata.label_tag }}
-                            <div class="col-md-7">
-                              {{ form.date_send_rawdata }}
-                            </div>
+                        </div>
+                      </div>
+                      <div class="col">
+                        <!--报告发送日期-->
+                        <div class="form-group row">
+                          {{ form.date_send_report.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.date_send_report }}
                           </div>
-                          <!--项目截止日期-->
-                          <div class="form-group row">
-                            {{ form.pro_deadline.label_tag }}
-                            <div class="col-md-7">
-                              {{ form.pro_deadline }}
-                            </div>
+                        </div>
+                        <!--原始数据发送日期-->
+                        <div class="form-group row">
+                          {{ form.date_send_rawdata.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.date_send_rawdata }}
                           </div>
-
+                        </div>
+                        <!--项目截止日期-->
+                        <div class="form-group row">
+                          {{ form.pro_deadline.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.pro_deadline }}
+                          </div>
+                        </div>
                       </div>    <!-- /.col-->
                       </div>   <!-- /.row-->
                   </div>  <!-- /.card-body-->
