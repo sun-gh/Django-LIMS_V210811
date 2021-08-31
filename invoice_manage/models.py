@@ -92,7 +92,8 @@ class InvoiceInfo(models.Model):
     link_apply = models.ForeignKey(ApplyInvoice, verbose_name="关联开票申请", on_delete=models.SET_NULL, null=True)
     unit_invoice = models.CharField(max_length=64, verbose_name="开票单位", default="开票单位")
     applicant = models.CharField(max_length=32, verbose_name="申请人", default="销售")
-    invoice_sum = models.PositiveIntegerField(verbose_name="发票金额", blank=True, null=True)
+    # 发票冲红时会产生一张金额为负数的发票，所以要用IntegerField
+    invoice_sum = models.IntegerField(verbose_name="发票金额", blank=True, null=True)
     invoice_date = models.DateField(verbose_name="开票日期", null=True, blank=True)
     void_red = models.SmallIntegerField(choices=void_red_choice, verbose_name="作废/冲红", default=0)
     invoice_callback = models.NullBooleanField(verbose_name="发票是否收回", default=None)

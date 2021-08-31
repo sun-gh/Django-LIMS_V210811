@@ -441,7 +441,7 @@ def edit_invoice_info(request, invoice_id):
                     contract.save()
                     # 若发票金额无变化，对应合同信息不用修改
             else:
-                # 此时为首次修改
+                # 此时为首次修改,即添加发票
                 contract = invoice.link_apply.related_contract
                 # 要考虑一个合同对应多张票
                 old_makeout_sum = contract.makeout_invoice_sum
@@ -662,19 +662,31 @@ def apply_void_del(request):
 def approve_apply_void(request, apply_id):
     # 审批发票作废申请
     apply_detail = VoidRedInfo.objects.get(id=apply_id)
-
     invoices = apply_detail.link_invoice.all()
 
-    for invoice in invoices:
-        # 修改发票对应合同的已开票和未开票金额
-        invoice_sum = invoice.invoice_sum
-        link_contract = invoice.link_apply.related_contract
-        link_contract.makeout_invoice_sum -= invoice_sum
-        link_contract.not_makeout_invoice_sum += invoice_sum
-        link_contract.save()
-        # 修改发票作废/冲红记录
-        invoice.void_red = apply_detail.treat_type
-        invoice.save()
+    treat_type = apply_detail.treat_type
+    if treat_type == 1:  # 此时为冲红处理，要产生金额为负数的发票，申请人与冲红申请保持一致
+        for invoice in invoices:
+            link_apply = invoice.link_apply
+            unit = invoice.unit_invoice
+            applicant = apply_detail.applicant
+            invoice_sum = - invoice.invoice_sum
+            invoice_instance = InvoiceInfo.objects.create(link_apply=link_apply, unit_invoice=unit, applicant=applicant,
+                                                          invoice_sum=invoice_sum, void_red=1)
+            # 修改发票作废/冲红记录
+            invoice.void_red = treat_type
+            invoice.save()
+    else:  # 此时为作废处理
+        for invoice in invoices:
+            # 修改发票对应合同的已开票和未开票金额
+            invoice_sum = invoice.invoice_sum
+            link_contract = invoice.link_apply.related_contract
+            link_contract.makeout_invoice_sum -= invoice_sum
+            link_contract.not_makeout_invoice_sum += invoice_sum
+            link_contract.save()
+            # 修改发票作废/冲红记录
+            invoice.void_red = treat_type
+            invoice.save()
 
     # 修改作废申请状态
     apply_detail.status = 2
