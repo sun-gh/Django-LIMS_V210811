@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .models import ProjectOrder
+from .models import ProjectOrder, SalePerson, PayType
 from project_stage.models import SampleRecord
 from contract_manage.models import ProjectContract
 from .forms import ProjectOrderForm
@@ -110,12 +110,12 @@ def project_order_table(request):
                 project_sum = "-"
             saler = project.projectorder.sale_person
             if saler:
-                sale_person = saler.name_person
+                sale_person = saler
             else:
                 sale_person = "-"
             pay = project.projectorder.pay_type
             if pay:
-                pay_type = pay.type_name
+                pay_type = pay
             else:
                 pay_type = "-"
             note_content = project.projectorder.note
@@ -171,7 +171,18 @@ def project_order_edit(request, pro_id):
             contract_record = project_order.contract_record
 
             project_order_form.save(commit=False)
-
+            # 定义销售人员修改
+            sale_person = project_order_form.cleaned_data.get("sale_person")
+            if sale_person:
+                project_order.sale_person = sale_person.name_person
+            else:
+                project_order.sale_person = None
+            # 定义结算方式修改
+            pay_type = project_order_form.cleaned_data.get("pay_type")
+            if pay_type:
+                project_order.pay_type = pay_type.type_name
+            else:
+                project_order.pay_type = None
             if "project_sum" in change_list:
                 if contract_record:
                     # 修改项目合同金额，及未开票金额
@@ -194,6 +205,17 @@ def project_order_edit(request, pro_id):
             return render(request, 'project_order/project_order_edit.html', {'form': project_order_form, 'msg': msg,
                                                                              'project_order': project_order})
     elif request.method == 'GET':
-        project_order_form = ProjectOrderForm(instance=project_order)
+        pay_type = PayType.objects.filter(type_name=project_order.pay_type)
+        sale_person = SalePerson.objects.filter(name_person=project_order.sale_person)
+        if not pay_type and not sale_person:
+            project_order_form = ProjectOrderForm(instance=project_order)
+        elif sale_person and not pay_type:
+            project_order_form = ProjectOrderForm(initial={'sale_person': sale_person[0]}, instance=project_order)
+        elif pay_type and not sale_person:
+            project_order_form = ProjectOrderForm(initial={'pay_type': pay_type[0]}, instance=project_order)
+        else:
+            project_order_form = ProjectOrderForm(initial={'pay_type': pay_type[0], 'sale_person': sale_person[0]},
+                                                  instance=project_order)
+
         return render(request, 'project_order/project_order_edit.html', {'form': project_order_form,
                                                                          'project_order': project_order})

@@ -94,11 +94,12 @@ def sample_record_table(request):
                 leading_official = person
             else:
                 leading_official = "-"
-
-            if project.sample_quality:
-                sample_quality = project.sample_quality.quality_type
+            # 定义样本质量
+            all_qualitys = project.sample_quality.all()
+            if all_qualitys.count() == 1:
+                sample_quality = all_qualitys[0].quality_type
             else:
-                sample_quality = "-"
+                sample_quality = str(all_qualitys.count()) + "个选项"
             # addition_item为多对多，显示分多种情况
             all_item = project.addition_item.all()
             if all_item:
@@ -305,7 +306,7 @@ def sample_record_edit(request, project_id):
         machine_time = MachineTime.objects.filter(time_type=project_info.machine_time)
         if machine_time:
             project_form = SampleRecordForm(initial={'sample_type': sample_type, 'machine_time': machine_time[0]},
-                                        instance=project_info)
+                                            instance=project_info)
         else:
             project_form = SampleRecordForm(initial={'sample_type': sample_type}, instance=project_info)
         return render(request, 'project_stage/sample_record_edit.html', {'form': project_form,

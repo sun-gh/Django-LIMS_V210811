@@ -18,8 +18,8 @@ class ProjectOrderForm(forms.ModelForm):
         model = ProjectOrder
         fields = [
             'project_sum',
-            'sale_person',
-            'pay_type',
+            # 'sale_person',
+            # 'pay_type',
             'contract_record',
             'note',
 

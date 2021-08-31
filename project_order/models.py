@@ -37,8 +37,8 @@ class ProjectOrder(models.Model):
 
     project_order = models.OneToOneField(SampleRecord, verbose_name="项目编号", on_delete=models.CASCADE)
     project_sum = models.PositiveIntegerField(verbose_name="项目金额", null=True, blank=True)
-    sale_person = models.ForeignKey(SalePerson, verbose_name="销售人员", on_delete=models.SET_NULL, null=True, blank=True)
-    pay_type = models.ForeignKey(PayType, verbose_name="结算方式", on_delete=models.SET_NULL, null=True, blank=True)
+    sale_person = models.CharField(max_length=32, verbose_name="销售人员", null=True, blank=True)
+    pay_type = models.CharField(max_length=32, verbose_name="结算方式", null=True, blank=True)
     contract_record = models.BooleanField(verbose_name="合同记录", default=False)
     note = models.CharField(max_length=256, verbose_name="备注", blank=True, null=True)
 

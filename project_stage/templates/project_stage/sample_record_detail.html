@@ -57,11 +57,17 @@
                         {{ record.machine_time|default:"-" }}
                       </td>
                       <td>{{ record.sample_amount }}</td>
-                      <td>{{ record.sample_quality.quality_type }}</td>
+                      <td>
+                        {% for item in record.sample_quality.all %}
+                          <span class="badge badge-warning">{{ item.quality_type }}</span>  <!--4.3中label已废除-->
+                        {% empty %}
+                            -
+                        {% endfor %}
+                      </td>
                       <td>{{ record.receive_date|date:"Y-m-d" }}</td>
                       <td>
                         {% for item in record.addition_item.all %}
-                        <span class="badge badge-warning">{{ item.item_type }}</span>  <!--4.3中label已废除-->
+                          <span class="badge badge-warning">{{ item.item_type }}</span>  <!--4.3中label已废除-->
                         {% empty %}
                             -
                         {% endfor %}

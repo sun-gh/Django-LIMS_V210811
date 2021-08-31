@@ -16,8 +16,8 @@ class SampleRecordForm(forms.ModelForm):
     sample_amount = forms.IntegerField(label="样本数量", widget=forms.NumberInput(attrs={'class': 'form-control'}))
     sample_sender = forms.ModelChoiceField(queryset=CustomerInfo.objects.all(), label="送样人",
                                            widget=forms.Select(attrs={'class': 'form-control'}))
-    sample_quality = forms.ModelChoiceField(queryset=SampleQuality.objects.all(), label="样本质量",
-                                            widget=forms.Select(attrs={'class': 'form-control'}))
+    sample_quality = forms.ModelMultipleChoiceField(queryset=SampleQuality.objects.all(), label="样本质量",
+                                                    widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
     addition_item = forms.ModelMultipleChoiceField(queryset=AdditionalItem.objects.all(), label="附加项目", required=False,
                                                    widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
     receive_date = forms.DateField(label="收样日期",  widget=forms.DateInput(

@@ -54,11 +54,7 @@
                       </td>
                       <td>{{ order.project_order.sample_amount }}</td>
                       <td>
-                        {% if order.sale_person %}
-                          <span>{{ order.sale_person.name_person }}</span>
-                        {% else %}
-                          <span>-</span>
-                        {% endif %}
+                        {{ order.sale_person|default:"-" }}
                       </td>
 
                     </tr>
@@ -113,11 +109,7 @@
                     </td>
                     <td>{{ order.project_sum|default_if_none:"-" }}</td>
                     <td>
-                      {% if order.pay_type %}
-                        <span>{{ order.pay_type.type_name }}</span>
-                      {% else %}
-                        <span>-</span>
-                      {% endif %}
+                      {{ order.pay_type|default:"-" }}
                     </td>
                     <td>{{ order.contract_record|yesno:"有,无,maybe" }}</td>
 
