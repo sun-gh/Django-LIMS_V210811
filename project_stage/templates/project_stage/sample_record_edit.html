@@ -126,7 +126,7 @@
                           <div id="pro_files" style="display:none;">{{  form.files }}</div>
                           <div id="file_cyc">
                             {% for file in project_info.files.all %}
-                              <div><a href="/media/{{ file.file.name }}">{{ file.file.name }}</a>&nbsp;<button
+                              <div><a href="{{ file.file.url }}">{{ file.file.name|slice:"14:" }}</a>&nbsp;<button
                                     type="button" class="btn_del btn-xs" id="btn-{{ file.id }}">删除</button></div>
                             {% empty %}  <!--增加files为空的判断-->
                             {% endfor %}

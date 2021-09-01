@@ -108,7 +108,7 @@ def apply_invoice_table(request):
             files = apply.reimburse_file.all()
             if files:
                 if files.count() == 1:
-                    file_display = files[0].file.name
+                    file_display = files[0].file.name[16:]
                 else:
                     file_display = files.count()
             else:

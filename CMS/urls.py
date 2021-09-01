@@ -27,7 +27,6 @@ urlpatterns = [
     path('user/', include('users.urls')),
     # 客户及单位相关
     path('customer/', include('customer.urls')),
-    # path('projects/', include('projects.urls')),
     # 项目进度相关
     path('project_stage/', include('project_stage.urls')),
     # 项目结算相关

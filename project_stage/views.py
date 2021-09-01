@@ -120,7 +120,7 @@ def sample_record_table(request):
             files = project.files.all()
             if files:
                 if files.count() == 1:
-                    file_display = files[0].file.name
+                    file_display = files[0].file.name[14:]
                 else:
                     file_display = files.count()
             else:

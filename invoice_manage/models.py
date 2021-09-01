@@ -21,7 +21,7 @@ class InvoiceRequire(models.Model):
 class ReimburseFile(models.Model):
 
     # 定义报账文件
-    file = models.FileField(verbose_name="报账文件", max_length=100, blank=True, null=True)
+    file = models.FileField(upload_to='reimburse_files/', verbose_name="报账文件", max_length=100, blank=True, null=True)
     c_time = models.DateTimeField(verbose_name="上传时间", auto_now_add=True)
 
     def __str__(self):
