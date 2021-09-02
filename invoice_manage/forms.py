@@ -10,7 +10,8 @@ class ApplyInvoiceForm(forms.ModelForm):
                                               widget=forms.Select(attrs={'class': 'form-control'}))
     unit_name = forms.ModelChoiceField(queryset=UnitInvoice.objects.all(),
                                        label="开票单位", widget=forms.Select(attrs={'class': 'form-control'}))
-    invoice_sum = forms.IntegerField(label="开票金额", widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    invoice_sum = forms.DecimalField(label="开票金额", max_digits=10, decimal_places=2,
+                                     widget=forms.NumberInput(attrs={'class': 'form-control'}))
     sheet_num = forms.IntegerField(label="开票张数", max_value=10,
                                    widget=forms.NumberInput(attrs={'class': 'form-control'}))
     invoice_require = forms.ModelMultipleChoiceField(queryset=InvoiceRequire.objects.all(), label="开票要求",
@@ -65,7 +66,8 @@ class EditInvoiceInfoForm(forms.ModelForm):
     # 定义修改发票信息表单
 
     invoice_num = forms.IntegerField(label="发票号", widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    invoice_sum = forms.IntegerField(label="发票金额", widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    invoice_sum = forms.DecimalField(label="发票金额", max_digits=10, decimal_places=2,
+                                     widget=forms.NumberInput(attrs={'class': 'form-control'}))
     invoice_date = forms.DateField(label="开票日期", widget=forms.DateInput(
         format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
     invoice_callback = forms.NullBooleanField(label="发票是否收回",
@@ -88,7 +90,8 @@ class EditPayInfoForm(forms.ModelForm):
 
     payment_date = forms.DateField(label="回款日期", widget=forms.DateInput(
         format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
-    payment_sum = forms.IntegerField(label="回款金额", widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    payment_sum = forms.DecimalField(label="回款金额", max_digits=10, decimal_places=2,
+                                     widget=forms.NumberInput(attrs={'class': 'form-control'}))
     note = forms.CharField(label="备注", required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     class Meta:

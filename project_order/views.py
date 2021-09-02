@@ -140,7 +140,7 @@ def project_order_table(request):
                 "unit": unit_name,
                 "sample_sender": project.sample_sender.customer_name,
                 "addition_item": addition_item,
-                "project_sum": project_sum,
+                "project_sum": str(project_sum),
                 "sale_person": sale_person,
                 "pay_type": pay_type,
                 "note": note,

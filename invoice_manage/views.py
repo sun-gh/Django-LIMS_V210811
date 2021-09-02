@@ -155,7 +155,7 @@ def apply_invoice_table(request):
                 "status": apply.status,
                 "related_contract": apply.related_contract.contract_num,
                 "unit": apply.unit,
-                "invoice_sum": apply.invoice_sum,
+                "invoice_sum": str(apply.invoice_sum),
                 "sheet_num": apply.sheet_num,
                 "invoice_require": invoice_require,
                 "invoice_type": apply.get_invoice_type_display(),
@@ -358,7 +358,7 @@ def invoice_info_table(request):
             # 定义发票金额
             invoice_sum = invoice.invoice_sum
             if invoice_sum:
-                invoice_sum = invoice_sum
+                invoice_sum = str(invoice_sum)
             else:
                 invoice_sum = "-"
             # 定义发票是否收回
@@ -386,7 +386,7 @@ def invoice_info_table(request):
                 payment_date = "-"
             payment_sum = invoice.payment_sum
             if payment_sum:
-                payment_sum = payment_sum
+                payment_sum = str(payment_sum)
             else:
                 payment_sum = "-"
             # 定义备注

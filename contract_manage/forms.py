@@ -52,7 +52,8 @@ class AdvancepayContractForm(forms.ModelForm):
     unit = forms.ModelChoiceField(queryset=UnitInvoice.objects.all(),
                                   label="单位", widget=forms.Select(attrs={'class': 'form-control'}))
     linkman = forms.CharField(label="联系人", widget=forms.TextInput(attrs={'class': 'form-control'}))
-    contract_sum = forms.IntegerField(label="合同金额", widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    contract_sum = forms.DecimalField(label="合同金额", max_digits=10, decimal_places=2,
+                                      widget=forms.NumberInput(attrs={'class': 'form-control'}))
     contract_type = forms.IntegerField(label="合同类型", widget=forms.Select(choices=contract_type_choice,
                                                                          attrs={'class': 'form-control'}))
     contract_file = forms.FileField(label="合同附件", required=False, widget=forms.ClearableFileInput(
@@ -80,7 +81,8 @@ class CutPaymentForm(forms.ModelForm):
     # 定义预付款扣款表单
     link_contract = forms.ModelChoiceField(queryset=ProjectContract.objects.filter(contract_type=1),
                                            label="关联合同", widget=forms.Select(attrs={'class': 'form-control'}))
-    cut_sum = forms.IntegerField(label="扣款金额", widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    cut_sum = forms.DecimalField(label="扣款金额", max_digits=10, decimal_places=2,
+                                 widget=forms.NumberInput(attrs={'class': 'form-control'}))
     link_order = forms.ModelMultipleChoiceField(queryset=ProjectOrder.objects.all(), label="关联项目",
                                                 widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
     applicant = forms.CharField(label="申请人", widget=forms.TextInput(attrs={'class': 'form-control'}))

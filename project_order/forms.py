@@ -5,7 +5,7 @@ from .models import ProjectOrder, SalePerson, PayType
 class ProjectOrderForm(forms.ModelForm):
     # 定义项目结算修改表单
 
-    project_sum = forms.IntegerField(label="项目金额", required=False,
+    project_sum = forms.DecimalField(label="项目金额", required=False, max_digits=10, decimal_places=2,
                                      widget=forms.NumberInput(attrs={'class': 'form-control'}))
     sale_person = forms.ModelChoiceField(queryset=SalePerson.objects.filter(valid=True), label="销售人员", required=False,
                                          widget=forms.Select(attrs={'class': 'form-control'}))
