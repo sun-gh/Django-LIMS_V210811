@@ -64,11 +64,10 @@ def project_contract_table(request):
 
             else:
                 project_order = "-"
-
             # 定义文件显示
             file = contract.contract_file
             if file:
-                file_display = file.name
+                file_display = file.name[15:]
             else:
                 file_display = ""
             # 要将date对象转化为字符串，才能进行json转换
@@ -284,7 +283,7 @@ def advancepay_contract_table(request):
             # 定义文件显示
             file = contract.contract_file
             if file:
-                file_display = file.name
+                file_display = file.name[15:]
             else:
                 file_display = ""
             # 要将date对象转化为字符串，才能进行json转换

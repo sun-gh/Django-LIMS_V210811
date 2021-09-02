@@ -18,7 +18,8 @@ class ProjectContract(models.Model):
     linkman = models.CharField(max_length=32, verbose_name="联系人")
     contract_sum = models.PositiveIntegerField(verbose_name="合同金额")
     contract_type = models.SmallIntegerField(choices=contract_type_choice, verbose_name="合同类型", default=0)
-    contract_file = models.FileField(verbose_name="合同附件", max_length=128, null=True, blank=True)
+    contract_file = models.FileField(upload_to='contract_files/', verbose_name="合同附件", max_length=128, null=True,
+                                     blank=True)
     callback_date = models.DateField(verbose_name="合同回收日期", blank=True, null=True)
     creator = models.CharField(max_length=32, verbose_name="创建人", default="销售")
     makeout_invoice_sum = models.PositiveIntegerField(verbose_name="已开票金额", default=0)

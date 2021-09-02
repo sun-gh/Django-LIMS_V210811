@@ -99,7 +99,7 @@
                 <h6><b>合同文件:</b></h6>
                 <div>
                   {% if contract.contract_file %}
-                    <div><a href="/media/{{ contract.contract_file.name }}">{{ contract.contract_file.name }}</a></div>
+                    <div><a href="{{ contract.contract_file.url }}">{{ contract.contract_file.name|slice:"15:" }}</a></div>
                   {% endif %}
                 </div>
               </div><!--/.col-->
