@@ -205,17 +205,37 @@ def project_order_edit(request, pro_id):
             return render(request, 'project_order/project_order_edit.html', {'form': project_order_form, 'msg': msg,
                                                                              'project_order': project_order})
     elif request.method == 'GET':
-        pay_type = PayType.objects.filter(type_name=project_order.pay_type)
-        sale_person = SalePerson.objects.filter(name_person=project_order.sale_person)
+        pay_type = project_order.pay_type
+        sale_person = project_order.sale_person
         if not pay_type and not sale_person:
+            # 此时为添加信息
             project_order_form = ProjectOrderForm(instance=project_order)
         elif sale_person and not pay_type:
-            project_order_form = ProjectOrderForm(initial={'sale_person': sale_person[0]}, instance=project_order)
+            # 此时销售人员存在
+            salesman = SalePerson.objects.filter(name_person=sale_person, valid=True)
+            if salesman:
+                project_order_form = ProjectOrderForm(initial={'sale_person': salesman[0]}, instance=project_order)
+            else:
+                # 此时销售人员属于离职
+                salesman = SalePerson.objects.filter(name_person=sale_person, valid=False)
+                new_men = SalePerson.objects.filter(Q(valid=True) | Q(name_person=sale_person))
+                project_order_form = ProjectOrderForm(initial={'sale_person': salesman[0]}, instance=project_order)
+                project_order_form.fields['sale_person'].queryset = new_men
         elif pay_type and not sale_person:
             project_order_form = ProjectOrderForm(initial={'pay_type': pay_type[0]}, instance=project_order)
         else:
-            project_order_form = ProjectOrderForm(initial={'pay_type': pay_type[0], 'sale_person': sale_person[0]},
-                                                  instance=project_order)
+            pay_type = PayType.objects.filter(type_name=pay_type)
+            salesman = SalePerson.objects.filter(name_person=sale_person, valid=True)
+            if salesman:
+                project_order_form = ProjectOrderForm(initial={'pay_type': pay_type[0], 'sale_person': salesman[0]},
+                                                      instance=project_order)
+            else:
+                # 此时销售人员属于离职
+                salesman = SalePerson.objects.filter(name_person=sale_person, valid=False)
+                new_men = SalePerson.objects.filter(Q(valid=True) | Q(name_person=sale_person))
+                project_order_form = ProjectOrderForm(initial={'pay_type': pay_type[0], 'sale_person': salesman[0]},
+                                                      instance=project_order)
+                project_order_form.fields['sale_person'].queryset = new_men
 
         return render(request, 'project_order/project_order_edit.html', {'form': project_order_form,
                                                                          'project_order': project_order})

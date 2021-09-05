@@ -8,6 +8,8 @@ class SalePerson(models.Model):
 
     # 定义销售人员
     name_person = models.CharField(verbose_name="销售人员", max_length=64)
+    # 为以后调整顺序用，可手动设置order编号
+    order = models.PositiveSmallIntegerField(verbose_name="序号", unique=True, null=True)
     valid = models.BooleanField(verbose_name="有效", default=True)
 
     def __str__(self):
@@ -15,6 +17,7 @@ class SalePerson(models.Model):
         return self.name_person
 
     class Meta:
+        ordering = ["order"]
         verbose_name = "销售人员"
         verbose_name_plural = verbose_name
 

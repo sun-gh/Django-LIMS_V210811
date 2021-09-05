@@ -11,7 +11,6 @@ class ProjectOrderForm(forms.ModelForm):
                                          widget=forms.Select(attrs={'class': 'form-control'}))
     pay_type = forms.ModelChoiceField(queryset=PayType.objects.all(), label="结算方式", required=False,
                                       widget=forms.Select(attrs={'class': 'form-control'}))
-    # contract_record = forms.BooleanField(label="合同记录", widget=forms.CheckboxInput(attrs={'class': 'form-control'}))
     note = forms.CharField(label="备注", required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     class Meta:
