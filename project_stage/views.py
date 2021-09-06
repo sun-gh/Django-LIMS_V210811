@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .models import SampleRecord, FilesRelated, ProjectType, SampleType, MachineTime
-from .forms import SampleRecordForm, PretreatStageForm, TestAnalysisForm
+from .forms import SampleRecordForm, PretreatStageForm, TestAnalysisForm, EditAnalysisForm
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 import json
@@ -158,7 +158,7 @@ def sample_record_add(request):
         return render(request, "project_stage/sample_record_add.html", {'form': form})
     elif request.method == 'POST':
         sample_rec = SampleRecord()
-        sample_rec_form = SampleRecordForm(request.POST, request.FILES or None, instance=sample_rec)
+        sample_rec_form = SampleRecordForm(request.POST, instance=sample_rec)
         if sample_rec_form.is_valid():
 
             sample_rec_form.save(commit=False)
@@ -207,22 +207,14 @@ def sample_record_add(request):
 
             sample_rec.save()
             sample_rec_form.save_m2m()   # 使用commit后要手动保存manytomany
-            # 定义文件添加
-            file_list = request.FILES.getlist('file_input')  # 获取上传的多个文件的列表
-            file_obj = []
-            for file in file_list:
-                file_instance = FilesRelated.objects.create(file=file)
-                file_obj.append(file_instance)
-            # print(sample_rec.sample_num)
-            for file in file_obj:
-                sample_rec.files.add(file)
+
             msg = "add_success"
             # 发送一个信号
             add_success.send(sample_record_add, msg=msg, sample_rec_id=sample_rec.id)
 
             return render(request, "project_stage/sample_record.html", {'msg': msg})
         else:
-            form = SampleRecordForm(request.POST, request.FILES or None)
+            form = SampleRecordForm(request.POST)
             msg = "info_error"
             return render(request, "project_stage/sample_record_add.html", {'form': form, 'msg': msg})
 
@@ -284,18 +276,10 @@ def sample_record_edit(request, project_id):
             project_info.save()
             project_info_form.save_m2m()  # 使用commit后要手动保存manytomany
 
-            # 对另外添加的文件单独处理
-            file_list = request.FILES.getlist('file_input')  # 获取上传的多个文件的列表
-            file_obj = []
-            for file in file_list:
-                file_instance = FilesRelated.objects.create(file=file)
-                file_obj.append(file_instance)
-            for file in file_obj:
-                project_info.files.add(file)
             msg = "edit_success"
             return render(request, 'project_stage/sample_record.html', {'msg': msg})
         else:
-            project_info_form = SampleRecordForm(request.POST, request.FILES or None)
+            project_info_form = SampleRecordForm(request.POST)
             msg = 'failed'
             return render(request, 'project_stage/sample_record_edit.html', {'form': project_info_form, 'msg': msg,
                                                                              'project_info': project_info})
@@ -612,6 +596,15 @@ def test_analysis_table(request):
             # 以下为检测分析阶段新添加字段
             # 定义项目来源
             project_source = project.get_project_source_display()
+            # 定义文件显示
+            files = project.files.all()
+            if files:
+                if files.count() == 1:
+                    file_display = files[0].file.name[14:]
+                else:
+                    file_display = files.count()
+            else:
+                file_display = ""
             if project.instrument_type:
                 instrument_type = project.instrument_type.instrument
             else:
@@ -655,6 +648,7 @@ def test_analysis_table(request):
                 # 以下为检测分析阶段新添加字段
                 "priority": project.priority,
                 "project_source": project_source,
+                "files": file_display,
                 "instrument_type": instrument_type,
                 "date_test": date_test,
                 "date_searchlib": date_searchlib,
@@ -726,3 +720,34 @@ def test_analysis_detail(request, pro_id):
     sample_record = SampleRecord.objects.get(id=pro_id)
 
     return render(request, 'project_stage/test_analysis_detail.html', {'record': sample_record})
+
+
+@login_required()
+def edit_analysis_info(request, pro_id):
+    # 定义项目相关文件等信息修改（销售专用）
+    project_info = SampleRecord.objects.get(id=pro_id)
+
+    if request.method == 'POST':
+        project_info_form = EditAnalysisForm(request.POST, instance=project_info)
+        if project_info_form.is_valid():
+            project_info_form.save()
+
+            # 对另外添加的文件单独处理
+            file_list = request.FILES.getlist('file_input')  # 获取上传的多个文件的列表
+            file_obj = []
+            for file in file_list:
+                file_instance = FilesRelated.objects.create(file=file)
+                file_obj.append(file_instance)
+            for file in file_obj:
+                project_info.files.add(file)
+            msg = "edit_success"
+            return render(request, 'project_stage/test_analysis.html', {'msg': msg})
+        else:
+            project_info_form = EditAnalysisForm(request.POST, request.FILES or None)
+            msg = 'failed'
+            return render(request, 'project_stage/edit_analysis_info.html', {'form': project_info_form, 'msg': msg,
+                                                                             'project_info': project_info})
+    elif request.method == 'GET':
+        project_form = EditAnalysisForm(instance=project_info)
+        return render(request, 'project_stage/edit_analysis_info.html', {'form': project_form,
+                                                                         'project_info': project_info})

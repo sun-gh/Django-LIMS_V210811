@@ -155,6 +155,18 @@
 
               </div><!--/.col-->
             </div>  <!--/.row-->
+            <div class="row">
+              <div class="col-md-12">
+                <h6><b>相关文件:</b></h6>
+                <div>
+                  {% for file in record.files.all %}
+                    <div><a href="{{ file.file.url }}">{{ file.file.name|slice:"14:" }}</a>&nbsp;</div>
+                  {% empty %}  <!--增加files为空的判断-->
+                    -
+                  {% endfor %}
+                </div>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
 
           </div>  <!-- /.card-body-->
           <div class="card-footer">

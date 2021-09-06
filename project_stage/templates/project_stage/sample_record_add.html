@@ -34,7 +34,7 @@
       <div class="col-md-12">
         <div class="card card-info ">
 
-              <form class="form-horizontal" method="post" action="{% url 'project_stage:sample_record_add' %}" enctype="multipart/form-data">
+              <form class="form-horizontal" method="post" action="{% url 'project_stage:sample_record_add' %}" >
               <!-- card-body -->
               <div class="row">
                 <div class="col-md-10 offset-md-1">
@@ -85,23 +85,6 @@
                               {{ form.sample_sender }}
                             </div>
                           </div>
-                          <!--样本质量-->
-                          <div class="form-group row">
-                            {{ form.sample_quality.label_tag }}
-                            <div class="col-md-7">
-                              {{ form.sample_quality }}
-                            </div>
-                          </div>
-                      </div>
-
-                      <div class="col">
-                          <!--附加项目-->
-                          <div class="form-group row">
-                            {{ form.addition_item.label_tag }}
-                            <div class="col-md-7">
-                              {{ form.addition_item }}
-                            </div>
-                          </div>
                           <!--收样日期-->
                           <div class="form-group row">
                             {{ form.receive_date.label_tag }}
@@ -109,6 +92,25 @@
                               {{ form.receive_date }}
                             </div>
                           </div>
+
+                      </div>
+
+                      <div class="col">
+                          <!--样本质量-->
+                          <div class="form-group row">
+                            {{ form.sample_quality.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.sample_quality }}
+                            </div>
+                          </div>
+                          <!--附加项目-->
+                          <div class="form-group row">
+                            {{ form.addition_item.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.addition_item }}
+                            </div>
+                          </div>
+
                           <!--备注-->
                           <div class="form-group row">
                             {{ form.note.label_tag }}
@@ -116,13 +118,7 @@
                               {{ form.note }}
                             </div>
                           </div>
-                          <!--相关文件-->
-                          <div class="form-group row">
-                            {{ form.file_input.label_tag }}
-                            <div class="col-md-7">
-                              {{ form.file_input }}
-                            </div>
-                          </div>
+
                           <!--登记人-->
                           <div class="form-group row">
                             {{ form.person_record.label_tag }}

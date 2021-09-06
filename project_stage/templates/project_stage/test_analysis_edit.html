@@ -69,13 +69,7 @@
                     {% csrf_token %}
                     <div class="row ">
                       <div class="col">
-                        <!--项目来源-->
-                        <div class="form-group row">
-                          {{ form.project_source.label_tag }}
-                          <div class="col-md-7">
-                            {{ form.project_source }}
-                          </div>
-                        </div>
+
                         <!--上机仪器-->
                         <div class="form-group row">
                           {{ form.instrument_type.label_tag }}

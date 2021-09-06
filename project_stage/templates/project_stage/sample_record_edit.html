@@ -87,24 +87,6 @@
                           {{ form.sample_sender }}
                         </div>
                       </div>
-                      <!--样本质量-->
-                      <div class="form-group row">
-                        {{ form.sample_quality.label_tag }}
-                        <div class="col-md-7">
-                          {{ form.sample_quality }}
-                        </div>
-                      </div>
-
-                  </div>
-
-                  <div class="col">
-                      <!--附加项目-->
-                      <div class="form-group row">
-                        {{ form.addition_item.label_tag }}
-                        <div class="col-md-7">
-                          {{ form.addition_item }}
-                        </div>
-                      </div>
                       <!--收样日期-->
                       <div class="form-group row">
                         {{ form.receive_date.label_tag }}
@@ -112,6 +94,25 @@
                           {{ form.receive_date }}
                         </div>
                       </div>
+
+                  </div>
+
+                  <div class="col">
+                      <!--样本质量-->
+                      <div class="form-group row">
+                        {{ form.sample_quality.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.sample_quality }}
+                        </div>
+                      </div>
+                      <!--附加项目-->
+                      <div class="form-group row">
+                        {{ form.addition_item.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.addition_item }}
+                        </div>
+                      </div>
+
                       <!--备注-->
                       <div class="form-group row">
                         {{ form.note.label_tag }}
@@ -119,22 +120,7 @@
                           {{ form.note }}
                         </div>
                       </div>
-                      <!--相关文件-->
-                      <div class="form-group row">
-                        {{ form.file_input.label_tag }}
-                        <div class="col-md-7">
-                          <div id="pro_files" style="display:none;">{{  form.files }}</div>
-                          <div id="file_cyc">
-                            {% for file in project_info.files.all %}
-                              <div><a href="{{ file.file.url }}">{{ file.file.name|slice:"14:" }}</a>&nbsp;<button
-                                    type="button" class="btn_del btn-xs" id="btn-{{ file.id }}">删除</button></div>
-                            {% empty %}  <!--增加files为空的判断-->
-                            {% endfor %}
-                          </div>
-                          <div>添加：</div>
-                          {{ form.file_input }}
-                        </div>
-                      </div>
+
                       <!--登记人-->
                       <div style="display:none;">{{  form.person_record }}</div>
 
@@ -191,20 +177,7 @@
   //Initialize Select2 Elements
   $('.select2').select2();
 
-  //文件删除按钮函数
-  $(".btn_del").each( function(index, domEle){
-    $(this).click(function() {
-        var btn_id = $(this).attr("id");
-        var str_arry = btn_id.split('-');
-        //var file_id = parseInt(str_arry[1]);  // 将string转换为Int
-        var file_id = str_arry[1];
-        $(this).parent().remove();
-        //console.log(file_id);
-        //在select中将相应文件删除
-        $("#pro_files select option[value=" + file_id + "]").removeAttr("selected");
 
-    } );  // click
-  });  // .btn_del
 
   // 设置弹出提示框属性
     toastr.options = {
