@@ -79,8 +79,8 @@ def apply_invoice_table(request):
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
         if search:  # 判断是否有搜索字
-            all_apply = ApplyInvoice.objects.filter(Q(unit__contains=search) | Q(linkman=search) |
-                                                    Q(related_contract__contract_num=search))
+            all_apply = ApplyInvoice.objects.filter(Q(unit__contains=search) | Q(linkman__contains=search) |
+                                                    Q(related_contract__contract_num__contains=search))
         else:
             all_apply = ApplyInvoice.objects.all()
 
@@ -333,8 +333,8 @@ def invoice_info_table(request):
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
         if search:  # 判断是否有搜索字
-            all_invoice = InvoiceInfo.objects.filter(Q(invoice_num=search) | Q(unit_invoice__contains=search) |
-                                                     Q(link_apply__related_contract__contract_num=search))
+            all_invoice = InvoiceInfo.objects.filter(Q(invoice_num__contains=search) | Q(unit_invoice__contains=search) |
+                                                     Q(link_apply__related_contract__contract_num__contains=search))
         else:
             all_invoice = InvoiceInfo.objects.all()
 
@@ -564,7 +564,8 @@ def void_red_info_table(request):
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
         if search:  # 判断是否有搜索字
-            all_apply = VoidRedInfo.objects.filter(Q(serial_number=search) | Q(link_invoice__invoice_num=search))
+            all_apply = VoidRedInfo.objects.filter(Q(serial_number__contains=search) |
+                                                   Q(link_invoice__invoice_num__contains=search))
         else:
             all_apply = VoidRedInfo.objects.all()
 

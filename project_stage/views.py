@@ -58,8 +58,9 @@ def sample_record_table(request):
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
         if search:  # 判断是否有搜索字
-            all_projects = SampleRecord.objects.filter(Q(project_num=search) | Q(sample_sender__customer_name=search) |
-                                                       Q(sample_sender__unit__unit_name__contains=search))
+            all_projects = SampleRecord.objects.filter(Q(project_num__contains=search) |
+                                                       Q(sample_sender__customer_name__contains=search) |
+                                                       Q(unit__contains=search))
         else:
             all_projects = SampleRecord.objects.all()
 
@@ -335,8 +336,9 @@ def pretreat_stage_table(request):
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
         if search:  # 判断是否有搜索字
-            all_projects = SampleRecord.objects.filter(Q(project_num=search) | Q(sample_sender__customer_name=search) |
-                                                       Q(sample_sender__unit__unit_name__contains=search))
+            all_projects = SampleRecord.objects.filter(Q(project_num__contains=search) |
+                                                       Q(sample_sender__customer_name__contains=search) |
+                                                       Q(unit__contains=search))
         else:
             all_projects = SampleRecord.objects.all()
 
@@ -555,8 +557,9 @@ def test_analysis_table(request):
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
         if search:  # 判断是否有搜索字
-            all_projects = SampleRecord.objects.filter(Q(project_num=search) | Q(sample_sender__customer_name=search) |
-                                                       Q(sample_sender__unit__unit_name__contains=search))
+            all_projects = SampleRecord.objects.filter(Q(project_num__contains=search) |
+                                                       Q(sample_sender__customer_name__contains=search) |
+                                                       Q(unit__contains=search))
         else:
             all_projects = SampleRecord.objects.all()
 

@@ -201,7 +201,8 @@ def customer_list_table(request):
         search = request.GET.get('search')
 
         if search:  # 判断是否有搜索字
-            all_customers = CustomerInfo.objects.filter(Q(customer_name=search) | Q(unit__unit_name__contains=search))
+            all_customers = CustomerInfo.objects.filter(Q(customer_name__contains=search) |
+                                                        Q(unit__unit_name__contains=search))
         else:
             all_customers = CustomerInfo.objects.all()
 
