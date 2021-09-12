@@ -40,7 +40,7 @@ def project_contract_table(request):
         if not pageNum:
             pageNum = 1
         if not limit:
-            limit = 10  # 默认是每页10行的内容，与前端默认行数一致
+            limit = 50  # 默认是每页10行的内容，与前端默认行数一致
         paginator = Paginator(all_contracts, limit)  # 开始做分页
 
         # page = int(int(offset) / int(limit) + 1)
@@ -272,7 +272,7 @@ def advancepay_contract_table(request):
         if not pageNum:
             pageNum = 1
         if not limit:
-            limit = 10  # 默认是每页10行的内容，与前端默认行数一致
+            limit = 50  # 默认是每页10行的内容，与前端默认行数一致
         paginator = Paginator(all_contracts, limit)  # 开始做分页
 
         # page = int(int(offset) / int(limit) + 1)
@@ -442,7 +442,7 @@ def cut_payment_table(request):
         if not pageNum:
             pageNum = 1
         if not limit:
-            limit = 10  # 默认是每页10行的内容，与前端默认行数一致
+            limit = 50  # 默认是每页10行的内容，与前端默认行数一致
         paginator = Paginator(all_apply, limit)  # 开始做分页
 
         # page = int(int(offset) / int(limit) + 1)

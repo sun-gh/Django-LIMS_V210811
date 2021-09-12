@@ -88,7 +88,7 @@ def apply_invoice_table(request):
         if not pageNum:
             pageNum = 1
         if not limit:
-            limit = 10  # 默认是每页10行的内容，与前端默认行数一致
+            limit = 50  # 默认是每页10行的内容，与前端默认行数一致
         paginator = Paginator(all_apply, limit)  # 开始做分页
 
         # page = int(int(offset) / int(limit) + 1)
@@ -342,7 +342,7 @@ def invoice_info_table(request):
         if not pageNum:
             pageNum = 1
         if not limit:
-            limit = 10  # 默认是每页10行的内容，与前端默认行数一致
+            limit = 50  # 默认是每页10行的内容，与前端默认行数一致
         paginator = Paginator(all_invoice, limit)  # 开始做分页
 
         # page = int(int(offset) / int(limit) + 1)
@@ -573,7 +573,7 @@ def void_red_info_table(request):
         if not pageNum:
             pageNum = 1
         if not limit:
-            limit = 10  # 默认是每页10行的内容，与前端默认行数一致
+            limit = 50  # 默认是每页10行的内容，与前端默认行数一致
         paginator = Paginator(all_apply, limit)  # 开始做分页
 
         # page = int(int(offset) / int(limit) + 1)

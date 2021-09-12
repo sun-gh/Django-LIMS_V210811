@@ -15,7 +15,7 @@
 {% block content %}
 
   <!-- Content Header (Page header) -->
-  <section class="content-header ">
+  <section class="content-header pb-1 pt-2">
     <div class="container-fluid">
       <div class="row mb-0">
         <div class="col-sm-6">
@@ -32,7 +32,7 @@
   <section class="content">
     <div class="row">
       <div class="col-md-12">
-        <div class="card card-secondary">
+        <div class="card card-secondary ">
         <div class="card-header">
           <h3 class="card-title">项目号：&nbsp;{{ project_info.project_num }}</h3>
 
@@ -41,7 +41,7 @@
               <i class="fas fa-minus"></i></button>
           </div>
         </div>
-        <div class="card-body">
+        <div class="card-body pt-2 pb-1">
           <div class="row">
             <div class="col">
               <p><span> 项目类型 </span>： {{ project_info.project_type.project_name }}</p>

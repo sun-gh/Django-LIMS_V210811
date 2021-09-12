@@ -44,7 +44,7 @@ def unit_list_table(request):
         if not pageNum:
             pageNum = 1
         if not limit:
-            limit = 10  # 默认是每页10行的内容，与前端默认行数一致
+            limit = 50  # 默认是每页10行的内容，与前端默认行数一致
         paginator = Paginator(all_units, limit)  # 开始做分页
 
         # page = int(int(offset) / int(limit) + 1)
@@ -210,7 +210,7 @@ def customer_list_table(request):
         if not pageNum:
             pageNum = 1
         if not limit:
-            limit = 10  # 默认是每页20行的内容，与前端默认行数一致
+            limit = 50  # 默认是每页20行的内容，与前端默认行数一致
         paginator = Paginator(all_customers, limit)  # 开始做分页
 
         # page = int(int(offset) / int(limit) + 1)
