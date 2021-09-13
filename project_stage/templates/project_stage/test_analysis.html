@@ -40,24 +40,46 @@
                 <i class="fas fa-minus"></i></button>
             </div>
           </div>
-          <div class="card-body pt-2 pb-2">
+          <div class="card-body pt-2 pb-0">
             <div class="row">
               <div class="col">
-                <form class="form-inline">
-                  <div class="form-group form-inner">
-                    <label for="project_number" class="form-lable">项目编号：</label>
-                    <input type="text" class="form-control form-input" id="project_number" name="project_num"  >
-                  </div>&nbsp;&nbsp;
-                  <div class="form-group form-inner">
-                    <label for="unit_search" class="form-lable">单位：</label>
-                    <input type="text" class="form-control form-input" id="unit_search" name="unit_name"  >
-                  </div>&nbsp;&nbsp;
-                  <div class="form-group form-inner">
-                    <label for="sender_search" class="form-lable">送样人：</label>
-                    <input type="text" class="form-control form-input" id="sender_search" name="sample_sender"  >
-                  </div>&nbsp;&nbsp;
-                  <a class="btn btn-info btn-sm  form-search" onclick="searchfun()" >搜索</a>&nbsp;&nbsp;
-                  <a class="btn btn-secondary btn-sm  form-search" onclick="clearfun()" >重置</a>
+                <form class="form-horizontal">
+                  <div class="row">
+                    <div class="col">
+                      <div class="form-group row">
+                        <label for="project_number" class="col-md-4 col-form-label col-form-label-sm">项目编号：</label>
+                        <div class="col-md-7">
+                          <input type="text" class="form-control form-control-sm" id="project_number" name="project_num" >
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="note_search" class="col-md-4 col-form-label col-form-label-sm">备注：</label>
+                        <div class="col-md-7">
+                          <input type="text" class="form-control form-control-sm" id="note_search" name="note"  >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="form-group row">
+                        <label for="unit_search" class="col-md-4 col-form-label col-form-label-sm">单位：</label>
+                        <div class="col-md-7">
+                          <input type="text" class="form-control form-control-sm" id="unit_search" name="unit_name" >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="form-group row">
+                        <label for="sender_search" class="col-md-4 col-form-label col-form-label-sm">送样人：</label>
+                        <div class="col-md-7">
+                          <input type="text" class="form-control form-control-sm" id="sender_search" name="sample_sender" >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <a class="btn btn-info btn-sm  form-search" id="search-btn" onclick="searchfun()" >搜索</a>&nbsp;&nbsp;
+                      <a class="btn btn-secondary btn-sm  form-search" onclick="clearfun()" >重置</a>
+                    </div>
+                  </div>  <!-- /.row -->
                 </form>
               </div>  <!-- /.col -->
             </div>  <!-- /.row -->
@@ -71,7 +93,7 @@
             </table>
             <div id="toolbar">
               {% if perms.project_stage.change_test_analysis %}
-                &nbsp;&nbsp;<a class="btn btn-primary btn-sm" href="#" role="button" id="edit-btn" >修改</a>
+                &nbsp;&nbsp;<a class="btn btn-info btn-sm" href="#" role="button" id="edit-btn" >修改</a>
               {% endif %}
               {% if perms.project_stage.change_analysis_info %}
                 &nbsp;&nbsp;<a class="btn btn-info btn-sm" href="#" role="button" id="edit-analysis-btn" >修改文件等信息</a>
@@ -299,6 +321,18 @@
           align: 'center',
         },
         {
+          field: 'note',
+          title: '备注',
+          width: 120,
+          align: 'center',
+          formatter: function (value,row,index) {
+            var span=document.createElement('span');
+            span.setAttribute('title',value);
+            span.innerHTML = value;
+            return span.outerHTML;
+          },
+        },
+        {
           field: 'files',
           title: '相关文件',
           width: 130,
@@ -382,6 +416,7 @@
       var project_num = sessionStorage.getItem("project_num");
       var unit = sessionStorage.getItem("unit");  //原为"unit_search"
       var sample_sender = sessionStorage.getItem("sample_sender");
+      var note = sessionStorage.getItem("note");
       var temp = {      //这里的pageSize、pageNum等必须和Controller改成一样的
           pageSize: pageSize==null?params.limit:pageSize,                      //页面大小
           pageNum: pageNum==null?(params.offset / params.limit) + 1:pageNum,   //页码
@@ -391,7 +426,7 @@
           project_num: project_num==null?$("#project_number").val():project_num,
           unit: unit==null?$("#unit_search").val():unit,
           sample_sender: sample_sender==null?$("#sender_search").val():sample_sender,
-
+          note: note==null?$("#note_search").val():note,
       };
       //在sessionStorage中清除这几个数据
       sessionStorage.removeItem("pageSize");
@@ -399,6 +434,7 @@
       sessionStorage.removeItem("project_num");
       sessionStorage.removeItem("unit");
       sessionStorage.removeItem("sample_sender");
+      sessionStorage.removeItem("note");
       return temp;
     }  //.getParams
 
@@ -461,6 +497,12 @@
         }else {
           sample_sender="";
         }
+        var note=$("#note_search").val();
+        if(note!=null){
+          sessionStorage.setItem("note", note);
+        }else {
+          note="";
+        }
         sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
         sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
 
@@ -505,6 +547,12 @@
         }else {
           sample_sender="";
         }
+        var note=$("#note_search").val();
+        if(note!=null){
+          sessionStorage.setItem("note", note);
+        }else {
+          note="";
+        }
         sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
         sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
 
@@ -542,6 +590,12 @@
       }else {
         sample_sender="";
       }
+      var note=$("#note_search").val();
+      if(note!=null){
+        sessionStorage.setItem("note", note);
+      }else {
+        note="";
+      }
       sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
       sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
 
@@ -566,6 +620,13 @@
 
     searchfun();
   }
+
+  //定义搜索框响应回车键
+  $("input").keydown(function (e) {  //当按下按键时
+    if (e.which == 13) {  //.which属性判断按下的是哪个键，回车键的键位序号为13
+      $('#search-btn').trigger("click");  //触发搜索按钮的点击事件
+    }
+  });
 
 </script>
 

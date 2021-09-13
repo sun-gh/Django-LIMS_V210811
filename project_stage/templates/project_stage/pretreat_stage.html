@@ -39,24 +39,40 @@
                 <i class="fas fa-minus"></i></button>
             </div>
           </div>
-          <div class="card-body pt-2 pb-2">
+          <div class="card-body pt-2 pb-0">
             <div class="row">
               <div class="col">
-                <form class="form-inline">
-                  <div class="form-group form-inner">
-                    <label for="project_number" class="form-lable">项目编号：</label>
-                    <input type="text" class="form-control form-input" id="project_number" name="project_num"  >
-                  </div>&nbsp;&nbsp;
-                  <div class="form-group form-inner">
-                    <label for="unit_search" class="form-lable">单位：</label>
-                    <input type="text" class="form-control form-input" id="unit_search" name="unit_name"  >
-                  </div>&nbsp;&nbsp;
-                  <div class="form-group form-inner">
-                    <label for="sender_search" class="form-lable">送样人：</label>
-                    <input type="text" class="form-control form-input" id="sender_search" name="sample_sender"  >
-                  </div>&nbsp;&nbsp;
-                  <a class="btn btn-info btn-sm  form-search" onclick="searchfun()" >搜索</a>&nbsp;&nbsp;
-                  <a class="btn btn-secondary btn-sm  form-search" onclick="clearfun()" >重置</a>
+                <form class="form-horizontal">
+                  <div class="row">
+                    <div class="col">
+                      <div class="form-group row">
+                        <label for="project_number" class="col-md-4 col-form-label col-form-label-sm">项目编号：</label>
+                        <div class="col-md-7">
+                          <input type="text" class="form-control form-control-sm" id="project_number" name="project_num"  >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="form-group row">
+                        <label for="unit_search" class="col-md-4 col-form-label col-form-label-sm">单位：</label>
+                        <div class="col-md-7">
+                          <input type="text" class="form-control form-control-sm" id="unit_search" name="unit_name"  >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="form-group row">
+                        <label for="sender_search" class="col-md-4 col-form-label col-form-label-sm">送样人：</label>
+                        <div class="col-md-7">
+                          <input type="text" class="form-control form-control-sm" id="sender_search" name="sample_sender"  >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <a class="btn btn-info btn-sm  form-search" id="search-btn" onclick="searchfun()" >搜索</a>&nbsp;
+                      <a class="btn btn-secondary btn-sm  form-search" onclick="clearfun()" >重置</a>
+                    </div>
+                  </div>  <!-- /.row -->
                 </form>
               </div>  <!-- /.col -->
             </div>  <!-- /.row -->
@@ -543,6 +559,13 @@
 
     searchfun();
   }
+
+  //定义搜索框响应回车键
+  $("input").keydown(function (e) {  //当按下按键时
+      if (e.which == 13) {  //.which属性判断按下的是哪个键，回车键的键位序号为13
+          $('#search-btn').trigger("click");  //触发搜索按钮的点击事件
+      }
+  });
 
 </script>
 {% endblock %}

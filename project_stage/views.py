@@ -584,14 +584,10 @@ def test_analysis_table(request):
         project_num = request.GET.get('project_num')
         unit_name = request.GET.get('unit')
         sample_sender = request.GET.get('sample_sender')
+        note = request.GET.get('note')
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
-        # if search:  # 判断是否有搜索字
-        #     all_projects = SampleRecord.objects.filter(Q(project_num__contains=search) |
-        #                                                Q(sample_sender__customer_name__contains=search) |
-        #                                                Q(unit__contains=search))
-        # else:
-        #     all_projects = SampleRecord.objects.all()
+
         conditions = {}  # 构造字典存储查询条件
 
         if project_num:
@@ -600,6 +596,9 @@ def test_analysis_table(request):
             conditions['unit__contains'] = unit_name
         if sample_sender:
             conditions['sample_sender__customer_name__contains'] = sample_sender
+        if note:
+            conditions['note__contains'] = note
+
         all_projects = SampleRecord.objects.filter(**conditions)
 
         all_projects_count = all_projects.count()
@@ -634,7 +633,11 @@ def test_analysis_table(request):
                 leading_official = person
             else:
                 leading_official = "-"
-
+            # 定义备注
+            if project.note:
+                note = project.note
+            else:
+                note = "-"
             # 以下为检测分析阶段新添加字段
             # 定义项目来源
             project_source = project.get_project_source_display()
@@ -687,6 +690,7 @@ def test_analysis_table(request):
                 "leading_official": leading_official,
                 "unit": unit_name,
                 "sample_sender": project.sample_sender.customer_name,
+                "note": note,
                 # 以下为检测分析阶段新添加字段
                 "priority": project.priority,
                 "project_source": project_source,

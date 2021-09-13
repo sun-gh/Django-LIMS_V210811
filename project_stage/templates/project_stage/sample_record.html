@@ -46,21 +46,21 @@
                   <div class="row">
                     <div class="col">
                       <div class="form-group row ">
-                        <label for="project_number" class="col-md-5 col-form-label col-form-label-sm">项目编号：</label>
+                        <label for="project_number" class="col-md-4 col-form-label col-form-label-sm">项目编号：</label>
                         <div class="col-md-7">
                           <input type="text" class="form-control form-control-sm" id="project_number" name="project_num"  >
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label for="note_search" class="col-md-5 col-form-label col-form-label-sm">备注：</label>
+                        <label for="note_search" class="col-md-4 col-form-label col-form-label-sm">备注：</label>
                         <div class="col-md-7">
-                        <input type="text" class="form-control form-control-sm" id="note_search" name="note"  >
+                          <input type="text" class="form-control form-control-sm" id="note_search" name="note"  >
                         </div>
                       </div>
                     </div>
                     <div class="col">
                       <div class="form-group row">
-                        <label for="unit_search" class="col-md-5 col-form-label col-form-label-sm">单位：</label>
+                        <label for="unit_search" class="col-md-4 col-form-label col-form-label-sm">单位：</label>
                         <div class="col-md-7">
                           <input type="text" class="form-control form-control-sm" id="unit_search" name="unit_name"  >
                         </div>
@@ -68,15 +68,14 @@
                     </div>
                     <div class="col">
                       <div class="form-group row">
-                        <label for="sender_search" class="col-md-5 col-form-label col-form-label-sm">送样人：</label>
+                        <label for="sender_search" class="col-md-4 col-form-label col-form-label-sm">送样人：</label>
                         <div class="col-md-7">
                           <input type="text" class="form-control form-control-sm" id="sender_search" name="sample_sender"  >
                         </div>
                       </div>
                     </div>
                     <div class="col-md-2">
-
-                        <a class="btn btn-info btn-sm  form-search" onclick="searchfun()" >搜索</a>&nbsp;
+                        <a class="btn btn-info btn-sm  form-search" id="search-btn" onclick="searchfun()" >搜索</a>&nbsp;
                         <a class="btn btn-secondary btn-sm  form-search" onclick="clearfun()" >重置</a>
 
                     </div>
@@ -588,5 +587,12 @@
 
     searchfun();
   }
+
+  //定义搜索框响应回车键
+  $("input").keydown(function (e) {  //当按下按键时
+      if (e.which == 13) {  //.which属性判断按下的是哪个键，回车键的键位序号为13
+          $('#search-btn').trigger("click");  //触发搜索按钮的点击事件
+      }
+  });
 </script>
 {% endblock %}

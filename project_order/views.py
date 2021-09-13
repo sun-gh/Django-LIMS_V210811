@@ -52,15 +52,27 @@ def project_order_table(request):
 
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
-        search = request.GET.get('search')
+        # search = request.GET.get('search')
+        project_num = request.GET.get('project_num')
+        unit_name = request.GET.get('unit')
+        sample_sender = request.GET.get('sample_sender')
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
-        if search:  # 判断是否有搜索字
-            all_projects = SampleRecord.objects.filter(Q(project_num__contains=search) |
-                                                       Q(sample_sender__customer_name__contains=search) |
-                                                       Q(unit__contains=search))
-        else:
-            all_projects = SampleRecord.objects.all()
+        # if search:  # 判断是否有搜索字
+        #     all_projects = SampleRecord.objects.filter(Q(project_num__contains=search) |
+        #                                                Q(sample_sender__customer_name__contains=search) |
+        #                                                Q(unit__contains=search))
+        # else:
+        #     all_projects = SampleRecord.objects.all()
+        conditions = {}  # 构造字典存储查询条件
+
+        if project_num:
+            conditions['project_num__contains'] = project_num
+        if unit_name:
+            conditions['unit__contains'] = unit_name
+        if sample_sender:
+            conditions['sample_sender__customer_name__contains'] = sample_sender
+        all_projects = SampleRecord.objects.filter(**conditions)
 
         all_projects_count = all_projects.count()
         if not pageNum:
