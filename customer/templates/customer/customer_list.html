@@ -69,9 +69,9 @@
   </div><!-- /.modal -->
 
   <!-- Content Header (Page header) -->
-  <section class="content-header ">
+  <section class="content-header pb-1">
     <div class="container-fluid">
-      <div class="row mb-0">
+      <div class="row ">
         <div class="col-sm-6">
           <h5>客户信息</h5>
         </div>
@@ -180,7 +180,7 @@
 
       url:"{% url 'customer:customer_list_table' %}",
       method: 'get',                      //请求方式（*）
-      //iconSize:"sm",                     // 1,设置修改图标  sm小图标 lg大图标
+      iconSize:"sm",                     // 设置图标大小  sm小图标 lg大图标
       cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
 
       pagination: true,                   //是否显示分页（*）

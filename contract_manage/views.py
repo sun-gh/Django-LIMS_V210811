@@ -27,14 +27,26 @@ def project_contract_table(request):
 
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
-        search = request.GET.get('search')
+        # search = request.GET.get('search')
+        contract_number = request.GET.get('contract_number')
+        unit = request.GET.get('unit')
+        linkman = request.GET.get('linkman')
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
-        if search:  # 判断是否有搜索字
-            all_contracts = ProjectContract.objects.filter(Q(contract_type=0), Q(contract_num__contains=search) |
-                                                           Q(linkman__contains=search) | Q(unit_name__contains=search))
-        else:
-            all_contracts = ProjectContract.objects.filter(contract_type=0)
+        # if search:  # 判断是否有搜索字
+        #     all_contracts = ProjectContract.objects.filter(Q(contract_type=0), Q(contract_num__contains=search) |
+        #                                                    Q(linkman__contains=search) | Q(unit_name__contains=search))
+        # else:
+        #     all_contracts = ProjectContract.objects.filter(contract_type=0)
+        conditions = {"contract_type": 0, }  # 构造字典存储查询条件
+
+        if contract_number:
+            conditions['contract_num__contains'] = contract_number
+        if unit:
+            conditions['unit_name__contains'] = unit
+        if linkman:
+            conditions['linkman__contains'] = linkman
+        all_contracts = ProjectContract.objects.filter(**conditions)
 
         all_contract_count = all_contracts.count()
         if not pageNum:
@@ -259,14 +271,26 @@ def advancepay_contract_table(request):
 
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
-        search = request.GET.get('search')
+        # search = request.GET.get('search')
+        contract_number = request.GET.get('contract_number')
+        unit = request.GET.get('unit')
+        linkman = request.GET.get('linkman')
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
-        if search:  # 判断是否有搜索字
-            all_contracts = ProjectContract.objects.filter(Q(contract_type__gt=0), Q(contract_num__contains=search) |
-                                                           Q(linkman__contains=search) | Q(unit_name__contains=search))
-        else:
-            all_contracts = ProjectContract.objects.filter(contract_type__gt=0)
+        # if search:  # 判断是否有搜索字
+        #     all_contracts = ProjectContract.objects.filter(Q(contract_type__gt=0), Q(contract_num__contains=search) |
+        #                                                    Q(linkman__contains=search) | Q(unit_name__contains=search))
+        # else:
+        #     all_contracts = ProjectContract.objects.filter(contract_type__gt=0)
+        conditions = {"contract_type__gt": 0, }  # 构造字典存储查询条件
+
+        if contract_number:
+            conditions['contract_num__contains'] = contract_number
+        if unit:
+            conditions['unit_name__contains'] = unit
+        if linkman:
+            conditions['linkman__contains'] = linkman
+        all_contracts = ProjectContract.objects.filter(**conditions)
 
         all_contract_count = all_contracts.count()
         if not pageNum:

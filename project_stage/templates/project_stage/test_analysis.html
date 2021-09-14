@@ -17,7 +17,7 @@
   <!-- Content Header (Page header) -->
   <section class="content-header pb-1">
     <div class="container-fluid">
-      <div class="row mb-0">
+      <div class="row ">
         <div class="col-sm-6">
           <h5>检测分析信息</h5>
         </div>
@@ -170,7 +170,7 @@
     {#全部参数#}
       url:"{% url 'project_stage:test_analysis_table' %}",
       method: 'get',                      //请求方式（*）
-      //iconSize:"sm",                     // 1,设置修改图标  sm小图标 lg大图标
+      iconSize:"sm",                     // 设置图标大小  sm小图标 lg大图标
       cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
       //cookie: true,                       //是否启用cookie
       //cookieExpire: '2h',                //cookie过期时间

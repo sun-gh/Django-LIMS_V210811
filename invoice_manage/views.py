@@ -75,14 +75,26 @@ def apply_invoice_table(request):
 
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
-        search = request.GET.get('search')
+        # search = request.GET.get('search')
+        contract_number = request.GET.get('contract_number')
+        unit = request.GET.get('unit')
+        linkman = request.GET.get('linkman')
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
-        if search:  # 判断是否有搜索字
-            all_apply = ApplyInvoice.objects.filter(Q(unit__contains=search) | Q(linkman__contains=search) |
-                                                    Q(related_contract__contract_num__contains=search))
-        else:
-            all_apply = ApplyInvoice.objects.all()
+        # if search:  # 判断是否有搜索字
+        #     all_apply = ApplyInvoice.objects.filter(Q(unit__contains=search) | Q(linkman__contains=search) |
+        #                                             Q(related_contract__contract_num__contains=search))
+        # else:
+        #     all_apply = ApplyInvoice.objects.all()
+        conditions = {}  # 构造字典存储查询条件
+
+        if contract_number:
+            conditions['related_contract__contract_num__contains'] = contract_number
+        if unit:
+            conditions['unit__contains'] = unit
+        if linkman:
+            conditions['linkman__contains'] = linkman
+        all_apply = ApplyInvoice.objects.filter(**conditions)
 
         all_apply_count = all_apply.count()
         if not pageNum:
@@ -329,14 +341,26 @@ def invoice_info_table(request):
 
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
-        search = request.GET.get('search')
+        # search = request.GET.get('search')
+        contract_number = request.GET.get('contract_number')
+        unit = request.GET.get('unit')
+        invoice_num = request.GET.get('invoice_num')
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
-        if search:  # 判断是否有搜索字
-            all_invoice = InvoiceInfo.objects.filter(Q(invoice_num__contains=search) | Q(unit_invoice__contains=search) |
-                                                     Q(link_apply__related_contract__contract_num__contains=search))
-        else:
-            all_invoice = InvoiceInfo.objects.all()
+        # if search:  # 判断是否有搜索字
+        #     all_invoice = InvoiceInfo.objects.filter(Q(invoice_num__contains=search) | Q(unit_invoice__contains=search) |
+        #                                              Q(link_apply__related_contract__contract_num__contains=search))
+        # else:
+        #     all_invoice = InvoiceInfo.objects.all()
+        conditions = {}  # 构造字典存储查询条件
+
+        if contract_number:
+            conditions['link_apply__related_contract__contract_num__contains'] = contract_number
+        if unit:
+            conditions['unit_invoice__contains'] = unit
+        if invoice_num:
+            conditions['invoice_num__contains'] = invoice_num
+        all_invoice = InvoiceInfo.objects.filter(**conditions)
 
         invoice_count = all_invoice.count()
         if not pageNum:
