@@ -42,6 +42,7 @@
                     <tr>
                       <th>关联合同</th>
                       <th>开票单位</th>
+                      <th>联系人</th>
                       <th>发票金额</th>
                       <th>开票日期</th>
                       <th>申请人</th>
@@ -51,6 +52,7 @@
                     <tr>
                       <td>{{ invoice.link_apply.related_contract.contract_num }}</td>
                       <td>{{ invoice.unit_invoice }}</td>
+                      <td>{{ invoice.linkman }}</td>
                       <td>{{ invoice.invoice_sum|default:"-" }}</td>
                       <td>
                         {% if invoice.invoice_date %}

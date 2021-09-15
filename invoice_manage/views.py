@@ -258,11 +258,13 @@ def approve_apply_invoice(request, apply_id):
     # 若只开一张票，直接赋值开票金额为发票金额
     if sheet_number == 1:
         invoice_info = InvoiceInfo.objects.create(link_apply=apply_detail, unit_invoice=apply_detail.unit,
+                                                  linkman=apply_detail.related_contract.linkman,
                                                   applicant=apply_detail.applicant, invoice_sum=apply_detail.invoice_sum)
     else:
         start_num = 1
         while start_num <= sheet_number:
             invoice_info = InvoiceInfo.objects.create(link_apply=apply_detail, unit_invoice=apply_detail.unit,
+                                                      linkman=apply_detail.related_contract.linkman,
                                                       applicant=apply_detail.applicant)
             start_num += 1
     # 修改开票申请状态
@@ -373,7 +375,7 @@ def invoice_info_table(request):
         response_data = {'total': invoice_count, 'rows': []}
         for invoice in paginator.page(pageNum):
             # 下面这些key，都是我们在前端定义好了的，前后端必须一致，前端才能接受到数据并且请求.
-            # 开票要求处理
+            # 定义发票号
             invoice_num = invoice.invoice_num
             if invoice_num:
                 invoice_num = invoice_num
@@ -425,6 +427,7 @@ def invoice_info_table(request):
                 "invoice_number": invoice_num,
                 "link_contract": invoice.link_apply.related_contract.contract_num,
                 "unit": invoice.unit_invoice,
+                "linkman": invoice.linkman,
                 "applicant": invoice.applicant,
                 "invoice_sum": invoice_sum,
                 "invoice_date": invoice_date,

@@ -91,6 +91,7 @@ class InvoiceInfo(models.Model):
     invoice_num = models.CharField(max_length=32, verbose_name="发票号", blank=True, null=True, unique=True)
     link_apply = models.ForeignKey(ApplyInvoice, verbose_name="关联开票申请", on_delete=models.SET_NULL, null=True)
     unit_invoice = models.CharField(max_length=64, verbose_name="开票单位", default="开票单位")
+    linkman = models.CharField(max_length=32, verbose_name="联系人")
     applicant = models.CharField(max_length=32, verbose_name="申请人", default="销售")
     invoice_sum = models.DecimalField(verbose_name="发票金额", max_digits=10, decimal_places=2, blank=True, null=True)
     invoice_date = models.DateField(verbose_name="开票日期", null=True, blank=True)
