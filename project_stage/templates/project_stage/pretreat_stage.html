@@ -51,6 +51,12 @@
                           <input type="text" class="form-control form-control-sm" id="project_number" name="project_num"  >
                         </div>
                       </div>
+                      <div class="form-group row">
+                        {{ form.project_type.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.project_type }}
+                        </div>
+                      </div>
                     </div>
                     <div class="col">
                       <div class="form-group row">
@@ -415,6 +421,9 @@
     return result;
   }
 
+  // 给label加上class属性;
+  $("[for='id_project_type']").addClass("col-md-4 col-form-label col-form-label-sm");
+
   //定义向后台传递参数的函数
     function getParams(params) {
 
@@ -425,6 +434,10 @@
       var project_num = sessionStorage.getItem("project_num");
       var unit = sessionStorage.getItem("unit");  //原为"unit_search"
       var sample_sender = sessionStorage.getItem("sample_sender");
+      //定义项目类型获取选择结果
+      var pro_type_id = sessionStorage.getItem("pro_type_id");
+      var pro_type = document.getElementById("id_project_type");
+
       var temp = {      //这里的pageSize、pageNum等必须和Controller改成一样的
         pageSize: pageSize==null?params.limit:pageSize,                      //页面大小
         pageNum: pageNum==null?(params.offset / params.limit) + 1:pageNum,   //页码
@@ -434,6 +447,7 @@
         project_num: project_num==null?$("#project_number").val():project_num,
         unit: unit==null?$("#unit_search").val():unit,
         sample_sender: sample_sender==null?$("#sender_search").val():sample_sender,
+        pro_type_id: pro_type_id==null?pro_type.selectedIndex:pro_type_id,
 
       };
       //在sessionStorage中清除这几个数据
@@ -442,6 +456,7 @@
       sessionStorage.removeItem("project_num");
       sessionStorage.removeItem("unit");
       sessionStorage.removeItem("sample_sender");
+      sessionStorage.removeItem("pro_type_id");
       return temp;
     }  //.getParams
 
@@ -470,6 +485,15 @@
       hideMethod: "fadeOut"
     };
 
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='edit_success') {
+        toastr.success('修改成功！')
+      }
+    }
+    msgTip();
+
   //修改按钮函数
   $("#edit-btn").on("click", function() {
     var rows = $("#mytab").bootstrapTable('getSelections');// 获得要修改的数据
@@ -497,6 +521,12 @@
         }else {
           sample_sender="";
         }
+        var pro_type = document.getElementById("id_project_type");
+        if(pro_type.selectedIndex!=null){
+          sessionStorage.setItem("pro_type_id", pro_type.selectedIndex);
+        }else {
+          pro_type="";   //此时if必然为true
+        }
 
         sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
         sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
@@ -516,24 +546,30 @@
 
   //查看详情页函数
     $(document).on("click", "a.view_detail", function(){
-       var project_number=$("#project_number").val();
-       if(project_number!=null){
-           sessionStorage.setItem("project_num", project_number);
-       }else {
-           project_number="";
-       }
-       var unit_name=$("#unit_search").val();
-       if(unit_name!=null){
-           sessionStorage.setItem("unit", unit_name);
-       }else {
-           unit_name="";
-       }
-       var sample_sender=$("#sender_search").val();
-       if(sample_sender!=null){
-           sessionStorage.setItem("sample_sender", sample_sender);
-       }else {
-           sample_sender="";
-       }
+      var project_number=$("#project_number").val();
+      if(project_number!=null){
+        sessionStorage.setItem("project_num", project_number);
+      }else {
+        project_number="";
+      }
+      var unit_name=$("#unit_search").val();
+      if(unit_name!=null){
+        sessionStorage.setItem("unit", unit_name);
+      }else {
+        unit_name="";
+      }
+      var sample_sender=$("#sender_search").val();
+      if(sample_sender!=null){
+        sessionStorage.setItem("sample_sender", sample_sender);
+      }else {
+        sample_sender="";
+      }
+      var pro_type = document.getElementById("id_project_type");
+      if(pro_type.selectedIndex!=null){
+        sessionStorage.setItem("pro_type_id", pro_type.selectedIndex);
+      }else {
+        pro_type="";   //此时if必然为true
+      }
 
       sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
       sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
@@ -556,15 +592,18 @@
     $("#project_number").val("");
     $("#unit_search").val("");
     $("#sender_search").val("");
+    //设置项目类型为第一选项
+    $("#id_project_type option").attr("selected",false);
+    $("#id_project_type option").first().attr("selected",true);
 
     searchfun();
   }
 
   //定义搜索框响应回车键
   $("input").keydown(function (e) {  //当按下按键时
-      if (e.which == 13) {  //.which属性判断按下的是哪个键，回车键的键位序号为13
-          $('#search-btn').trigger("click");  //触发搜索按钮的点击事件
-      }
+    if (e.which == 13) {  //.which属性判断按下的是哪个键，回车键的键位序号为13
+      $('#search-btn').trigger("click");  //触发搜索按钮的点击事件
+    }
   });
 
 </script>

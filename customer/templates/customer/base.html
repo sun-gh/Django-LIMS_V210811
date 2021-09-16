@@ -153,19 +153,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="{% url 'project_stage:sample_record' %}" class="nav-link">
+                <a href="{% url 'project_stage:sample_record' 'normal_show' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>样本登记阶段</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{% url 'project_stage:pretreat_stage' %}" class="nav-link">
+                <a href="{% url 'project_stage:pretreat_stage' 'normal_show' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>前处理阶段</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{% url 'project_stage:test_analysis' %}" class="nav-link">
+                <a href="{% url 'project_stage:test_analysis' 'normal_show' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>检测分析阶段</p>
                 </a>

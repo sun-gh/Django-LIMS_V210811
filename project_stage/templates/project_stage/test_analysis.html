@@ -66,6 +66,12 @@
                           <input type="text" class="form-control form-control-sm" id="unit_search" name="unit_name" >
                         </div>
                       </div>
+                      <div class="form-group row">
+                        {{ form.project_type.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.project_type }}
+                        </div>
+                      </div>
                     </div>
                     <div class="col">
                       <div class="form-group row">
@@ -406,6 +412,9 @@
     return result;
   }
 
+  // 给label加上class属性;
+  $("[for='id_project_type']").addClass("col-md-4 col-form-label col-form-label-sm");
+
   //定义向后台传递参数的函数
     function getParams(params) {
 
@@ -417,16 +426,21 @@
       var unit = sessionStorage.getItem("unit");  //原为"unit_search"
       var sample_sender = sessionStorage.getItem("sample_sender");
       var note = sessionStorage.getItem("note");
+      //定义项目类型获取选择结果
+      var pro_type_id = sessionStorage.getItem("pro_type_id");
+      var pro_type = document.getElementById("id_project_type");
+
       var temp = {      //这里的pageSize、pageNum等必须和Controller改成一样的
-          pageSize: pageSize==null?params.limit:pageSize,                      //页面大小
-          pageNum: pageNum==null?(params.offset / params.limit) + 1:pageNum,   //页码
-          //在进行模糊查询的参数
-          // sort: params.sort,      //排序列名
-          // sortOrder: params.order //排位命令（desc，asc）
-          project_num: project_num==null?$("#project_number").val():project_num,
-          unit: unit==null?$("#unit_search").val():unit,
-          sample_sender: sample_sender==null?$("#sender_search").val():sample_sender,
-          note: note==null?$("#note_search").val():note,
+        pageSize: pageSize==null?params.limit:pageSize,                      //页面大小
+        pageNum: pageNum==null?(params.offset / params.limit) + 1:pageNum,   //页码
+        //在进行模糊查询的参数
+        // sort: params.sort,      //排序列名
+        // sortOrder: params.order //排位命令（desc，asc）
+        project_num: project_num==null?$("#project_number").val():project_num,
+        unit: unit==null?$("#unit_search").val():unit,
+        sample_sender: sample_sender==null?$("#sender_search").val():sample_sender,
+        note: note==null?$("#note_search").val():note,
+        pro_type_id: pro_type_id==null?pro_type.selectedIndex:pro_type_id,
       };
       //在sessionStorage中清除这几个数据
       sessionStorage.removeItem("pageSize");
@@ -435,6 +449,7 @@
       sessionStorage.removeItem("unit");
       sessionStorage.removeItem("sample_sender");
       sessionStorage.removeItem("note");
+      sessionStorage.removeItem("pro_type_id");
       return temp;
     }  //.getParams
 
@@ -454,6 +469,15 @@
       showMethod: "fadeIn",
       hideMethod: "fadeOut"
     };
+
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='edit_success') {
+        toastr.success('修改成功！')
+      }
+    }
+    msgTip();
 
   // 定义文件为链接形式函数
   function linkMatter(value,row,index) {
@@ -502,6 +526,12 @@
           sessionStorage.setItem("note", note);
         }else {
           note="";
+        }
+        var pro_type = document.getElementById("id_project_type");
+        if(pro_type.selectedIndex!=null){
+          sessionStorage.setItem("pro_type_id", pro_type.selectedIndex);
+        }else {
+          pro_type="";   //此时if必然为true
         }
         sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
         sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
@@ -553,6 +583,12 @@
         }else {
           note="";
         }
+        var pro_type = document.getElementById("id_project_type");
+        if(pro_type.selectedIndex!=null){
+          sessionStorage.setItem("pro_type_id", pro_type.selectedIndex);
+        }else {
+          pro_type="";   //此时if必然为true
+        }
         sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
         sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
 
@@ -596,6 +632,12 @@
       }else {
         note="";
       }
+      var pro_type = document.getElementById("id_project_type");
+      if(pro_type.selectedIndex!=null){
+        sessionStorage.setItem("pro_type_id", pro_type.selectedIndex);
+      }else {
+        pro_type="";   //此时if必然为true
+      }
       sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
       sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
 
@@ -618,6 +660,9 @@
     $("#unit_search").val("");
     $("#sender_search").val("");
     $("#note_search").val("");
+    //设置项目类型为第一选项
+    $("#id_project_type option").attr("selected",false);
+    $("#id_project_type option").first().attr("selected",true);
     searchfun();
   }
 

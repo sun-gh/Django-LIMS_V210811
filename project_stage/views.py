@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import SampleRecord, FilesRelated, ProjectType, SampleType, MachineTime
-from .forms import SampleRecordForm, PretreatStageForm, TestAnalysisForm, EditAnalysisForm
+from .forms import SampleRecordForm, PretreatStageForm, TestAnalysisForm, EditAnalysisForm, SearchForm
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 import json
@@ -9,7 +9,7 @@ from datetime import date, timedelta
 import django.dispatch
 from django.dispatch import receiver
 from customer.views import customer_edit, project_add_unit, project_add_terminal
-from django.db.models import Q
+# from django.db.models import Q
 
 # Create your views here.
 
@@ -41,11 +41,13 @@ def edit_project_terminal(sender, **kwargs):
 
 
 @login_required()
-def sample_record(request):
+def sample_record(request, msg="normal_show"):
     # 定义样本登记页面
 
     if request.method == 'GET':
-        return render(request, 'project_stage/sample_record.html')
+        search_form = SearchForm()
+
+        return render(request, 'project_stage/sample_record.html', {'form': search_form, 'msg': msg})
 
 
 def sample_record_table(request):
@@ -59,14 +61,10 @@ def sample_record_table(request):
         unit_name = request.GET.get('unit')
         sample_sender = request.GET.get('sample_sender')
         note = request.GET.get('note')
+        pro_type_id = int(request.GET.get('pro_type_id'))
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
-        # if search:  # 判断是否有搜索字
-        #     all_projects = SampleRecord.objects.filter(Q(project_num__contains=search) |
-        #                                                Q(sample_sender__customer_name__contains=search) |
-        #                                                Q(unit__contains=search))
-        # else:
-        #     all_projects = SampleRecord.objects.all()
+
         conditions = {}  # 构造字典存储查询条件
 
         if project_num:
@@ -77,6 +75,9 @@ def sample_record_table(request):
             conditions['sample_sender__customer_name__contains'] = sample_sender
         if note:
             conditions['note__contains'] = note
+        if pro_type_id:
+            conditions['project_type__id'] = pro_type_id
+
         all_projects = SampleRecord.objects.filter(**conditions)
 
         all_projects_count = all_projects.count()
@@ -228,7 +229,8 @@ def sample_record_add(request):
             # 发送一个信号
             add_success.send(sample_record_add, msg=msg, sample_rec_id=sample_rec.id)
 
-            return render(request, "project_stage/sample_record.html", {'msg': msg})
+            # return render(request, "project_stage/sample_record.html", {'msg': msg})
+            return redirect('project_stage:sample_record', msg)
         else:
             form = SampleRecordForm(request.POST)
             msg = "info_error"
@@ -293,7 +295,8 @@ def sample_record_edit(request, project_id):
             project_info_form.save_m2m()  # 使用commit后要手动保存manytomany
 
             msg = "edit_success"
-            return render(request, 'project_stage/sample_record.html', {'msg': msg})
+            # return render(request, 'project_stage/sample_record.html', {'msg': msg})
+            return redirect('project_stage:sample_record', msg)
         else:
             project_info_form = SampleRecordForm(request.POST)
             msg = 'failed'
@@ -334,11 +337,13 @@ def view_sample_detail(request, pro_id):
 
 
 @login_required()
-def pretreat_stage(request):
+def pretreat_stage(request, msg="normal_show"):
     # 定义前处理页面
 
     if request.method == 'GET':
-        return render(request, 'project_stage/pretreat_stage.html')
+        search_form = SearchForm()
+
+        return render(request, 'project_stage/pretreat_stage.html', {'form': search_form, 'msg': msg})
 
 
 def pretreat_stage_table(request):
@@ -351,6 +356,7 @@ def pretreat_stage_table(request):
         project_num = request.GET.get('project_num')
         unit_name = request.GET.get('unit')
         sample_sender = request.GET.get('sample_sender')
+        pro_type_id = int(request.GET.get('pro_type_id'))
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
         # if search:  # 判断是否有搜索字
@@ -367,6 +373,9 @@ def pretreat_stage_table(request):
             conditions['unit__contains'] = unit_name
         if sample_sender:
             conditions['sample_sender__customer_name__contains'] = sample_sender
+        if pro_type_id:
+            conditions['project_type__id'] = pro_type_id
+
         all_projects = SampleRecord.objects.filter(**conditions)
 
         all_projects_count = all_projects.count()
@@ -547,7 +556,8 @@ def pretreat_stage_edit(request, project_id):
             project_info_form.save()
 
             msg = "edit_success"
-            return render(request, 'project_stage/pretreat_stage.html', {'msg': msg})
+            # return render(request, 'project_stage/pretreat_stage.html', {'msg': msg})
+            return redirect('project_stage:pretreat_stage', msg)
         else:
             project_info_form = PretreatStageForm(request.POST)
             msg = 'failed'
@@ -568,10 +578,12 @@ def view_pretreat_detail(request, pro_id):
 
 
 @login_required()
-def test_analysis(request):
+def test_analysis(request, msg="normal_show"):
     # 定义检测分析列表页面
+    if request.method == 'GET':
+        search_form = SearchForm()
 
-    return render(request, 'project_stage/test_analysis.html')
+        return render(request, 'project_stage/test_analysis.html', {'form': search_form, 'msg': msg})
 
 
 def test_analysis_table(request):
@@ -585,6 +597,7 @@ def test_analysis_table(request):
         unit_name = request.GET.get('unit')
         sample_sender = request.GET.get('sample_sender')
         note = request.GET.get('note')
+        pro_type_id = int(request.GET.get('pro_type_id'))
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
 
@@ -598,6 +611,8 @@ def test_analysis_table(request):
             conditions['sample_sender__customer_name__contains'] = sample_sender
         if note:
             conditions['note__contains'] = note
+        if pro_type_id:
+            conditions['project_type__id'] = pro_type_id
 
         all_projects = SampleRecord.objects.filter(**conditions)
 
@@ -748,7 +763,8 @@ def test_analysis_edit(request, project_id):
             project_info.save()
             project_info_form.save_m2m()
             msg = "edit_success"
-            return render(request, 'project_stage/test_analysis.html', {'msg': msg})
+            # return render(request, 'project_stage/test_analysis.html', {'msg': msg})
+            return redirect('project_stage:test_analysis', msg)
         else:
             project_info_form = TestAnalysisForm(request.POST)
             msg = 'failed'
@@ -787,7 +803,8 @@ def edit_analysis_info(request, pro_id):
             for file in file_obj:
                 project_info.files.add(file)
             msg = "edit_success"
-            return render(request, 'project_stage/test_analysis.html', {'msg': msg})
+            # return render(request, 'project_stage/test_analysis.html', {'msg': msg})
+            return redirect('project_stage:test_analysis', msg)
         else:
             project_info_form = EditAnalysisForm(request.POST, request.FILES or None)
             msg = 'failed'
