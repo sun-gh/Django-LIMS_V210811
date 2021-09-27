@@ -164,7 +164,7 @@ class SampleRecord(models.Model):
     sample_sender = models.ForeignKey(CustomerInfo, verbose_name="送样人", on_delete=models.SET_NULL, null=True)
     # 将以下两个字段直接保存到记录
     unit = models.CharField(max_length=128, verbose_name="单位", null=True, blank=True)
-    terminal = models.CharField(max_length=32, verbose_name="送样终端", blank=True, null=True)
+    terminal = models.CharField(max_length=32, verbose_name="送样终端", blank=True, null=True)  # 上级领导
     sample_quality = models.ManyToManyField(SampleQuality, verbose_name="样本质量")
     addition_item = models.ManyToManyField(AdditionalItem, verbose_name="附加项目", blank=True)
     receive_date = models.DateField(verbose_name="收样日期")

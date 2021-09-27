@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from .models import ProjectContract, CutPayment
 from .forms import AddProjectContractForm, EditProjectContractForm, AdvancepayContractForm, CutPaymentForm
 from customer.models import UnitInvoice
-# from project_order.models import ProjectOrder
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 import json
@@ -27,17 +26,10 @@ def project_contract_table(request):
 
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
-        # search = request.GET.get('search')
         contract_number = request.GET.get('contract_number')
         unit = request.GET.get('unit')
         linkman = request.GET.get('linkman')
-        # sort_column = request.GET.get('sort')  # which column need to sort
-        # order = request.GET.get('order')  # ascending or descending
-        # if search:  # 判断是否有搜索字
-        #     all_contracts = ProjectContract.objects.filter(Q(contract_type=0), Q(contract_num__contains=search) |
-        #                                                    Q(linkman__contains=search) | Q(unit_name__contains=search))
-        # else:
-        #     all_contracts = ProjectContract.objects.filter(contract_type=0)
+
         conditions = {"contract_type": 0, }  # 构造字典存储查询条件
 
         if contract_number:
@@ -55,7 +47,6 @@ def project_contract_table(request):
             limit = 50  # 默认是每页10行的内容，与前端默认行数一致
         paginator = Paginator(all_contracts, limit)  # 开始做分页
 
-        # page = int(int(offset) / int(limit) + 1)
         response_data = {'total': all_contract_count, 'rows': []}  # 必须带有rows和total这2个key
         for contract in paginator.page(pageNum):
             # 下面这些key，都是我们在前端定义好了的，前后端必须一致，前端才能接受到数据并且请求.
@@ -130,15 +121,17 @@ def project_contract_add(request):
         project_contract = ProjectContract()
         project_contract_form = AddProjectContractForm(request.POST, request.FILES or None, instance=project_contract)
         if project_contract_form.is_valid():
-            # change_list = project_contract_form.changed_data
+
             project_contract_form.save(commit=False)
-            # 定义合同号
+            # 若单位、项目金额为空，则不能建立合同
+            project_order = project_contract_form.cleaned_data.get('project_order')
+            order_queryset = project_order.values_list()
+            # 定义合同号、合同金额、单位、联系人
             date_today = date.today()
             contract_today = ProjectContract.objects.filter(c_time__contains=date_today,
                                                             contract_type=0).order_by('-c_time')
-            project_order = project_contract_form.cleaned_data.get('project_order')
+
             count_order = project_order.count()
-            # return HttpResponse("200 ok")
             if contract_today:
                 if count_order == 1:
                     contract_num = '1' + str(int(contract_today[0].contract_num) + 1)[1:]

@@ -277,6 +277,9 @@
           width: 120,
           align: 'center',
           formatter: progressMatter,
+          cellStyle: function(value,row,index){
+            return {css:{"padding-left":"10px","padding-right":"10px"}};
+          },
         },
         {
           field: 'project_type',
