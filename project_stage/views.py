@@ -9,7 +9,6 @@ from datetime import date, timedelta
 import django.dispatch
 from django.dispatch import receiver
 from customer.views import customer_edit, project_add_unit, project_add_terminal
-# from django.db.models import Q
 
 # Create your views here.
 
@@ -56,14 +55,12 @@ def sample_record_table(request):
 
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
-        # search = request.GET.get('search')
+
         project_num = request.GET.get('project_num')
         unit_name = request.GET.get('unit')
         sample_sender = request.GET.get('sample_sender')
         note = request.GET.get('note')
         pro_type_id = int(request.GET.get('pro_type_id'))
-        # sort_column = request.GET.get('sort')  # which column need to sort
-        # order = request.GET.get('order')  # ascending or descending
 
         conditions = {}  # 构造字典存储查询条件
 
@@ -87,7 +84,6 @@ def sample_record_table(request):
             limit = 50  # 默认是每页10行的内容，与前端默认行数一致
         paginator = Paginator(all_projects, limit)  # 开始做分页
 
-        # page = int(int(offset) / int(limit) + 1)
         response_data = {'total': all_projects_count, 'rows': []}  # 必须带有rows和total这2个key
         for project in paginator.page(pageNum):
             # 下面这些key，都是我们在前端定义好了的，前后端必须一致，前端才能接受到数据并且请求.
@@ -207,20 +203,26 @@ def sample_record_add(request):
             # 定义启动截至日期
             start_days = pro_type.start_deadline
             if start_days:
-                sample_rec.start_deadline = receive_date + timedelta(days=start_days)
+                # sample_rec.start_deadline = receive_date + timedelta(days=start_days)
+                sample_rec.start_deadline = date_today + timedelta(days=start_days)
             # 定义预实验截至日期
             preexperiment_days = pro_type.pre_experiment_cycle
             if preexperiment_days:
-                sample_rec.preexperiment_deadline = receive_date + timedelta(days=preexperiment_days)
+                # sample_rec.preexperiment_deadline = receive_date + timedelta(days=preexperiment_days)
+                sample_rec.preexperiment_deadline = date_today + timedelta(days=preexperiment_days)
             # 定义前处理截至日期和下机截止日期
             pre_process_days = pro_type.pre_process_cycle
             if pre_process_days:
-                sample_rec.pretreat_deadline = receive_date + timedelta(days=pre_process_days)
-                sample_rec.test_deadline = receive_date + timedelta(days=pre_process_days + pro_type.test_cycle)
+                # sample_rec.pretreat_deadline = receive_date + timedelta(days=pre_process_days)
+                # sample_rec.test_deadline = receive_date + timedelta(days=pre_process_days + pro_type.test_cycle)
+                sample_rec.pretreat_deadline = date_today + timedelta(days=pre_process_days)
+                sample_rec.test_deadline = date_today + timedelta(days=pre_process_days + pro_type.test_cycle)
             else:
-                sample_rec.test_deadline = receive_date + timedelta(days=pro_type.test_cycle)
+                # sample_rec.test_deadline = receive_date + timedelta(days=pro_type.test_cycle)
+                sample_rec.test_deadline = date_today + timedelta(days=pro_type.test_cycle)
             # 定义项目截至日期
-            sample_rec.pro_deadline = receive_date + timedelta(days=pro_type.total_cycle)
+            # sample_rec.pro_deadline = receive_date + timedelta(days=pro_type.total_cycle)
+            sample_rec.pro_deadline = date_today + timedelta(days=pro_type.total_cycle)
 
             sample_rec.save()
             sample_rec_form.save_m2m()   # 使用commit后要手动保存manytomany
@@ -268,28 +270,29 @@ def sample_record_edit(request, project_id):
                     project_info.terminal = terminal
                 else:
                     project_info.terminal = None
-            # 以下定义几个截止日期修改
-            if 'project_type' in change_list or 'receive_date' in change_list:
-
+            # 以下定义几个截止日期修改(若周期以登记时间作为起点，则收样时间跟周期无关)
+            # if 'project_type' in change_list or 'receive_date' in change_list:
+            if 'project_type' in change_list :
                 pro_type = ProjectType.objects.get(id=request.POST.get("project_type"))
-                receive_date = project_info_form.cleaned_data.get("receive_date")
+                # receive_date = project_info_form.cleaned_data.get("receive_date")
+                start_time = project_info.c_time.date()
                 # 同时修改启动截止日期
                 start_days = pro_type.start_deadline
                 if start_days:
-                    project_info.start_deadline = receive_date + timedelta(days=start_days)
+                    project_info.start_deadline = start_time + timedelta(days=start_days)
                 # 定义预实验截至日期
                 preexperiment_days = pro_type.pre_experiment_cycle
                 if preexperiment_days:
-                    project_info.preexperiment_deadline = receive_date + timedelta(days=preexperiment_days)
+                    project_info.preexperiment_deadline = start_time + timedelta(days=preexperiment_days)
                 # 定义前处理截至日期和下机截止日期
                 pre_process_days = pro_type.pre_process_cycle
                 if pre_process_days:
-                    project_info.pretreat_deadline = receive_date + timedelta(days=pre_process_days)
-                    project_info.test_deadline = receive_date + timedelta(days=pre_process_days + pro_type.test_cycle)
+                    project_info.pretreat_deadline = start_time + timedelta(days=pre_process_days)
+                    project_info.test_deadline = start_time + timedelta(days=pre_process_days + pro_type.test_cycle)
                 else:
-                    project_info.test_deadline = receive_date + timedelta(days=pro_type.test_cycle)
+                    project_info.test_deadline = start_time + timedelta(days=pro_type.test_cycle)
                 # 定义项目截至日期
-                project_info.pro_deadline = receive_date + timedelta(days=pro_type.total_cycle)
+                project_info.pro_deadline = start_time + timedelta(days=pro_type.total_cycle)
 
             project_info.save()
             project_info_form.save_m2m()  # 使用commit后要手动保存manytomany
@@ -352,19 +355,12 @@ def pretreat_stage_table(request):
 
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
-        # search = request.GET.get('search')
+
         project_num = request.GET.get('project_num')
         unit_name = request.GET.get('unit')
         sample_sender = request.GET.get('sample_sender')
         pro_type_id = int(request.GET.get('pro_type_id'))
-        # sort_column = request.GET.get('sort')  # which column need to sort
-        # order = request.GET.get('order')  # ascending or descending
-        # if search:  # 判断是否有搜索字
-        #     all_projects = SampleRecord.objects.filter(Q(project_num__contains=search) |
-        #                                                Q(sample_sender__customer_name__contains=search) |
-        #                                                Q(unit__contains=search))
-        # else:
-        #     all_projects = SampleRecord.objects.filter(pretreat_finish_date__isnull=True)
+
         conditions = {}  # 构造字典存储查询条件
 
         if project_num:
@@ -385,7 +381,6 @@ def pretreat_stage_table(request):
             limit = 50  # 默认是每页10行的内容，与前端默认行数一致
         paginator = Paginator(all_projects, limit)  # 开始做分页
 
-        # page = int(int(offset) / int(limit) + 1)
         response_data = {'total': all_projects_count, 'rows': []}  # 必须带有rows和total这2个key
         date_now = date.today()    # 为后面计算周期做准备
         for project in paginator.page(pageNum):
@@ -428,7 +423,8 @@ def pretreat_stage_table(request):
                 pretreat_finish_date = "-"
                 if project.project_type.pre_process_cycle:
                     real_remain_time = project.pretreat_deadline - date_now
-                    real_pretreat_cycle = project.pretreat_deadline - project.receive_date
+                    # real_pretreat_cycle = project.pretreat_deadline - project.receive_date
+                    real_pretreat_cycle = project.pretreat_deadline - project.c_time.date()
                     time_percent = real_remain_time.days * 100 // real_pretreat_cycle.days
                 else:
                     time_percent = "-"
@@ -552,7 +548,7 @@ def pretreat_stage_edit(request, project_id):
     if request.method == 'POST':
         project_info_form = PretreatStageForm(request.POST, instance=project_info)
         if project_info_form.is_valid():
-            # change_list = project_info_form.changed_data
+
             project_info_form.save()
 
             msg = "edit_success"
@@ -592,14 +588,12 @@ def test_analysis_table(request):
     if request.method == 'GET':
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
-        # search = request.GET.get('search')
+
         project_num = request.GET.get('project_num')
         unit_name = request.GET.get('unit')
         sample_sender = request.GET.get('sample_sender')
         note = request.GET.get('note')
         pro_type_id = int(request.GET.get('pro_type_id'))
-        # sort_column = request.GET.get('sort')  # which column need to sort
-        # order = request.GET.get('order')  # ascending or descending
 
         conditions = {}  # 构造字典存储查询条件
 
@@ -623,7 +617,6 @@ def test_analysis_table(request):
             limit = 50  # 默认是每页10行的内容，与前端默认行数一致
         paginator = Paginator(all_projects, limit)  # 开始做分页
 
-        # page = int(int(offset) / int(limit) + 1)
         response_data = {'total': all_projects_count, 'rows': []}  # 必须带有rows和total这2个key
         date_now = date.today()  # 为后面计算剩余周期需要
         for project in paginator.page(pageNum):
@@ -688,7 +681,9 @@ def test_analysis_table(request):
             else:
                 date_send_report = "-"
                 real_remain_time = project.pro_deadline - date_now
-                real_period = project.pro_deadline - project.receive_date
+                # real_period = project.pro_deadline - project.receive_date
+                real_period = project.pro_deadline - project.c_time.date()
+                # 此时可能要考虑real_period为0的情况
                 time_percent = real_remain_time.days * 100 // real_period.days
             if project.date_send_rawdata:
                 date_send_rawdata = project.date_send_rawdata.strftime('%Y-%m-%d')
@@ -735,9 +730,10 @@ def test_analysis_edit(request, project_id):
             project_info_form.save(commit=False)
             if "pro_deadline" in change_list:
                 # 计算实际周期占比
-                receive_date = project_info.receive_date
+                # receive_date = project_info.receive_date
+                start_date = project_info.c_time.date()
                 pro_deadline = project_info_form.cleaned_data.get('pro_deadline')
-                real_pro_cycle = pro_deadline - receive_date
+                real_pro_cycle = pro_deadline - start_date
                 real_in_theory = round(real_pro_cycle.days / project_info.project_type.total_cycle, 2)  # 实际周期占比
                 # 修改实际前处理截止日期和下机截止日期
                 pre_process_cycle = project_info.project_type.pre_process_cycle
@@ -745,20 +741,20 @@ def test_analysis_edit(request, project_id):
                 real_test_period = int(test_cycle * real_in_theory)  # 实际检测周期
                 if pre_process_cycle:
                     real_pre_period = int(pre_process_cycle * real_in_theory)  # 实际前处理周期
-                    project_info.pretreat_deadline = receive_date + timedelta(days=real_pre_period)
-                    project_info.test_deadline = receive_date + timedelta(days=real_pre_period + real_test_period)
+                    project_info.pretreat_deadline = start_date + timedelta(days=real_pre_period)
+                    project_info.test_deadline = start_date + timedelta(days=real_pre_period + real_test_period)
                 else:
-                    project_info.test_deadline = receive_date + timedelta(days=real_test_period)
+                    project_info.test_deadline = start_date + timedelta(days=real_test_period)
                 # 修改实际预实验截止日期
                 pre_experiment_cycle = project_info.project_type.pre_experiment_cycle
                 if pre_experiment_cycle:
                     real_preexperiment_period = int(pre_experiment_cycle * real_in_theory)  # 实际预实验周期
-                    project_info.preexperiment_deadline = receive_date + timedelta(days=real_preexperiment_period)
+                    project_info.preexperiment_deadline = start_date + timedelta(days=real_preexperiment_period)
                 # 修改实际启动截止日期
                 start_cycle = project_info.project_type.start_deadline
                 if start_cycle:
                     real_start_period = int(start_cycle * real_in_theory)  # 实际预实验周期
-                    project_info.start_deadline = receive_date + timedelta(days=real_start_period)
+                    project_info.start_deadline = start_date + timedelta(days=real_start_period)
 
             project_info.save()
             project_info_form.save_m2m()

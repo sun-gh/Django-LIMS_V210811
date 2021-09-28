@@ -125,61 +125,70 @@ def project_contract_add(request):
             project_contract_form.save(commit=False)
             # 若单位、项目金额为空，则不能建立合同
             project_order = project_contract_form.cleaned_data.get('project_order')
-            order_queryset = project_order.values_list()
-            # 定义合同号、合同金额、单位、联系人
-            date_today = date.today()
-            contract_today = ProjectContract.objects.filter(c_time__contains=date_today,
-                                                            contract_type=0).order_by('-c_time')
+            value_list = []
+            queryset1 = project_order.values_list('project_sum', flat=True)
+            value_list += list(queryset1)
+            queryset2 = project_order.values_list('project_order__unit', flat=True)
+            value_list += list(queryset2)
+            if None in value_list:
+                msg = "info_deletion"
+                form = AddProjectContractForm(request.POST, request.FILES or None)
 
-            count_order = project_order.count()
-            if contract_today:
-                if count_order == 1:
-                    contract_num = '1' + str(int(contract_today[0].contract_num) + 1)[1:]
-                    contract_sum = project_order[0].project_sum
-                    not_makeout_invoice_sum = contract_sum
+                return render(request, "contract_manage/project_contract_add.html", {'form': form, 'msg': msg})
+            else:
+                # 定义合同号、合同金额、单位、联系人
+                date_today = date.today()
+                contract_today = ProjectContract.objects.filter(c_time__contains=date_today,
+                                                                contract_type=0).order_by('-c_time')
+                count_order = project_order.count()
+                if contract_today:
+                    if count_order == 1:
+                        contract_num = '1' + str(int(contract_today[0].contract_num) + 1)[1:]
+                        contract_sum = project_order[0].project_sum
+                        not_makeout_invoice_sum = contract_sum
+                    else:
+                        contract_num = '2' + str(int(contract_today[0].contract_num) + 1)[1:]
+                        contract_sum = 0
+                        for order in project_order:
+                            contract_sum += order.project_sum
+                        not_makeout_invoice_sum = contract_sum
                 else:
-                    contract_num = '2' + str(int(contract_today[0].contract_num) + 1)[1:]
-                    contract_sum = 0
-                    for order in project_order:
-                        contract_sum += order.project_sum
-                    not_makeout_invoice_sum = contract_sum
-            else:
-                if count_order == 1:
-                    contract_num = '1' + date_today.strftime('%y%m%d') + '01'
-                    contract_sum = project_order[0].project_sum
-                    not_makeout_invoice_sum = contract_sum
+                    if count_order == 1:
+                        contract_num = '1' + date_today.strftime('%y%m%d') + '01'
+                        contract_sum = project_order[0].project_sum
+                        not_makeout_invoice_sum = contract_sum
+                    else:
+                        contract_num = '2' + date_today.strftime('%y%m%d') + '01'
+                        contract_sum = 0
+                        for order in project_order:
+                            contract_sum += order.project_sum
+                        not_makeout_invoice_sum = contract_sum
+                project_contract.contract_num = contract_num
+                project_contract.contract_sum = contract_sum
+                project_contract.not_makeout_invoice_sum = not_makeout_invoice_sum
+                # 定义单位
+                unit = project_contract_form.cleaned_data.get('unit')
+                if unit:
+                    project_contract.unit_name = unit.unit_name
                 else:
-                    contract_num = '2' + date_today.strftime('%y%m%d') + '01'
-                    contract_sum = 0
-                    for order in project_order:
-                        contract_sum += order.project_sum
-                    not_makeout_invoice_sum = contract_sum
-            project_contract.contract_num = contract_num
-            project_contract.contract_sum = contract_sum
-            project_contract.not_makeout_invoice_sum = not_makeout_invoice_sum
-            # 定义单位
-            unit = project_contract_form.cleaned_data.get('unit')
-            if unit:
-                project_contract.unit_name = unit.unit_name
-            else:
-                project_contract.unit_name = project_order[0].project_order.sample_sender.unit.unit_name
-            # 定义联系人
-            linkman = project_contract_form.cleaned_data.get('linkman')
-            if linkman:
-                project_contract.linkman = linkman
-            else:
-                project_contract.linkman = project_order[0].project_order.sample_sender.customer_name
+                    project_contract.unit_name = project_order[0].project_order.unit
+                # 定义联系人
+                linkman = project_contract_form.cleaned_data.get('linkman')
+                if linkman:
+                    project_contract.linkman = linkman
+                else:
+                    project_contract.linkman = project_order[0].project_order.sample_sender.customer_name
 
-            project_contract.save()
-            project_contract_form.save_m2m()  # 使用commit后要手动保存manytomany
+                project_contract.save()
+                project_contract_form.save_m2m()  # 使用commit后要手动保存manytomany
 
-            msg = "add_success"
-            # 发送一个信号
-            contract_add_success.send(project_contract_add, msg=msg, project_order=project_order)
+                msg = "add_success"
+                # 发送一个信号
+                contract_add_success.send(project_contract_add, msg=msg, project_order=project_order)
 
-            return render(request, "contract_manage/project_contract.html", {'msg': msg})
+                return render(request, "contract_manage/project_contract.html", {'msg': msg})
         else:
-            form = AdvancepayContractForm(request.POST, request.FILES or None)
+            form = AddProjectContractForm(request.POST, request.FILES or None)
             msg = "info_error"
             return render(request, "contract_manage/project_contract_add.html", {'form': form, 'msg': msg})
 

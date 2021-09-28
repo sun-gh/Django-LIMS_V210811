@@ -148,28 +148,28 @@
 
   // 设置弹出提示框属性
     toastr.options = {
-        closeButton: true,
-        debug: true,
-        progressBar: false,
-        positionClass: "toast-center-center",
-        onclick: null,
-        showDuration: "300",
-        hideDuration: "1000",
-        timeOut: "2000",
-        extendedTimeOut: "1000",
-        showEasing: "swing",
-        hideEasing: "linear",
-        showMethod: "fadeIn",
-        hideMethod: "fadeOut"
+      closeButton: true,
+      debug: true,
+      progressBar: false,
+      positionClass: "toast-center-center",
+      onclick: null,
+      showDuration: "300",
+      hideDuration: "1000",
+      timeOut: "2000",
+      extendedTimeOut: "1000",
+      showEasing: "swing",
+      hideEasing: "linear",
+      showMethod: "fadeIn",
+      hideMethod: "fadeOut"
     };
 
   // 定义message显示
     function msgTip(){
       var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
-      if (msgs=='repeat') {
-        toastr.error('该客户已存在！')
+      if (msgs=='info_deletion') {
+        toastr.error('添加失败！项目金额或单位缺失。')
       }else if (msgs=='info_error') {
-        toastr.error('添加失败！')
+        toastr.error('添加失败！请检查填写内容。')
       }
     }
     msgTip();
