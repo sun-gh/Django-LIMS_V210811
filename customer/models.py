@@ -34,6 +34,7 @@ class CustomerInfo(models.Model):
     unit = models.ForeignKey(UnitInvoice, verbose_name="单位", on_delete=models.SET_NULL, null=True, blank=True)
     department = models.CharField(max_length=128, verbose_name="科室/院系", blank=True, null=True)
     leading_official = models.CharField(max_length=32, verbose_name="负责人", blank=True, null=True)
+    address = models.CharField(max_length=128, verbose_name="地址", blank=True, null=True)
     note = models.CharField(max_length=256, verbose_name="备注", blank=True, null=True)
     person_add = models.CharField(max_length=32, verbose_name="添加人", default="添加人")
     c_time = models.DateTimeField(verbose_name="添加时间", auto_now_add=True)

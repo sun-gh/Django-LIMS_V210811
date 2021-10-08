@@ -162,6 +162,7 @@ class SampleRecord(models.Model):
     machine_time = models.CharField(max_length=48, verbose_name="机时类型", null=True, blank=True)
     sample_amount = models.PositiveSmallIntegerField(verbose_name="样本数量")
     sample_sender = models.ForeignKey(CustomerInfo, verbose_name="送样人", on_delete=models.SET_NULL, null=True)
+    agent_id = models.PositiveIntegerField(verbose_name="代理ID", null=True, blank=True)
     # 将以下两个字段直接保存到记录
     unit = models.CharField(max_length=128, verbose_name="单位", null=True, blank=True)
     terminal = models.CharField(max_length=32, verbose_name="送样终端", blank=True, null=True)  # 上级领导

@@ -38,6 +38,7 @@ class CustomerInfoForm(forms.ModelForm):
     department = forms.CharField(label="科室/院系", required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     leading_official = forms.CharField(label="负责人", required=False,
                                        widget=forms.TextInput(attrs={'class': 'form-control'}))
+    address = forms.CharField(label="通讯地址", required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     note = forms.CharField(label="备注", required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     person_add = forms.CharField(label="添加人", widget=forms.TextInput(attrs={'class': 'form-control'}))
 
@@ -50,6 +51,7 @@ class CustomerInfoForm(forms.ModelForm):
             'unit',
             'department',
             'leading_official',
+            'address',
             'note',
             'person_add',
             ]

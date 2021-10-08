@@ -78,15 +78,16 @@
               </div><!--/.col-->
             </div>  <!--/.row-->
             <div class="row">
-              <div class="col-md-8">
+              <div class="col-md-10">
               <h6><b>送样人:</b></h6>
               <table border="1" class="table " style="border-left:3px solid orangered;border-bottom:1px solid orangered" >
                 <thead>
                   <tr>
-                      <th>姓名</th>
-                      <th>邮箱</th>
-                      <th>单位</th>
-                      <th>送样终端</th>
+                    <th>姓名</th>
+                    <th>邮箱</th>
+                    <th>单位</th>
+                    <th>送样终端</th>
+                    <th>代理ID</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -95,6 +96,7 @@
                     <td>{{ record.sample_sender.mail|default:"-" }}</td>
                     <td>{{ record.unit|default:"-" }}</td>
                     <td>{{ record.terminal|default:"-" }}</td>
+                    <td>{{ record.agent_id|default:"-" }}</td>
                   </tr>
                 </tbody>
               </table>

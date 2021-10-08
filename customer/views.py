@@ -239,6 +239,12 @@ def customer_list_table(request):
                 leading_official = customer.leading_official
             else:
                 leading_official = "-"
+            # 定义地址
+            address_content = customer.address
+            if address_content:
+                address = address_content
+            else:
+                address = "-"
             if customer.note:
                 note = customer.note
             else:
@@ -255,6 +261,7 @@ def customer_list_table(request):
                 "unit_name": unit_name,
                 "department": department,
                 "leading_official": leading_official,
+                "address": address,
                 "note": note,
                 "person_add": customer.person_add,
             })

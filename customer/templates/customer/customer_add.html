@@ -70,8 +70,6 @@
                           {{ form.unit }}
                         </div>
                       </div>
-                      </div>
-                      <div class="col">
                       <!--科室/院系-->
                       <div class="form-group row">
                         {{ form.department.label_tag }}
@@ -79,11 +77,21 @@
                           {{ form.department }}
                         </div>
                       </div>
+                      </div>
+                      <div class="col">
+
                       <!--负责人-->
                       <div class="form-group row">
                         {{ form.leading_official.label_tag }}
                         <div class="col-md-7">
                           {{ form.leading_official }}
+                        </div>
+                      </div>
+                      <!--通讯地址-->
+                      <div class="form-group row">
+                        {{ form.address.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.address }}
                         </div>
                       </div>
                       <!--备注-->

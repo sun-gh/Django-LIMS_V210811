@@ -50,6 +50,10 @@
                     <td id="detail_leading_official"></td>
                   </tr>
                   <tr>
+                    <th>通讯地址：</th>
+                    <td id="detail_address"></td>
+                  </tr>
+                  <tr>
                     <th>备注：</th>
                     <td id="detail_note"></td>
                   </tr>
@@ -289,6 +293,13 @@
             align: 'center',
         },
         {
+            field: 'address',
+            title: '通讯地址',
+            width: 110,
+            align: 'center',
+            formatter: paramsMatter,
+        },
+        {
             field: 'note',
             title: '备注',
             width: 140,
@@ -388,6 +399,7 @@
     modal.find('.modal-body #detail_unit').text(rows.unit_name)
     modal.find('.modal-body #detail_department').text(rows.department)
     modal.find('.modal-body #detail_leading_official').text(rows.leading_official)
+    modal.find('.modal-body #detail_adress').text(rows.address)
     modal.find('.modal-body #detail_note').text(rows.note)
     modal.find('.modal-body #person_add').text(rows.person_add)
   })

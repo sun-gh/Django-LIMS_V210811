@@ -107,6 +107,12 @@ def sample_record_table(request):
                 leading_official = person
             else:
                 leading_official = "-"
+            # 定义代理ID
+            agent_num = project.agent_id
+            if agent_num:
+                agent_id = agent_num
+            else:
+                agent_id = "-"
             # 定义样本质量
             all_qualitys = project.sample_quality.all()
             if all_qualitys.count() == 1:
@@ -149,6 +155,7 @@ def sample_record_table(request):
                 "leading_official": leading_official,
                 "unit": unit_name,
                 "sample_sender": project.sample_sender.customer_name,
+                "agent_id": agent_id,
                 "sample_quality": sample_quality,
                 "addition_item": addition_item,
                 "receive_date": receive_date,
@@ -272,7 +279,7 @@ def sample_record_edit(request, project_id):
                     project_info.terminal = None
             # 以下定义几个截止日期修改(若周期以登记时间作为起点，则收样时间跟周期无关)
             # if 'project_type' in change_list or 'receive_date' in change_list:
-            if 'project_type' in change_list :
+            if 'project_type' in change_list:
                 pro_type = ProjectType.objects.get(id=request.POST.get("project_type"))
                 # receive_date = project_info_form.cleaned_data.get("receive_date")
                 start_time = project_info.c_time.date()
