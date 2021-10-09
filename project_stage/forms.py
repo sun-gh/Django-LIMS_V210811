@@ -16,7 +16,7 @@ class SampleRecordForm(forms.ModelForm):
     sample_amount = forms.IntegerField(label="样本数量", widget=forms.NumberInput(attrs={'class': 'form-control'}))
     sample_sender = forms.ModelChoiceField(queryset=CustomerInfo.objects.all(), label="送样人",
                                            widget=forms.Select(attrs={'class': 'form-control'}))
-    agent_id = forms.IntegerField(label="代理ID", max_value=999999,
+    agent_id = forms.IntegerField(label="代理ID", max_value=999999, required=False,
                                   widget=forms.NumberInput(attrs={'class': 'form-control'}))
     sample_quality = forms.ModelMultipleChoiceField(queryset=SampleQuality.objects.all(), label="样本质量",
                                                     widget=forms.SelectMultiple(attrs={'class': 'form-control'}))

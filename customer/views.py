@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import UnitInvoice, CustomerInfo
+from project_stage.models import SampleRecord
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from . import forms
@@ -113,12 +114,16 @@ def unit_del(request):
     # 定义删除功能函数
     if request.method == 'POST':
 
-        # if request.POST.get("type") == "post":
-        ids = request.POST.get("ids")
-        for unit_id in json.loads(ids):
+        unit_id = request.POST.get("unit_id")
+        unit_id = json.loads(unit_id)
+
+        link_customer = CustomerInfo.objects.filter(unit=unit_id)
+        if link_customer:
+            return HttpResponse("del_fail")
+        else:
             unit = UnitInvoice.objects.get(id=unit_id)
             unit.delete()
-        return HttpResponse("del_success")
+            return HttpResponse("del_success")
 
     return HttpResponse("非POST请求！")
 
@@ -294,11 +299,16 @@ def customer_del(request):
     # 定义删除客户功能函数
     if request.method == 'POST':
 
-        ids = request.POST.get("ids")
-        for customer_id in json.loads(ids):
+        str_id = request.POST.get("customer_id")
+        customer_id = json.loads(str_id)
+
+        link_pro = SampleRecord.objects.filter(sample_sender=customer_id)
+        if link_pro:
+            return HttpResponse("del_fail")
+        else:
             customer = CustomerInfo.objects.get(id=customer_id)
             customer.delete()
-        return HttpResponse("del_success")
+            return HttpResponse("del_success")
 
     return HttpResponse("非POST请求！")
 
