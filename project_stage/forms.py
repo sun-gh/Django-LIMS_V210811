@@ -1,6 +1,6 @@
 from django import forms
 from .models import SampleRecord, ProjectType, SampleType, MachineTime, SampleQuality, AdditionalItem, OperatePerson,\
-    SampleStatus, ProjectInterrupt, Machine
+    SampleStatus, ProjectInterrupt, Machine, ResponsiblePerson
 from customer.models import CustomerInfo
 
 
@@ -101,6 +101,8 @@ class TestAnalysisForm(forms.ModelForm):
                                              required=False, widget=forms.Select(attrs={'class': 'form-control'}))
     date_test = forms.DateField(label="上机日期", required=False, widget=forms.DateInput(
         format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
+    responsible_person = forms.ModelChoiceField(queryset=ResponsiblePerson.objects.all(), label="项目负责人",
+                                                required=False, widget=forms.Select(attrs={'class': 'form-control'}))
     date_searchlib = forms.DateField(label="搜库日期", required=False, widget=forms.DateInput(
         format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
     date_send_report = forms.DateField(label="报告发送日期", required=False, widget=forms.DateInput(
@@ -115,6 +117,7 @@ class TestAnalysisForm(forms.ModelForm):
         fields = [
             'instrument_type',
             'date_test',
+            'responsible_person',
             'date_searchlib',
             'date_send_report',
             'date_send_rawdata',

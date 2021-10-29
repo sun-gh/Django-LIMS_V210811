@@ -128,6 +128,11 @@ def sample_record_table(request):
                     addition_item = str(all_item.count()) + "个附加项"
             else:
                 addition_item = "-"
+            technical_support = project.responsible_person
+            if technical_support:
+                responsible_person = technical_support.name
+            else:
+                responsible_person = "-"
             # 定义备注
             if project.note:
                 note = project.note
@@ -159,6 +164,7 @@ def sample_record_table(request):
                 "sample_quality": sample_quality,
                 "addition_item": addition_item,
                 "receive_date": receive_date,
+                "responsible_person": responsible_person,
                 "note": note,
                 "files": file_display,
             })
@@ -414,6 +420,11 @@ def pretreat_stage_table(request):
                 leading_official = "-"
 
             # 以下为前处理阶段新添加字段
+            technical_support = project.responsible_person
+            if technical_support:
+                responsible_person = technical_support.name
+            else:
+                responsible_person = "-"
             if project.start_date:
                 start_date = project.start_date.strftime('%Y-%m-%d')
             else:
@@ -527,6 +538,7 @@ def pretreat_stage_table(request):
                 "sample_sender": project.sample_sender.customer_name,
                 # 以下为前处理阶段新添加字段
                 "priority": project.priority,
+                "responsible_person": responsible_person,
                 "start_date": start_date,
                 "preexperiment_finish_date": preexperiment_finish_date,
                 "pretreat_finish_date": pretreat_finish_date,
@@ -677,6 +689,11 @@ def test_analysis_table(request):
                 date_test = project.date_test.strftime('%Y-%m-%d')
             else:
                 date_test = "-"
+            technical_support = project.responsible_person
+            if technical_support:
+                responsible_person = technical_support.name
+            else:
+                responsible_person = "-"
             if project.date_searchlib:
                 date_searchlib = project.date_searchlib.strftime('%Y-%m-%d')
             else:
@@ -714,6 +731,7 @@ def test_analysis_table(request):
                 "files": file_display,
                 "instrument_type": instrument_type,
                 "date_test": date_test,
+                "responsible_person": responsible_person,
                 "date_searchlib": date_searchlib,
                 "date_send_report": date_send_report,
                 "date_send_rawdata": date_send_rawdata,
@@ -737,7 +755,6 @@ def test_analysis_edit(request, project_id):
             project_info_form.save(commit=False)
             if "pro_deadline" in change_list:
                 # 计算实际周期占比
-                # receive_date = project_info.receive_date
                 start_date = project_info.c_time.date()
                 pro_deadline = project_info_form.cleaned_data.get('pro_deadline')
                 real_pro_cycle = pro_deadline - start_date
@@ -766,7 +783,7 @@ def test_analysis_edit(request, project_id):
             project_info.save()
             project_info_form.save_m2m()
             msg = "edit_success"
-            # return render(request, 'project_stage/test_analysis.html', {'msg': msg})
+
             return redirect('project_stage:test_analysis', msg)
         else:
             project_info_form = TestAnalysisForm(request.POST)

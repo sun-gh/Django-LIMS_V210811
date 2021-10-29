@@ -35,6 +35,8 @@ urlpatterns = [
     path('contract_manage/', include('contract_manage.urls')),
     # 发票相关
     path('invoice_manage/', include('invoice_manage.urls')),
+    # 临床意向
+    path('clinic_intention/', include('clinic_intention.urls')),
     # 文件下载链接
     url('media/(?P<path>.*)', serve, {'document_root': settings.MEDIA_ROOT}),
 ]

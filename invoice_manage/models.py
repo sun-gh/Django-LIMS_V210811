@@ -58,7 +58,7 @@ class ApplyInvoice(models.Model):
     reimburse_file = models.ManyToManyField(ReimburseFile, verbose_name="报账文件", blank=True)
     # 开票类型暂定三种
     invoice_type = models.SmallIntegerField(choices=invoice_type_choice, verbose_name="开票类型", default=0)
-    note = models.CharField(max_length=128, verbose_name="备注", blank=True, null=True)
+    note = models.CharField(max_length=500, verbose_name="备注", blank=True, null=True)
     linkman = models.CharField(max_length=32, verbose_name="联系人")
     phone = models.BigIntegerField(verbose_name="电话", blank=True, null=True)
     address_linkman = models.CharField(max_length=128, verbose_name="收件地址", blank=True, null=True)

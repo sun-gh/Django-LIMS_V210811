@@ -106,15 +106,15 @@ class EditPayInfoForm(forms.ModelForm):
 class ApplyVoidRedForm(forms.ModelForm):
     # 定义申请发票冲红
 
-    link_invoice = forms.ModelMultipleChoiceField(queryset=InvoiceInfo.objects.filter(void_red=0), label="原发票号",
-                                                  widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
-    treat_type = forms.IntegerField(label="处理类型", widget=forms.Select(
-        choices=VoidRedInfo.treat_choice, attrs={'class': 'form-control'}))
+    link_invoice = forms.ModelMultipleChoiceField(queryset=InvoiceInfo.objects.filter(
+        void_red=0, invoice_num__isnull=False), label="原发票号", widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
+    treat_type = forms.IntegerField(label="处理类型", widget=forms.Select(choices=VoidRedInfo.treat_choice,
+                                                                      attrs={'class': 'form-control'}))
     reason = forms.CharField(label="作废/冲红原因", required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     applicant = forms.CharField(label="申请人", widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     class Meta:
-        model = InvoiceInfo
+        model = VoidRedInfo
         fields = [
             'link_invoice',
             'treat_type',

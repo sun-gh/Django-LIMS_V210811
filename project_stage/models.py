@@ -144,6 +144,20 @@ class Machine(models.Model):
         return self.instrument
 
 
+class ResponsiblePerson(models.Model):
+    # 定义项目负责人
+    name = models.CharField(max_length=32, verbose_name="姓名")
+    order = models.PositiveSmallIntegerField(verbose_name="显示顺序", unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["order"]
+        verbose_name = "项目负责人"
+        verbose_name_plural = verbose_name
+
+
 class SampleRecord(models.Model):
     # 定义样本登记表
     priority_level = (
@@ -199,6 +213,7 @@ class SampleRecord(models.Model):
     project_source = models.SmallIntegerField(choices=source_choice, verbose_name="项目来源", default=0)
     instrument_type = models.ForeignKey(Machine, verbose_name="上机仪器", on_delete=models.SET_NULL, blank=True, null=True)
     date_test = models.DateField(verbose_name="上机日期", blank=True, null=True)
+    responsible_person = models.ForeignKey(ResponsiblePerson, verbose_name="项目负责人", on_delete=models.SET_NULL, blank=True, null=True)
     date_searchlib = models.DateField(verbose_name="搜库日期", blank=True, null=True)
     date_send_report = models.DateField(verbose_name="报告发送日期", blank=True, null=True)
     date_send_rawdata = models.DateField(verbose_name="原始数据发送日期", blank=True, null=True)

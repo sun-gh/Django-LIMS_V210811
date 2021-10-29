@@ -45,7 +45,7 @@
                         <th>样本质量</th>
                         <th>收样日期</th>
                         <th>附加项目</th>
-                        <th>登记人</th>
+                        <th>项目负责人</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -71,7 +71,13 @@
                             -
                         {% endfor %}
                       </td>
-                      <td>{{ record.person_record }}</td>
+                      <td>
+                        {% if record.responsible_person %}
+                          <span>{{ record.responsible_person.name }}</span>
+                        {% else %}
+                          <span>-</span>
+                        {% endif %}
+                      </td>
                     </tr>
                   </tbody>
                 </table>

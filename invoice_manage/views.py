@@ -15,7 +15,6 @@ from django.db.models import Q
 @login_required()
 def apply_invoice(request):
     # 定义申请开票函数
-
     if request.method == 'GET':
 
         apply_form = forms.ApplyInvoiceForm()
@@ -70,7 +69,6 @@ def apply_invoice_record(request):
 
 def apply_invoice_table(request):
     # 定义开票申请表数据
-
     if request.method == 'GET':
 
         limit = request.GET.get('pageSize')  # how many items per page
@@ -79,13 +77,7 @@ def apply_invoice_table(request):
         contract_number = request.GET.get('contract_number')
         unit = request.GET.get('unit')
         linkman = request.GET.get('linkman')
-        # sort_column = request.GET.get('sort')  # which column need to sort
-        # order = request.GET.get('order')  # ascending or descending
-        # if search:  # 判断是否有搜索字
-        #     all_apply = ApplyInvoice.objects.filter(Q(unit__contains=search) | Q(linkman__contains=search) |
-        #                                             Q(related_contract__contract_num__contains=search))
-        # else:
-        #     all_apply = ApplyInvoice.objects.all()
+
         conditions = {}  # 构造字典存储查询条件
 
         if contract_number:
@@ -250,7 +242,6 @@ def apply_invoice_del(request):
 
 @login_required()
 def approve_apply_invoice(request, apply_id):
-
     # 定义开票申请审批
     apply_detail = ApplyInvoice.objects.get(id=apply_id)
 
@@ -338,7 +329,6 @@ def invoice_info(request):
 @login_required()
 def invoice_info_table(request):
     # 定义已开发票信息数据
-
     if request.method == 'GET':
 
         limit = request.GET.get('pageSize')  # how many items per page
@@ -347,13 +337,7 @@ def invoice_info_table(request):
         contract_number = request.GET.get('contract_number')
         unit = request.GET.get('unit')
         invoice_num = request.GET.get('invoice_num')
-        # sort_column = request.GET.get('sort')  # which column need to sort
-        # order = request.GET.get('order')  # ascending or descending
-        # if search:  # 判断是否有搜索字
-        #     all_invoice = InvoiceInfo.objects.filter(Q(invoice_num__contains=search) | Q(unit_invoice__contains=search) |
-        #                                              Q(link_apply__related_contract__contract_num__contains=search))
-        # else:
-        #     all_invoice = InvoiceInfo.objects.all()
+
         conditions = {}  # 构造字典存储查询条件
 
         if contract_number:
@@ -371,7 +355,6 @@ def invoice_info_table(request):
             limit = 50  # 默认是每页10行的内容，与前端默认行数一致
         paginator = Paginator(all_invoice, limit)  # 开始做分页
 
-        # page = int(int(offset) / int(limit) + 1)
         response_data = {'total': invoice_count, 'rows': []}
         for invoice in paginator.page(pageNum):
             # 下面这些key，都是我们在前端定义好了的，前后端必须一致，前端才能接受到数据并且请求.
@@ -603,7 +586,6 @@ def void_red_info_table(request):
             limit = 50  # 默认是每页10行的内容，与前端默认行数一致
         paginator = Paginator(all_apply, limit)  # 开始做分页
 
-        # page = int(int(offset) / int(limit) + 1)
         response_data = {'total': apply_count, 'rows': []}
         for apply in paginator.page(pageNum):
             # 下面这些key，都是我们在前端定义好了的，前后端必须一致，前端才能接受到数据并且请求.
@@ -655,19 +637,19 @@ def edit_void_red(request, apply_id):
             msg = "edit_success"
             return render(request, 'invoice_manage/void_red_info.html', {'msg': msg})
         else:
-            apply_form = forms.ApplyInvoiceForm(request.POST)
+            apply_form = forms.ApplyVoidRedForm(request.POST)
             msg = 'failed'
             return render(request, 'invoice_manage/edit_void_red.html', {'form': apply_form, 'msg': msg,
                                                                          'apply_info': apply_info})
     elif request.method == 'GET':
         apply_form = forms.ApplyVoidRedForm(instance=apply_info)
+
         return render(request, 'invoice_manage/edit_void_red.html', {'form': apply_form, 'apply_info': apply_info})
 
 
 @login_required()
 def void_red_detail(request, apply_id):
     # 定义发票作废详情
-
     apply_detail = VoidRedInfo.objects.get(id=apply_id)
 
     return render(request, 'invoice_manage/void_red_detail.html', {'apply_detail': apply_detail})

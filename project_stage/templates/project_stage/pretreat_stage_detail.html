@@ -43,6 +43,7 @@
                         <th>机时类型</th>
                         <th>样本数量</th>
                         <th>优先级</th>
+                        <th>项目负责人</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -54,6 +55,13 @@
                       </td>
                       <td>{{ record.sample_amount }}</td>
                       <td>{{ record.get_priority_display }}</td>
+                      <td>
+                        {% if record.responsible_person %}
+                          <span>{{ record.responsible_person.name }}</span>
+                        {% else %}
+                          <span>-</span>
+                        {% endif %}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
