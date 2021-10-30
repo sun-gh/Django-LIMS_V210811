@@ -144,3 +144,5 @@ class SearchForm(forms.Form):
     # 定义搜索项表单
     project_type = forms.ModelChoiceField(queryset=ProjectType.objects.all(), label="项目类型", required=False,
                                           widget=forms.Select(attrs={'class': 'form-control form-control-sm'}))
+    sample_type = forms.ModelChoiceField(queryset=SampleType.objects.all(), label="样本类型", required=False,
+                                         widget=forms.Select(attrs={'class': 'form-control form-control-sm'}))

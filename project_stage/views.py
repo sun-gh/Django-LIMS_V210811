@@ -373,6 +373,7 @@ def pretreat_stage_table(request):
         unit_name = request.GET.get('unit')
         sample_sender = request.GET.get('sample_sender')
         pro_type_id = int(request.GET.get('pro_type_id'))
+        sample_type_id = request.GET.get('sample_type_id')
 
         conditions = {}  # 构造字典存储查询条件
 
@@ -384,6 +385,9 @@ def pretreat_stage_table(request):
             conditions['sample_sender__customer_name__contains'] = sample_sender
         if pro_type_id:
             conditions['project_type__id'] = pro_type_id
+        if sample_type_id:
+            sample_type = SampleType.objects.get(id=int(sample_type_id))
+            conditions['sample_type'] = sample_type.type_name
 
         all_projects = SampleRecord.objects.filter(**conditions)
 

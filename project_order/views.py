@@ -56,14 +56,7 @@ def project_order_table(request):
         project_num = request.GET.get('project_num')
         unit_name = request.GET.get('unit')
         sample_sender = request.GET.get('sample_sender')
-        # sort_column = request.GET.get('sort')  # which column need to sort
-        # order = request.GET.get('order')  # ascending or descending
-        # if search:  # 判断是否有搜索字
-        #     all_projects = SampleRecord.objects.filter(Q(project_num__contains=search) |
-        #                                                Q(sample_sender__customer_name__contains=search) |
-        #                                                Q(unit__contains=search))
-        # else:
-        #     all_projects = SampleRecord.objects.all()
+
         conditions = {}  # 构造字典存储查询条件
 
         if project_num:
@@ -117,7 +110,7 @@ def project_order_table(request):
                 addition_item = "-"
             # 定义项目结算特有字段（OneToOne反向关联只用模型小写名称）
             project_bill = project.projectorder.project_sum
-            if project_bill:
+            if project_bill is not None:
                 project_sum = project_bill
             else:
                 project_sum = "-"
