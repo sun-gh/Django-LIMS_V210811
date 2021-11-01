@@ -73,7 +73,7 @@
                     </div>
 
                     <div class="col-md-2">
-                        <a class="btn btn-info btn-sm  form-search" id="search-btn" onclick="searchfun()" >搜索</a>&nbsp;
+                        <a class="btn btn-success btn-sm  form-search" id="search-btn" onclick="searchfun()" >搜索</a>&nbsp;
                         <a class="btn btn-secondary btn-sm  form-search" onclick="clearfun()" >重置</a>
 
                     </div>
@@ -91,7 +91,7 @@
             </table>
             <div id="toolbar">
               {% if perms.invoice_manage.change_invoiceinfo %}
-                <a class="btn btn-primary btn-sm" href="#" role="button" id="edit-invoice" >修改发票信息</a>&nbsp;&nbsp;
+                <a class="btn btn-info btn-sm" href="#" role="button" id="edit-invoice" >修改发票信息</a>&nbsp;&nbsp;
               {% endif %}
               {% if perms.invoice_manage.edit_pay_info %}
                 <a class="btn btn-info btn-sm" href="#" role="button" id="edit-payment" >修改回款信息</a>
