@@ -34,8 +34,11 @@ class SampleQuality(models.Model):
     # 定义样本质量
 
     quality_type = models.CharField(max_length=64, verbose_name="样本质量", unique=True)
+    message_template = models.CharField(max_length=64, verbose_name="短信模板名称", blank=True, null=True)
+    order = models.PositiveSmallIntegerField(verbose_name="显示顺序", unique=True, blank=True, null=True)
 
     class Meta:
+        ordering = ["order"]
         verbose_name = "样本质量"
         verbose_name_plural = verbose_name
 
@@ -180,7 +183,8 @@ class SampleRecord(models.Model):
     # 将以下两个字段直接保存到记录
     unit = models.CharField(max_length=128, verbose_name="单位", null=True, blank=True)
     terminal = models.CharField(max_length=32, verbose_name="送样终端", blank=True, null=True)  # 上级领导
-    sample_quality = models.ManyToManyField(SampleQuality, verbose_name="样本质量")
+    # sample_quality = models.ManyToManyField(SampleQuality, verbose_name="样本质量")
+    sample_quality = models.ForeignKey(SampleQuality, verbose_name="样本运送条件和质量", on_delete=models.SET_NULL, null=True)
     addition_item = models.ManyToManyField(AdditionalItem, verbose_name="附加项目", blank=True)
     receive_date = models.DateField(verbose_name="收样日期")
     person_record = models.CharField(max_length=32, verbose_name="登记人")

@@ -18,8 +18,8 @@ class SampleRecordForm(forms.ModelForm):
                                            widget=forms.Select(attrs={'class': 'form-control'}))
     agent_id = forms.IntegerField(label="代理ID", max_value=999999, required=False,
                                   widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    sample_quality = forms.ModelMultipleChoiceField(queryset=SampleQuality.objects.all(), label="样本质量",
-                                                    widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
+    sample_quality = forms.ModelChoiceField(queryset=SampleQuality.objects.all(), label="样本运送条件和质量",
+                                            widget=forms.Select(attrs={'class': 'form-control'}))
     addition_item = forms.ModelMultipleChoiceField(queryset=AdditionalItem.objects.all(), label="附加项目", required=False,
                                                    widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
     receive_date = forms.DateField(label="收样日期",  widget=forms.DateInput(

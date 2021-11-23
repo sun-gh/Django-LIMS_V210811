@@ -114,11 +114,13 @@ def sample_record_table(request):
             else:
                 agent_id = "-"
             # 定义样本质量
-            all_qualitys = project.sample_quality.all()
-            if all_qualitys.count() == 1:
-                sample_quality = all_qualitys[0].quality_type
+            quality = project.sample_quality
+            if quality:
+                sample_quality = quality.quality_type
+                message_template = quality.message_template
             else:
-                sample_quality = str(all_qualitys.count()) + "个选项"
+                sample_quality = "-"
+                message_template = "-"
             # addition_item为多对多，显示分多种情况
             all_item = project.addition_item.all()
             if all_item:
@@ -162,6 +164,7 @@ def sample_record_table(request):
                 "sample_sender": project.sample_sender.customer_name,
                 "agent_id": agent_id,
                 "sample_quality": sample_quality,
+                "message_template": message_template,
                 "addition_item": addition_item,
                 "receive_date": receive_date,
                 "responsible_person": responsible_person,

@@ -42,7 +42,7 @@
                         <th>样本类型</th>
                         <th>机时类型</th>
                         <th>样本数量</th>
-                        <th>样本质量</th>
+                        <th>样本运送条件和质量</th>
                         <th>收样日期</th>
                         <th>附加项目</th>
                         <th>项目负责人</th>
@@ -56,13 +56,7 @@
                         {{ record.machine_time|default:"-" }}
                       </td>
                       <td>{{ record.sample_amount }}</td>
-                      <td>
-                        {% for item in record.sample_quality.all %}
-                          <span class="badge badge-warning">{{ item.quality_type }}</span>  <!--4.3中label已废除-->
-                        {% empty %}
-                            -
-                        {% endfor %}
-                      </td>
+                      <td>{{ record.sample_quality.quality_type }}</td>
                       <td>{{ record.receive_date|date:"Y-m-d" }}</td>
                       <td>
                         {% for item in record.addition_item.all %}
