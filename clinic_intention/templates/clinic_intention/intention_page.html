@@ -1,0 +1,609 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;临床意向信息 {% endblock %}
+
+{% block css %}
+  <!--bootstrap-table-->
+  <link rel="stylesheet" href="{% static 'bootstrap-table-1.17.0/dist/bootstrap-table.min.css' %}" />
+  <!--bootstrap-table fixed columns-->
+  <link rel="stylesheet" href="{% static 'bootstrap-table-1.17.0/dist/extensions/fixed-columns/bootstrap-table-fixed-columns.min.css' %}" />
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}" />
+  <link href="{% static 'clinic_intention/css/intention_page.css'  %}" rel="stylesheet" />
+
+{% endblock  %}
+
+{% block content %}
+  <!-- Content Header (Page header) -->
+  <section class="content-header pb-1">
+    <div class="container-fluid">
+      <div class="row ">
+        <div class="col-sm-6">
+          <h5>临床意向信息</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-12">
+        <div class="card card-lightblue mb-2">  <!--primary-->
+          <div class="card-header pb-1 pt-2">
+            <h3 class="card-title">条件查询</h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                <i class="fas fa-minus"></i></button>
+            </div>
+          </div>
+          <div class="card-body pt-2 pb-0">
+            <div class="row">
+              <div class="col">
+                <form class="form-horizontal">
+                  <div class="row">
+                    <div class="col">
+                      <div class="form-group row">
+                        <label for="customer_name" class="col-md-4 col-form-label col-form-label-sm">客户姓名：</label>
+                        <div class="col-md-7">
+                          <input type="text" class="form-control form-control-sm" id="customer_name" name="customer_name" >
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        {{ form.plan_needed.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.plan_needed  }}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="form-group row">
+                        <label for="unit" class="col-md-4 col-form-label col-form-label-sm">单位：</label>
+                        <div class="col-md-7">
+                          <input type="text" class="form-control form-control-sm" id="unit" name="unit"  >
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        {{ form.plan_type.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.plan_type }}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="form-group row">
+                        {{ form.project_stage.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.project_stage }}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <a class="btn btn-success btn-sm  form-search" id="search-btn" onclick="searchfun()" >搜索</a>&nbsp;
+
+                      <a class="btn btn-secondary btn-sm  form-search" onclick="clearfun()" >重置</a>
+                    </div>
+
+                  </div>  <!-- /.row -->
+                </form>
+              </div>  <!-- /.col -->
+            </div>  <!-- /.row -->
+          </div> <!-- /.card-body -->
+        </div>  <!-- /.card -->
+        <!-- 第二个card，表格部分 -->
+        <div class="card">
+          <!-- card-body -->
+          <div class="card-body pt-0 pb-1 pl-1 pr-1">
+            <table id="mytab" class="table table-sm table-bordered table-striped table-hover " style="table-layout:fixed;">
+            </table>
+            <div id="toolbar">
+              {% if perms.clinic_intention.add_clinicintention %}
+                <a class="btn btn-primary btn-sm" href="#" role="button" onclick="add_intention()">添加</a>
+              {% endif %}
+              {% if perms.clinic_intention.change_clinicintention %}
+                <a class="btn btn-info btn-sm" href="#" role="button" id="edit-btn" >修改</a>
+              {% endif %}
+              {% if perms.clinic_intention.delete_clinicintention %}
+                <button type="button" class="btn btn-secondary btn-sm" id="remove-btn">删除</button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div> <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+{% endblock %}
+
+{% block script %}
+<!--popper定位库-->
+<script src="{% static 'popper-core-1.14.7/dist/umd/popper.min.js' %}" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<!-- bootstrap table -->
+<script src="{% static 'bootstrap-table-1.17.0/dist/bootstrap-table.min.js' %}"></script>
+<!-- bootstrap table fixed columns-->
+<script src="{% static 'bootstrap-table-1.17.0/dist/extensions/fixed-columns/bootstrap-table-fixed-columns.min.js' %}"></script>
+<!-- tableExport-->
+<script src="{% static 'tableExport.min.js' %}"></script>
+<!-- bootstrap table export-->
+<script src="{% static 'bootstrap-table-1.17.0/dist/extensions/export/bootstrap-table-export.min.js' %}"></script>
+<!-- bootstrap table cookie-->
+<script src="{% static 'bootstrap-table-1.17.0/dist/extensions/cookie/bootstrap-table-cookie.min.js' %}"></script>
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+
+<script type="text/javascript">
+  // 获取csrf
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  const csrftoken = getCookie('csrftoken');
+  function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  };
+  $.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      }
+    }
+  });
+
+  $(function () {
+    initBSTable()
+  });
+  $table = $("#mytab");
+
+  function initBSTable() {
+
+    // num=1是为了规定num为数字类型
+    var pageSize = sessionStorage.getItem("pageSize");
+    var pageNum = sessionStorage.getItem("pageNum");
+    var num=1;
+    num = pageNum==null?1:parseInt(pageNum);
+    //console.log(pageNum);
+
+    $table.bootstrapTable({
+
+      {#全部参数#}
+      url:"{% url 'clinic_intention:intention_table' %}",
+      method: 'get',                      //请求方式（*）
+      iconSize:"sm",                     // 1,设置修改图标  sm小图标 lg大图标
+      cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+      //cookie: true,                       //是否启用cookie
+      //cookieExpire: '2h',                //cookie过期时间
+      //cookieIdTable: 'unit_list',        //cookie的唯一标识符
+
+      pagination: true,                   //是否显示分页（*）
+      sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+      pageNumber: num,                       //初始化加载第一页，默认第一页;原始值为1
+      pageSize: 50,                       //每页的记录行数（*）
+      pageList: [10, 20, 50, 100, 'All'],        //可供选择的每页的行数（*）
+      smartDisplay: false,               //自动判断显示分页信息和 card 视图
+      paginationLoop: false,             //是否启用分页条无限循环
+      queryParamsType: "limit",          //默认设置为limit，此时发生url中包含limit, offset, sort, order四个参数；为空则包含：pageSize, pageNumber, sortName, sortOrder
+      queryParams: getParams,            //定义向后台传递参数
+
+      search: false,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+      //searchOnEnterKey: true,              //按回车触发搜索方法
+
+      showColumns: true,                  //是否显示所有的列
+      toolbar: "#toolbar",                //一个jQuery 选择器，指明自定义的 toolbar
+
+      showRefresh: false,                  //是否显示刷新按钮
+      showExport: true,                    //显示导出按钮
+      exportTypes:['excel','csv'],  //导出文件类型
+      exportOptions: {
+        fileName: '临床意向信息表',  //文件名称设置
+        worksheetName: 'sheet1',  //表格工作区名称
+        tableName: '临床意向信息',
+        excelstyles: ['background-color', 'color', 'font-size', 'font-weight'],
+
+      },
+      height: 600,                        //行高，如果没有设置height属性，表格自动高度
+      //theadClasses: "thead-light",       //设置thead-blue为表头样式
+
+      showToggle: false,                    //是否显示详细视图和列表视图的切换按钮
+      cardView: false,                    //是否显示详细视图,使用fixed-columns需要设为false
+      detailView: false,                  //开启详情树形图模式,使用fixed-columns需要设为false
+      showFooter: false,                  //显示摘要页脚行,使用fixed-columns需要设为false
+      fixedColumns: true,
+      fixedNumber: 3,  //固定列数
+      uniqueId: 'intention_id',     //为每一行指定唯一的标识符
+
+      //自定义分页字符串显示为中文
+      formatShowingRows:function(pageFrom, pageTo, totalRows) {
+        return "第"+pageFrom+"-"+pageTo+"行，共"+totalRows+"行";
+      },
+      //自定义分页字符串显示为中文
+      formatRecordsPerPage:function(pageNumber) {
+        return pageNumber+' 行/页';
+      },
+      //定义Search placeholder
+      formatSearch:function() {
+        return  "客户姓名/单位";
+      },
+
+      columns: [
+        { checkbox:true, },
+        {
+          field: 'num',  　　　　　　//返回数据rows数组中的每个字典的键名与此处的field值要保持一致
+          title: '序号',
+          width: 55,
+          align: 'center',
+          formatter: function(value,row,index){
+            var pageSize=$('#mytab').bootstrapTable('getOptions').pageSize;//通过表的#id 可以得到每页多少条
+            if (pageSize == 'All'){
+                var totalRows = $('#mytab').bootstrapTable('getOptions').totalRows;
+                pageSize = totalRows;
+            };
+            var pageNumber=$('#mytab').bootstrapTable('getOptions').pageNumber;//通过表的#id 可以得到当前第几页
+            return pageSize * (pageNumber - 1) + index + 1;    //返回每条的序号： 每页条数 * （当前页 - 1 ）+ 序号
+          },
+        },
+        {
+          field: 'intention_number',
+          title: '意向编号',
+          width: 100,
+          align: 'center',
+          formatter: function (value,row,index) {
+            var result = "";
+            result += "<a href='#'  class='view_detail' id='btn-" +row.intention_id +"' >" + value + "</a>";
+
+            return result;
+          },
+        },
+        {
+          field: 'customer_name',
+          title: '客户姓名',
+          width: 90,
+          align: 'center',
+        },
+        {
+          field: 'contact_info',
+          title: '联系方式',
+          width: 130,
+          align: 'center',
+        },
+        {
+          field: 'unit',
+          title: '单位',
+          width: 290,
+          align: 'center',
+        },
+        {
+          field: 'department',
+          title: '科室/院系',
+          width: 110,
+          align: 'center',
+        },
+        {
+          field: 'leading_official',
+          title: '负责人',
+          width: 85,
+          align: 'center',
+        },
+        {
+          field: 'disease_type',
+          title: '疾病种类',
+          width: 100,
+          align: 'center',
+        },
+        {
+          field: 'plan_needed',
+          title: '是否需方案设计',
+          width: 130,
+          align: 'center',
+          formatter: function (value,row,index) {
+              var result = "";
+              if (value==true) {
+                result += '<span class="badge badge-warning">是</span>';
+              }else if (value==false) {
+                result += '<span class="badge badge-info">否</span>';
+              }else {
+                result += '-';
+              }
+              return result;
+            },
+        },
+        {
+          field: 'plan_type',
+          title: '方案类型',
+          width: 100,
+          align: 'center',
+        },
+        {
+          field: 'plan_deadline',
+          title: '方案截止日期',
+          width: 110,
+          align: 'center',
+        },
+        {
+          field: 'customer_budget',
+          title: '客户预算',
+          width: 100,
+          align: 'right',
+        },
+        {
+          field: 'sample_number',
+          title: '计划样本数量',
+          width: 120,
+          align: 'center',
+        },
+        {
+          field: 'collect_time',
+          title: '计划收样日期',
+          width: 110,
+          align: 'center',
+        },
+        {
+          field: 'send_time',
+          title: '计划送样日期',
+          width: 110,
+          align: 'center',
+        },
+        {
+          field: 'sample_type',
+          title: '样本类型',
+          width: 100,
+          align: 'center',
+        },
+        {
+          field: 'project_stage',
+          title: '项目阶段',
+          width: 100,
+          align: 'center',
+        },
+        {
+          field: 'demand_estimate',
+          title: '需求预估',
+          width: 160,
+          align: 'center',
+        },
+
+      ],
+
+    });  //. $table
+
+  }  //.initBSTable
+
+  //定义向后台传递参数的函数
+    function getParams(params) {
+
+      //获取sessionStorage中params的value
+      var pageSize = sessionStorage.getItem("pageSize");
+      var pageNum = sessionStorage.getItem("pageNum");
+      //自定义的搜索条件
+      var customer_name = sessionStorage.getItem("customer_name");
+      var unit = sessionStorage.getItem("unit");
+      var project_stage = sessionStorage.getItem("project_stage");
+      var project_stage_id = document.getElementById("id_project_stage");
+      var plan_type = sessionStorage.getItem("plan_type");
+      var plan_type_id = document.getElementById("id_plan_type");
+      var plan_needed = sessionStorage.getItem("plan_needed");
+      var plan_needed_id = document.getElementById("id_plan_needed");
+
+      var temp = {      //这里的pageSize、pageNum等必须和Controller改成一样的
+        pageSize: pageSize==null?params.limit:pageSize,                      //页面大小
+        pageNum: pageNum==null?(params.offset / params.limit) + 1:pageNum,   //页码
+        customer_name: customer_name==null?$("#customer_name").val():customer_name,
+        unit: unit==null?$("#unit").val():unit,
+        project_stage: project_stage==null?project_stage_id.selectedIndex:project_stage,
+        plan_type: plan_type==null?plan_type_id.selectedIndex:plan_type,
+        plan_needed: plan_needed==null?plan_needed_id.value:plan_needed,
+
+      };
+      //在sessionStorage中清除这几个数据
+      sessionStorage.removeItem("pageSize");
+      sessionStorage.removeItem("pageNum");
+      sessionStorage.removeItem("customer_name");
+      sessionStorage.removeItem("unit");
+      sessionStorage.removeItem("project_stage");
+      sessionStorage.removeItem("plan_type");
+      sessionStorage.removeItem("plan_needed");
+
+      return temp;
+    }  //.getParams
+
+  // 给label加上class属性;
+  $("[for='id_project_stage']").addClass("col-md-4 col-form-label col-form-label-sm");
+  $("[for='id_plan_needed']").addClass("col-md-4 col-form-label col-form-label-sm");
+  $("[for='id_plan_type']").addClass("col-md-4 col-form-label col-form-label-sm");
+
+  // 设置弹出提示框属性
+    toastr.options = {
+      closeButton: true,
+      debug: true,
+      progressBar: false,
+      positionClass: "toast-center-center",
+      onclick: null,
+      showDuration: "300",
+      hideDuration: "1000",
+      timeOut: "2000",
+      extendedTimeOut: "1000",
+      showEasing: "swing",
+      hideEasing: "linear",
+      showMethod: "fadeIn",
+      hideMethod: "fadeOut"
+    };
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='add_success') {
+        toastr.success('添加成功！')
+      }else if (msgs=='edit_success') {
+        toastr.success('修改成功！')
+      }
+    }
+    msgTip();
+
+  //添加按钮函数
+  function add_intention() {
+
+    sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
+    sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
+
+    window.location.href="/clinic_intention/add_intention/";
+  }
+
+  //修改按钮函数
+  $("#edit-btn").on("click", function() {
+
+    var rows = $("#mytab").bootstrapTable('getSelections');// 获得要修改的数据
+    if (rows.length == 0) {  // 判断是否选中
+        //alert("请先选择要修改的记录!");
+        toastr.info('请先选择要修改的记录！');
+        return;
+    } else {
+      if (rows.length == 1) {
+        var customer_name=$("#customer_name").val();
+        if(customer_name!=null){
+           sessionStorage.setItem("customer_name", customer_name);
+        }else {
+           customer_name="";
+        }
+        var unit=$("#unit").val();
+        if(unit!=null){
+           sessionStorage.setItem("unit", unit);
+        }else {
+           unit="";
+        }
+        var project_stage = document.getElementById("id_project_stage");
+        sessionStorage.setItem("project_stage", project_stage.selectedIndex);
+        var plan_needed = document.getElementById("id_plan_needed");
+        sessionStorage.setItem("plan_needed", plan_needed.value);
+        var plan_type = document.getElementById("id_plan_type");
+        sessionStorage.setItem("plan_type", plan_type.selectedIndex);
+
+        sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
+        sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
+
+        var intention_id = rows[0].intention_id;  // 获取客户id
+        var url="/clinic_intention/edit_intention/" + intention_id + "/"  ;
+        // alert(url);
+        location.href=url;
+
+      } else {
+        //alert("一次只能修改一条记录!");
+        toastr.info('一次只能修改一条记录！');
+        return;
+      }
+    }
+  })  // btn.on
+
+  // 删除按钮事件
+    $("#remove-btn").on("click", function() {
+
+      var rows = $("#mytab").bootstrapTable('getSelections');// 获得要删除的数据
+      if (rows.length == 0) {  // rows 主要是为了判断是否选中
+        //alert("请先选择要删除的记录!");
+        toastr.info('请先选择要删除的记录！');
+        return;
+      } else if(rows.length == 1){
+        if (confirm("是否确认删除？") == true) {
+          var intention_id = new Number;// 声明一个数值
+
+          intention_id = rows[0].intention_id;
+          deleteMs(intention_id);
+        } else {
+          return false;
+        }
+      } else {
+        toastr.info('一次只能删除一条记录！');
+      }
+    })  // btn.on
+  //定义ajax请求函数
+    function deleteMs(intention_id) {
+      $.post(
+        "/clinic_intention/del_intention/",
+        {
+        "intention_id": JSON.stringify(intention_id) ,
+        "method":"post",
+        },
+        function(data,status) {
+
+          if (data == 'del_success') {
+            toastr.success('删除成功！');
+            $('#mytab').bootstrapTable('refresh', {
+            url : "/clinic_intention/intention_table/"
+          });
+          }  //.if
+        }  //. function
+      )  //.post
+    }
+
+  //查看详情页函数
+    $(document).on("click", "a.view_detail", function(){
+      //将分页和查询等信息保持到缓存
+      var customer_name=$("#customer_name").val();
+      if(customer_name!=null){
+         sessionStorage.setItem("customer_name", customer_name);
+      }else {
+         customer_name="";
+      }
+      var unit=$("#unit").val();
+      if(unit!=null){
+         sessionStorage.setItem("unit", unit);
+      }else {
+         unit="";
+      }
+      var project_stage = document.getElementById("id_project_stage");
+      sessionStorage.setItem("project_stage", project_stage.selectedIndex);
+      var plan_needed = document.getElementById("id_plan_needed");
+      sessionStorage.setItem("plan_needed", plan_needed.value);
+      var plan_type = document.getElementById("id_plan_type");
+      sessionStorage.setItem("plan_type", plan_type.selectedIndex);
+
+      sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
+      sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
+
+      var btn_id = $(this).attr("id");
+      var str_arry = btn_id.split('-');
+      //var file_id = parseInt(str_arry[1]);  // 将string转换为Int
+      var intention_id = str_arry[1];
+      window.location.href="/clinic_intention/intention_detail/" + intention_id + "/";
+
+    } );  // .on
+
+  // 搜索按钮函数
+  function searchfun() {
+    sessionStorage.setItem("pageNum", 1);  // 搜索后结果数据从第一页显示，避免列表页不在第一页搜索时出错；
+	$("#mytab").bootstrapTable('refresh');
+  }
+  // 重置按钮函数
+  function clearfun(){
+    $("#customer_name").val("");
+    $("#unit").val("");
+    //设置各选项为第一选项
+    $("#id_project_stage option").attr("selected",false);
+    $("#id_project_stage option").first().attr("selected",true);
+    $("#id_plan_needed option").attr("selected",false);
+    $("#id_plan_needed option").first().attr("selected",true);
+    $("#id_plan_type option").attr("selected",false);
+    $("#id_plan_type option").first().attr("selected",true);
+    searchfun();
+  }
+  //定义搜索框响应回车键
+  $("input").keydown(function (e) {  //当按下按键时
+    if (e.which == 13) {  //.which属性判断按下的是哪个键，回车键的键位序号为13
+      $('#search-btn').trigger("click");  //触发搜索按钮的点击事件
+    }
+  });
+
+
+</script>
+{% endblock %}

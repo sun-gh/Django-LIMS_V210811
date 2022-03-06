@@ -1,0 +1,155 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;需求审核 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/select2/css/select2.min.css' %}" />
+  <!--customer css-->
+<!--  <link href="{% static 'project_order/css/project_order_edit.css'  %}" rel="stylesheet" />-->
+{% endblock  %}
+
+{% block content %}
+
+  <!-- Content Header (Page header) -->
+  <section class="content-header pb-1">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>需求审核</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-secondary">
+        <div class="card-header">
+          <h3 class="card-title">需求编号：&nbsp;{{ demand.demand_number }}</h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+              <i class="fas fa-minus"></i></button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <p><span> 提出人 </span>：{{ demand.sponsor }} </p>
+              <p><span> 紧急程度 </span>：{{ demand.get_urgent_degree_display }} </p>
+              <p><span> 需求描述 </span>： {{ demand.demand_describe }}</p>
+            </div>
+            <div class="col">
+              <p><span class="link_info"> 需求类型 </span> ：{{ demand.get_demand_type_display }} </p>
+              <p><span class="link_info"> 重要程度 </span> ： {{ demand.get_important_degree_display }}</p>
+
+            </div>
+          </div>
+
+        </div> <!-- /.card-body -->
+        </div>
+
+        <div class="card card-info ">
+              <form class="form-horizontal" method="post" action="{% url 'demand_manage:demand_verify' demand.id %}">
+              <!-- card-body -->
+              <div class="row">
+                <div class="col-md-10 offset-md-1">
+                  <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
+                    {% csrf_token %}
+                    <div class="row ">
+                      <div class="col-md-8 offset-md-2">
+                          <!--审核结果-->
+                          <div class="form-group row">
+                            {{ form.verify_result.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.verify_result }}
+                            </div>
+                          </div>
+                          <!--审核建议-->
+                          <div class="form-group row">
+                            {{ form.note.label_tag }}
+                            <div class="col-md-7" >
+                              {{ form.note }}
+                            </div>
+                          </div>
+
+                      </div>    <!-- /.col-->
+                      </div>   <!-- /.row-->
+                  </div>  <!-- /.card-body-->
+                </div>   <!-- /.col-->
+              </div>  <!-- /.row-->
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card-footer ">
+                    <div class="row">
+                      <div class="col-md-2 offset-md-5">
+<!--                        <a href="{% url 'invoice_manage:apply_invoice_record' %}" class="btn btn-secondary btn-sm">取消</a>-->
+                        <input type="button" class="btn btn-secondary btn-sm"  value="返回" onclick="javascript:history.go(-1);"/>
+                        <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
+                      </div>
+                    </div>
+                  </div>  <!-- /.card-footer-->
+                </div>  <!-- /.col-->
+              </div>   <!-- /.row-->
+              </form>
+
+        </div>  <!-- /.card-->
+      </div>   <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+
+{% block script %}
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+<!-- Select2 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/select2/js/select2.full.min.js' %}"></script>
+
+<script type="text/javascript">
+
+  $(document).ready(function() {
+
+  // 给label加上class属性;input加上class;
+  $("form label").addClass("col-md-4 col-form-label");
+
+
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='verify_failed') {
+        toastr.error('提交失败！')
+      }
+    }
+    msgTip();
+
+  });  // .ready
+
+</script>
+{% endblock %}

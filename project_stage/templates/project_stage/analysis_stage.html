@@ -1,7 +1,7 @@
 {% extends "customer/base.html"  %}
 {% load static %}
 
-{% block title %} 谱度众合&nbsp;|&nbsp;检测分析进度 {% endblock %}
+{% block title %} 谱度众合&nbsp;|&nbsp;数据分析进度 {% endblock %}
 
 {% block css %}
   <!--bootstrap-table-->
@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="{% static 'bootstrap-table-1.17.0/dist/extensions/fixed-columns/bootstrap-table-fixed-columns.min.css' %}">
   <!--toastr提示框-->
   <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
-  <link href="{% static 'project_stage/css/test_analysis.css'  %}" rel="stylesheet" />
+  <link href="{% static 'project_stage/css/analysis_stage.css'  %}" rel="stylesheet" />
 {% endblock  %}
 
 {% block content %}
@@ -19,7 +19,7 @@
     <div class="container-fluid">
       <div class="row ">
         <div class="col-sm-6">
-          <h5>检测分析信息</h5>
+          <h5>数据分析信息</h5>
         </div>
         <div class="col-sm-6">
 
@@ -174,7 +174,7 @@
 
     $table.bootstrapTable({
     {#全部参数#}
-      url:"{% url 'project_stage:test_analysis_table' %}",
+      url:"{% url 'project_stage:analysis_stage_table' %}",
       method: 'get',                      //请求方式（*）
       iconSize:"sm",                     // 设置图标大小  sm小图标 lg大图标
       cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
@@ -202,9 +202,9 @@
       showExport: true,                    //显示导出按钮
       exportTypes:['excel','csv'],  //导出文件类型
       exportOptions: {
-        fileName: '检测分析进度',  //文件名称设置
+        fileName: '数据分析进度',  //文件名称设置
         worksheetName: 'sheet1',  //表格工作区名称
-        tableName: '检测分析进度',
+        tableName: '数据分析进度',
         excelstyles: ['background-color', 'color', 'font-size', 'font-weight'],
 
       },
@@ -274,7 +274,7 @@
         {
           field: 'time_percent',
           title: '项目剩余周期',
-          width: 120,
+          width: 110,
           align: 'center',
           formatter: progressMatter,
           cellStyle: function(value,row,index){
@@ -351,15 +351,9 @@
         {
           field: 'instrument_type',
           title: '检测仪器',
-          width: 120,
+          width: 110,
           align: 'center',
         },
-        {
-          field: 'date_test',
-          title: '上机日期',
-          width: 120,
-          align: 'center',
-         },
          {
           field: 'responsible_person',
           title: '项目负责人',
@@ -369,7 +363,7 @@
         {
           field: 'date_searchlib',
           title: '搜库日期',
-          width: 120,
+          width: 100,
           align: 'center',
         },
         {
@@ -382,12 +376,6 @@
           field: 'date_send_rawdata',
           title: '原始数据发送日期',
           width: 140,
-          align: 'center',
-        },
-        {
-          field: 'test_deadline',
-          title: '下机截止日期',
-          width: 120,
           align: 'center',
         },
         {
@@ -443,8 +431,6 @@
         pageSize: pageSize==null?params.limit:pageSize,                      //页面大小
         pageNum: pageNum==null?(params.offset / params.limit) + 1:pageNum,   //页码
         //在进行模糊查询的参数
-        // sort: params.sort,      //排序列名
-        // sortOrder: params.order //排位命令（desc，asc）
         project_num: project_num==null?$("#project_number").val():project_num,
         unit: unit==null?$("#unit_search").val():unit,
         sample_sender: sample_sender==null?$("#sender_search").val():sample_sender,
@@ -546,7 +532,7 @@
         sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
 
         var project_id = rows[0].project_id;  // 获取客户id
-        var url="/project_stage/test_analysis_edit/" + project_id + "/"  ;
+        var url="/project_stage/analysis_stage_edit/" + project_id + "/"  ;
         // alert(url);
         location.href=url;
 
@@ -654,7 +640,7 @@
       var str_arry = btn_id.split('-');
       //var file_id = parseInt(str_arry[1]);  // 将string转换为Int
       var pro_id = str_arry[1];
-      window.location.href="/project_stage/test_analysis_detail/" + pro_id + "/";
+      window.location.href="/project_stage/analysis_stage_detail/" + pro_id + "/";
 
     } );  // .on
 

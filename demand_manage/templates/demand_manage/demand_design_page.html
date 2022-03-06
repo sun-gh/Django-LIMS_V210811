@@ -1,0 +1,594 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;需求管理 {% endblock %}
+
+{% block css %}
+  <!--bootstrap-table-->
+  <link rel="stylesheet" href="{% static 'bootstrap-table-1.17.0/dist/bootstrap-table.min.css' %}" />
+  <!--bootstrap-table fixed columns-->
+  <link rel="stylesheet" href="{% static 'bootstrap-table-1.17.0/dist/extensions/fixed-columns/bootstrap-table-fixed-columns.min.css' %}" />
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}" />
+  <link href="{% static 'demand_manage/css/demand_design_page.css'  %}" rel="stylesheet" />
+
+{% endblock  %}
+
+{% block content %}
+
+    <!-- Content Header (Page header) -->
+  <section class="content-header pb-1">
+    <div class="container-fluid">
+      <div class="row ">
+        <div class="col-sm-6">
+          <h5>需求设计信息</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-12">
+        <div class="card card-lightblue mb-2">  <!--primary-->
+          <div class="card-header pb-1 pt-2">
+            <h3 class="card-title">条件查询</h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                <i class="fas fa-minus"></i></button>
+            </div>
+          </div>
+          <div class="card-body pt-2 pb-0">
+            <div class="row">
+              <div class="col">
+                <form class="form-horizontal">
+                  <div class="row">
+                    <div class="col">
+                      <div class="form-group row ">
+                        {{ form.status.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.status }}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="form-group row">
+                        {{ form.sponsor.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.sponsor }}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="form-group row">
+                        {{ form.demand_describe.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.demand_describe }}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                        <a class="btn btn-success btn-sm  form-search" id="search-btn" onclick="searchfun()" >搜索</a>&nbsp;
+                        <a class="btn btn-secondary btn-sm  form-search" onclick="clearfun()" >重置</a>
+                    </div>
+                  </div>  <!-- /.row -->
+                </form>
+              </div>  <!-- /.col -->
+            </div>  <!-- /.row -->
+          </div> <!-- /.card-body -->
+        </div>  <!-- /.card -->
+        <div class="card">
+          <!-- card-body -->
+          <div class="card-body pt-0 pb-1 pl-1 pr-1">
+
+            <table id="mytab" class="table table-sm table-bordered table-striped table-hover " style="table-layout:fixed;">
+            </table>
+
+            <div id="toolbar">
+              {% if perms.demand_manage.change_demanddesign %}
+                <a class="btn btn-info btn-sm" href="#" role="button" id="edit-demand" >修改</a>&nbsp;
+              {% endif %}
+
+            </div>
+          </div>
+        </div>
+      </div> <!-- /.col-->
+    </div>  <!-- /.row-->
+
+  </section>
+
+{% endblock %}
+
+{% block script %}
+<!--popper定位库-->
+<script src="{% static 'popper-core-1.14.7/dist/umd/popper.min.js' %}" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<!-- bootstrap table -->
+<script src="{% static 'bootstrap-table-1.17.0/dist/bootstrap-table.min.js' %}"></script>
+<!-- bootstrap table fixed columns-->
+<script src="{% static 'bootstrap-table-1.17.0/dist/extensions/fixed-columns/bootstrap-table-fixed-columns.min.js' %}"></script>
+<!-- tableExport-->
+<script src="{% static 'tableExport.min.js' %}"></script>
+<!-- bootstrap table export-->
+<script src="{% static 'bootstrap-table-1.17.0/dist/extensions/export/bootstrap-table-export.min.js' %}"></script>
+<!-- bootstrap table cookie-->
+<script src="{% static 'bootstrap-table-1.17.0/dist/extensions/cookie/bootstrap-table-cookie.min.js' %}"></script>
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+
+<script type="text/javascript">
+
+    // 获取csrf
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+    function csrfSafeMethod(method) {
+      // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    };
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+      }
+    });
+
+    $(function () {
+        initBSTable()
+    });
+    $table = $("#mytab");
+
+    function initBSTable() {
+
+      // num=1是为了规定Num为数字类型
+      var pageSize = sessionStorage.getItem("pageSize");
+      var pageNum = sessionStorage.getItem("pageNum");
+      var num=1;
+      num = pageNum==null?1:parseInt(pageNum);
+      //console.log(pageNum);
+      // 根据权限判断导出按钮是否显示
+        var perm =  '{{perms.demand_manage.add_demands}}';
+        //console.log(perm);
+        var perm_bool = Boolean;
+        perm_bool = perm==='True'?true:false;
+
+
+      $table.bootstrapTable({
+      {#全部参数#}
+
+        url:"{% url 'demand_manage:demand_design_table' %}",
+        method: 'get',                      //请求方式（*）
+        iconSize:"sm",                     // 设置图标大小  sm小图标 lg大图标
+        cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+        //cookie: true,                       //是否启用cookie
+        //cookieExpire: '2h',                //cookie过期时间
+        //cookieIdTable: 'unit_list',        //cookie的唯一标识符
+
+        pagination: true,                   //是否显示分页（*）
+        sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+        pageNumber: num,                       //初始化加载第一页，默认第一页;原始值为1
+        pageSize: 50,                       //每页的记录行数（*）
+        pageList: [10, 20, 50, 100, 'All'],        //可供选择的每页的行数（*）
+        smartDisplay: false,               //自动判断显示分页信息和 card 视图
+        paginationLoop: false,             //是否启用分页条无限循环
+        queryParams: getParams,
+
+        search: false,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，
+        searchOnEnterKey: true,              //按回车触发搜索方法
+
+        showColumns: true,                  //是否显示所有的列
+        toolbar: "#toolbar",                //一个jQuery 选择器，指明自定义的 toolbar
+
+        showRefresh: false,                  //是否显示刷新按钮
+
+        showExport: perm_bool,             //显示导出按钮，实现权限判断
+        exportTypes:['excel','csv'],  //导出文件类型
+        exportOptions: {
+          fileName: '需求设计信息',  //文件名称设置
+          worksheetName: 'sheet1',  //表格工作区名称
+          tableName: '需求设计信息',
+          excelstyles: ['background-color', 'color', 'font-size', 'font-weight'],
+
+        },
+        height: 600,                        //行高，如果没有设置height属性，表格自动高度
+        //theadClasses: "thead-light",       //设置thead-blue为表头样式
+
+        showToggle: false,                    //是否显示详细视图和列表视图的切换按钮
+        cardView: false,                    //是否显示详细视图,使用fixed-columns需要设为false
+        detailView: false,                  //开启详情树形图模式,使用fixed-columns需要设为false
+        showFooter: false,                  //显示摘要页脚行,使用fixed-columns需要设为false
+        fixedColumns: true,
+        fixedNumber: 3,  //固定列数
+        uniqueId: 'design_id',     //为每一行指定唯一的标识符
+
+        //自定义分页字符串显示为中文
+        formatShowingRows:function(pageFrom, pageTo, totalRows) {
+          return "第"+pageFrom+"-"+pageTo+"行，共"+totalRows+"行";
+        },
+        //自定义分页字符串显示为中文
+        formatRecordsPerPage:function(pageNumber) {
+          return pageNumber+' 行/页';
+        },
+        //定义Search placeholder
+        formatSearch:function() {
+          return  "需求类型/提出人";
+        },
+
+        columns: [
+          { checkbox:true, },
+          {
+            field: 'num',  　　　　　　//返回数据rows数组中的每个字典的键名与此处的field值要保持一致
+            title: '序号',
+            width: 55,
+            align: 'center',
+            formatter: function(value,row,index){
+              var pageSize=$('#mytab').bootstrapTable('getOptions').pageSize;//通过表的#id 可以得到每页多少条
+              if (pageSize == 'All'){
+                  var totalRows = $('#mytab').bootstrapTable('getOptions').totalRows;
+                  pageSize = totalRows;
+              };
+              var pageNumber=$('#mytab').bootstrapTable('getOptions').pageNumber;//通过表的#id 可以得到当前第几页
+              return pageSize * (pageNumber - 1) + index + 1;    //返回每条的序号： 每页条数 * （当前页 - 1 ）+ 序号
+            },
+
+          },
+          {
+            field: 'demand_number',
+            title: '需求编号',
+            width: 100,
+            align: 'center',
+            formatter: function (value,row,index) {
+              var result = "";
+              result += "<a href='#'  class='view_detail' id='btn-" +row.design_id +"' >" + value + "</a>";
+
+              return result;
+            },
+          },
+          {
+            field: 'status_code',
+            title: '状态',
+            width: 80,
+            align: 'center',
+            formatter: function (value,row,index) {
+              var result = "";
+              switch(value){
+                case 1:
+                  result +='<span class="text-danger">'+row.status+'</span>';
+                  break;
+                case 2:
+                  result +='<span class="text-info">'+row.status+'</span>';
+                  break;
+                case 3:
+                  result +='<span class="text-warning">'+row.status+'</span>';
+                  break;
+                case 4:
+                  result +='<span class="text-secondary">'+row.status+'</span>';
+                  break;
+                case 5:
+                  result +='<span class="text-success">'+row.status+'</span>';
+                  break;
+
+              }
+              return result;
+            },
+          },
+          {
+            field: 'sponsor',
+            title: '提出人',
+            width: 90,
+            align: 'center',
+          },
+
+          {
+            field: 'create_date',
+            title: '创建时间',
+            width: 90,
+            align: 'center',
+          },
+          {
+            field: 'demand_type',
+            title: '需求类型',
+            width: 100,
+            align: 'center',
+          },
+          {
+            field: 'demand_describe',
+            title: '需求描述',
+            width: 160,
+            align: 'center',
+            formatter: paramsMatter,
+          },
+          {
+            field: 'urgent_degree',
+            title: '紧急程度',
+            width: 90,
+            align: 'center',
+            formatter: function (value,row,index) {
+              var result = "";
+              if (value==1) {
+                result += '<span class="badge badge-pill badge-danger">紧急</span>';
+              }else {
+                result += '<span class="badge badge-pill badge-success">不紧急</span>';
+              }
+              return result;
+            },
+          },
+          {
+            field: 'important_degree',
+            title: '重要程度',
+            width: 90,
+            align: 'center',
+            formatter: function (value,row,index) {
+              var result = "";
+              if (value==1) {
+                result += '<span class="badge badge-pill badge-warning">重要</span>';
+              }else {
+                result += '<span class="badge badge-pill badge-success">不重要</span>';
+              }
+              return result;
+            },
+          },
+
+          {
+            field: 'estimate_result_code',
+            title: '评估结果',
+            width: 90,
+            align: 'center',
+            formatter: function (value,row,index) {
+              var result = "";
+              switch(value){
+                case 0:
+                  result +='<span class="text-secondary">'+row.estimate_result+'</span>';
+                  break;
+                case 1:
+                  result +='<span class="text-success">'+row.estimate_result+'</span>';
+                  break;
+                case 2:
+                  result +='<span class="text-warning">'+row.estimate_result+'</span>';
+                  break;
+                case 3:
+                  result +='<span class="text-info">'+row.estimate_result+'</span>';
+                  break;
+
+              }
+              return result;
+            },
+          },
+          {
+            field: 'note',
+            title: '评估建议',
+            width: 120,
+            align: 'center',
+            formatter: paramsMatter,
+          },
+          {
+            field: 'predict_cycle',
+            title: '预计开发周期',
+            width: 105,
+            align: 'center',
+            formatter: function (value,row,index) {
+              var result = "";
+              if (value.length > 1) {
+                result += '<span >'+value+'天</span>';
+              }else {
+                result += '<span>'+value+'</span>';
+              }
+              return result;
+            },
+          },
+          {
+            field: 'start_time',
+            title: '开始时间',
+            width: 100,
+            align: 'center',
+          },
+          {
+            field: 'finish_time',
+            title: '完成时间',
+            width: 100,
+            align: 'center',
+          },
+
+        ],
+
+      });  //. $table
+
+    }  //.initBSTable
+
+  // 给label加上class属性;
+  $("[for='id_status']").addClass("col-md-4 col-form-label col-form-label-sm");
+  $("[for='id_sponsor']").addClass("col-md-4 col-form-label col-form-label-sm");
+  $("[for='id_demand_describe']").addClass("col-md-4 col-form-label col-form-label-sm");
+
+  //定义向后台传递参数的函数
+    function getParams(params) {
+
+      //获取sessionStorage
+      var pageSize = sessionStorage.getItem("pageSize");
+      var pageNum = sessionStorage.getItem("pageNum");
+      //获取自定义搜索条件
+      var status = sessionStorage.getItem("status");
+      var sponsor = sessionStorage.getItem("sponsor");
+      var demand_describe = sessionStorage.getItem("demand_describe");
+
+      var temp = {      //这里的pageSize、pageNum、search必须和Controller改成一样的
+          pageSize: pageSize==null?params.limit:pageSize,                      //页面大小
+          pageNum: pageNum==null?(params.offset / params.limit) + 1:pageNum,   //页码
+          //在进行模糊查询的参数
+          status: status==null?$("#id_status").val():status,
+          sponsor: sponsor==null?$("#id_sponsor").val():sponsor,
+          demand_describe: demand_describe==null?$("#id_demand_describe").val():demand_describe,
+          // sort: params.sort,      //排序列名
+          // sortOrder: params.order //排位命令（desc，asc）
+
+      };
+      //在sessionStorage中清除这三个数据
+      sessionStorage.removeItem("pageSize");
+      sessionStorage.removeItem("pageNum");
+      sessionStorage.removeItem("status");
+      sessionStorage.removeItem("sponsor");
+      sessionStorage.removeItem("demand_describe");
+      return temp;
+    }  //.getParams
+
+  // 定义鼠标悬停显示内容函数
+  function paramsMatter(value,row,index) {
+    var span=document.createElement('span');
+    span.setAttribute('title',value);
+    span.innerHTML = value;
+    return span.outerHTML;
+  }
+
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+  // 定义message显示函数
+  function msgTip(){
+    var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+
+    if (msgs=='edit_success') {
+      toastr.success('需求设计修改成功！');
+    }else if (msgs=='estimate_success') {
+      toastr.success('需求评估完成！');
+    }else if (msgs=='untread_success') {
+      toastr.success('退回成功！');
+    }
+  }
+  msgTip();
+
+  //修改需求按钮函数
+  $("#edit-demand").on("click", function() {
+
+    var rows = $("#mytab").bootstrapTable('getSelections');// 获得要修改的数据
+    if (rows.length == 0) {  // 判断是否选中
+        //alert("请先选择要修改的记录!");
+        toastr.info('请先选择要修改的记录！');
+        return;
+    } else {
+      if (rows.length == 1) {
+        if (rows[0].status_code < 3 || rows[0].status_code > 4){
+          toastr.info('该状态下无法修改！');
+          return;
+        }else{
+          var status=$("#id_status").val();
+          if(status!=null){
+            sessionStorage.setItem("status", status);
+          }else {
+            status="";  //此处if结果必为真
+          }
+          var sponsor=$("#id_sponsor").val();
+          if(sponsor!=null){
+            sessionStorage.setItem("sponsor", sponsor);
+          }else {
+            sponsor="";
+          }
+          var demand_describe=$("#id_demand_describe").val();
+          if(demand_describe!=null){
+            sessionStorage.setItem("demand_describe", demand_describe);
+          }else {
+            demand_describe="";
+          }
+          sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
+          sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
+
+          var design_id = rows[0].design_id;  // 获取需求id
+          var url="/demand_manage/edit_demand_design/" + design_id + "/"  ;
+
+          location.href=url;
+        }
+      } else {
+        //alert("一次只能修改一条记录!");
+        toastr.info('一次只能修改一条记录！');
+        return;
+      }
+    }
+  })  // btn.on
+
+  //查看详情页函数
+    $(document).on("click", "a.view_detail", function(){
+        //将分页等信息保持到缓存
+        var status=$("#id_status").val();
+        if(status!=null){
+          sessionStorage.setItem("status", status);
+        }else {
+          status="";  //此处if结果必为真
+        }
+        var sponsor=$("#id_sponsor").val();
+        if(sponsor!=null){
+          sessionStorage.setItem("sponsor", sponsor);
+        }else {
+          sponsor="";
+        }
+        var demand_describe=$("#id_demand_describe").val();
+        if(demand_describe!=null){
+          sessionStorage.setItem("demand_describe", demand_describe);
+        }else {
+          demand_describe="";
+        }
+        sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
+        sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
+
+        var btn_id = $(this).attr("id");
+        var str_arry = btn_id.split('-');
+        //var apply_id = parseInt(str_arry[1]);  // 将string转换为Int
+        var design_id = str_arry[1];
+        window.location.href="/demand_manage/demand_design_detail/" + design_id + "/";
+
+    } );  // .on
+
+  // 搜索按钮函数
+  function searchfun() {
+    sessionStorage.setItem("pageNum", 1);  // 搜索后结果数据从第一页显示，避免列表页不在第一页搜索时出错；
+
+	$("#mytab").bootstrapTable('refresh');
+  }
+  // 重置按钮函数
+  function clearfun(){
+    $("#id_sponsor").val("");
+    $("#id_demand_describe").val("");
+    //设置状态为第一选项
+    $("#id_status option").attr("selected",false);
+    $("#id_status option").first().attr("selected",true);
+
+    searchfun();
+  }
+
+  //定义搜索框响应回车键
+  $("input").keydown(function (e) {  //当按下按键时
+    if (e.which == 13) {  //.which属性判断按下的是哪个键，回车键的键位序号为13
+      $('#search-btn').trigger("click");  //触发搜索按钮的点击事件
+    }
+  });
+
+</script>
+
+{% endblock %}

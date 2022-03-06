@@ -1,12 +1,10 @@
 from django.db import models
 from customer.models import CustomerInfo
-
 # Create your models here.
 
 
 class SampleType(models.Model):
     #  定义样本类型model
-
     type_name = models.CharField(max_length=64, verbose_name="样本类型", unique=True)
 
     class Meta:
@@ -19,7 +17,6 @@ class SampleType(models.Model):
 
 class MachineTime(models.Model):
     #  定义机时类型model
-
     time_type = models.CharField(max_length=64, verbose_name="机时类型", unique=True)
 
     class Meta:
@@ -32,7 +29,6 @@ class MachineTime(models.Model):
 
 class SampleQuality(models.Model):
     # 定义样本质量
-
     quality_type = models.CharField(max_length=64, verbose_name="样本质量", unique=True)
     message_template = models.CharField(max_length=64, verbose_name="短信模板名称", blank=True, null=True)
     order = models.PositiveSmallIntegerField(verbose_name="显示顺序", unique=True, blank=True, null=True)
@@ -60,13 +56,12 @@ class AdditionalItem(models.Model):
 
 class ProjectType(models.Model):
     # 定义项目类型
-
     project_name = models.CharField(max_length=128, verbose_name="项目类型", unique=True)
     total_cycle = models.PositiveSmallIntegerField(verbose_name="总周期")
     start_deadline = models.PositiveSmallIntegerField(verbose_name="启动预警期", null=True, blank=True)
     pre_experiment_cycle = models.PositiveSmallIntegerField(verbose_name="预实验周期", null=True, blank=True)
     pre_process_cycle = models.PositiveSmallIntegerField(verbose_name="前处理周期", null=True, blank=True)
-    test_cycle = models.PositiveSmallIntegerField(verbose_name="检测周期")
+    test_cycle = models.PositiveSmallIntegerField(verbose_name="检测周期", null=True, blank=True)
     analysis_cycle = models.PositiveSmallIntegerField(verbose_name="数据分析周期", null=True, blank=True)
 
     class Meta:
@@ -78,13 +73,11 @@ class ProjectType(models.Model):
 
 
 class FilesRelated(models.Model):
-
     # 定义项目相关文件
     file = models.FileField(upload_to='project_files/', verbose_name="项目相关文件", max_length=100, blank=True, null=True)
     c_time = models.DateTimeField(verbose_name="上传时间", auto_now_add=True)
 
     def __str__(self):
-
         return str(self.file)
 
     class Meta:
@@ -93,13 +86,11 @@ class FilesRelated(models.Model):
 
 
 class OperatePerson(models.Model):
-
     # 定义实验操作人员
     operate_person = models.CharField(verbose_name="实验操作人员", max_length=64)
     valid = models.BooleanField(verbose_name="有效", default=True)
 
     def __str__(self):
-
         return self.operate_person
 
     class Meta:
@@ -108,12 +99,10 @@ class OperatePerson(models.Model):
 
 
 class SampleStatus(models.Model):
-
     # 定义剩余样本状态
     status_type = models.CharField(verbose_name="状态类型", max_length=64)
 
     def __str__(self):
-
         return self.status_type
 
     class Meta:
@@ -122,15 +111,15 @@ class SampleStatus(models.Model):
 
 
 class ProjectInterrupt(models.Model):
-
     # 定义项目中断类型
     interrupt_type = models.CharField(verbose_name="中断类型", max_length=64)
+    # type_order = models.PositiveSmallIntegerField(verbose_name="类型编号", default=0)
 
     def __str__(self):
-
         return self.interrupt_type
 
     class Meta:
+        # ordering = ["type_order"]
         verbose_name = "项目中断类型"
         verbose_name_plural = verbose_name
 
@@ -173,27 +162,43 @@ class SampleRecord(models.Model):
         (0, "常规项目"),
         (1, "临床项目"),
     )
+    status_choices = (
+        (11, "待启动"),
+        (21, "准备实验"),
+        (22, "前处理"),
+        (31, "待上机"),
+        (32, "检测中"),
+        (41, "待分析"),
+        (42, "分析中"),
+        (71, "完成"),
+        (81, "暂停"),
+        (82, "终止"),
+    )
     project_num = models.CharField(max_length=32, verbose_name="项目编号", unique=True)
+    status = models.PositiveSmallIntegerField(verbose_name="状态", choices=status_choices, default=11)
+    original_status = models.CharField(max_length=32, verbose_name="原状态编号", null=True, blank=True)
     project_type = models.ForeignKey(ProjectType, verbose_name="项目类型", on_delete=models.SET_NULL, null=True)
     sample_type = models.CharField(max_length=32, verbose_name="样本类型")
     machine_time = models.CharField(max_length=48, verbose_name="机时类型", null=True, blank=True)
     sample_amount = models.PositiveSmallIntegerField(verbose_name="样本数量")
     sample_sender = models.ForeignKey(CustomerInfo, verbose_name="送样人", on_delete=models.SET_NULL, null=True)
     agent_id = models.PositiveIntegerField(verbose_name="代理ID", null=True, blank=True)
+    anti_fake_number = models.CharField(max_length=32, verbose_name="防伪编号", null=True, blank=True)
     # 将以下两个字段直接保存到记录
     unit = models.CharField(max_length=128, verbose_name="单位", null=True, blank=True)
-    terminal = models.CharField(max_length=32, verbose_name="送样终端", blank=True, null=True)  # 上级领导
+    terminal = models.CharField(max_length=32, verbose_name="送样终端", blank=True, null=True)
     # sample_quality = models.ManyToManyField(SampleQuality, verbose_name="样本质量")
     sample_quality = models.ForeignKey(SampleQuality, verbose_name="样本运送条件和质量", on_delete=models.SET_NULL, null=True)
     addition_item = models.ManyToManyField(AdditionalItem, verbose_name="附加项目", blank=True)
     receive_date = models.DateField(verbose_name="收样日期")
+    pro_start_date = models.DateField(verbose_name="项目启动时间", null=True, blank=True)
     person_record = models.CharField(max_length=32, verbose_name="登记人")
     c_time = models.DateTimeField(verbose_name="登记时间", auto_now_add=True)
     note = models.CharField(max_length=256, verbose_name="备注", blank=True, null=True)
     files = models.ManyToManyField(FilesRelated, verbose_name="相关文件", blank=True)
     # 以下为前处理阶段
     priority = models.SmallIntegerField(choices=priority_level, verbose_name="优先级", default=0)
-    start_date = models.DateField(verbose_name="项目启动时间", null=True, blank=True)
+    start_date = models.DateField(verbose_name="实验开始日期", null=True, blank=True)
     preexperiment_finish_date = models.DateField(verbose_name="预实验完成时间", null=True, blank=True)
     pretreat_finish_date = models.DateField(verbose_name="前处理完成时间", null=True, blank=True)
     first_operate_person = models.ManyToManyField(OperatePerson, verbose_name="步骤一", related_name='exp_first_person',
@@ -209,15 +214,17 @@ class SampleRecord(models.Model):
     sample_overplus = models.NullBooleanField(verbose_name="样本剩余",)
     sample_overplus_status = models.ManyToManyField(SampleStatus, verbose_name="剩余样本状态", blank=True)
     project_interrupt = models.ForeignKey(ProjectInterrupt, verbose_name="项目中断类型", on_delete=models.SET_NULL,
-                                          null=True, blank=True)
-    start_deadline = models.DateField(verbose_name="启动截止日期", null=True, blank=True)
+                                          blank=True, null=True)
+    start_deadline = models.DateField(verbose_name="实验开始截止日期", null=True, blank=True)
     preexperiment_deadline = models.DateField(verbose_name="预实验截止日期", null=True, blank=True)
     pretreat_deadline = models.DateField(verbose_name="制备截止日期", null=True, blank=True)
     # 以下为检测-数据分析阶段
     project_source = models.SmallIntegerField(choices=source_choice, verbose_name="项目来源", default=0)
     instrument_type = models.ForeignKey(Machine, verbose_name="上机仪器", on_delete=models.SET_NULL, blank=True, null=True)
     date_test = models.DateField(verbose_name="上机日期", blank=True, null=True)
-    responsible_person = models.ForeignKey(ResponsiblePerson, verbose_name="项目负责人", on_delete=models.SET_NULL, blank=True, null=True)
+    test_finish_date = models.DateField(verbose_name="下机日期", blank=True, null=True)
+    responsible_person = models.ForeignKey(ResponsiblePerson, verbose_name="项目负责人", on_delete=models.SET_NULL,
+                                           blank=True, null=True)
     date_searchlib = models.DateField(verbose_name="搜库日期", blank=True, null=True)
     date_send_report = models.DateField(verbose_name="报告发送日期", blank=True, null=True)
     date_send_rawdata = models.DateField(verbose_name="原始数据发送日期", blank=True, null=True)
@@ -225,7 +232,6 @@ class SampleRecord(models.Model):
     pro_deadline = models.DateField(verbose_name="项目截止日期", blank=True, null=True)
 
     def __str__(self):
-
         return self.project_num
 
     class Meta:

@@ -261,6 +261,12 @@
           title: '关联项目',
           width: 90,
           align: 'center',
+          formatter: function (value,row,index) {
+            var span=document.createElement('span');
+            span.setAttribute('title',value);
+            span.innerHTML = value;
+            return span.outerHTML;
+          },
         },
         {
           field: 'project_type',
@@ -380,7 +386,7 @@
     if (!value) {
       result = "-";
     }else {
-      result += "<a href='/media/" + value + "'>" + value + "</a>";
+      result += "<a href='/media/contract_files/" + value + "'>" + value + "</a>";
     }
     return result;
   }

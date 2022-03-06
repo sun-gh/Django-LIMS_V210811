@@ -18,11 +18,15 @@ class SampleRecordForm(forms.ModelForm):
                                            widget=forms.Select(attrs={'class': 'form-control'}))
     agent_id = forms.IntegerField(label="代理ID", max_value=999999, required=False,
                                   widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    sample_quality = forms.ModelChoiceField(queryset=SampleQuality.objects.all(), label="样本运送条件和质量",
+    anti_fake_number = forms.CharField(label="防伪编号", required=False,
+                                       widget=forms.TextInput(attrs={'class': 'form-control'}))
+    sample_quality = forms.ModelChoiceField(queryset=SampleQuality.objects.all(), label="运送条件和质量",
                                             widget=forms.Select(attrs={'class': 'form-control'}))
     addition_item = forms.ModelMultipleChoiceField(queryset=AdditionalItem.objects.all(), label="附加项目", required=False,
                                                    widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
     receive_date = forms.DateField(label="收样日期",  widget=forms.DateInput(
+        format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
+    pro_start_date = forms.DateField(label="项目启动时间", required=False, widget=forms.DateInput(
         format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
     person_record = forms.CharField(label="登记人", widget=forms.TextInput(attrs={'class': 'form-control'}))
     note = forms.CharField(label="备注", required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -30,14 +34,15 @@ class SampleRecordForm(forms.ModelForm):
     class Meta:
         model = SampleRecord
         fields = [
-            # 'project_num',
             'project_type',
             'sample_amount',
             'sample_sender',
             'agent_id',
+            'anti_fake_number',
             'sample_quality',
             'addition_item',
             'receive_date',
+            'pro_start_date',
             'person_record',
             'note',
         ]
@@ -47,34 +52,35 @@ class PretreatStageForm(forms.ModelForm):
     # 定义前处理修改表单
     priority = forms.IntegerField(label="优先级", required=False, widget=forms.Select(choices=SampleRecord.priority_level,
                                                                                    attrs={'class': 'form-control'}))
-    start_date = forms.DateField(label="项目启动时间", required=False, widget=forms.DateInput(
+    start_date = forms.DateField(label="实验开始日期", required=False, widget=forms.DateInput(
         format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
     preexperiment_finish_date = forms.DateField(label="预实验完成时间", required=False, widget=forms.DateInput(
         format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
     pretreat_finish_date = forms.DateField(label="前处理完成时间", required=False, widget=forms.DateInput(
         format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
     # 以下4个元素为步骤1-4
-    first_operate_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.filter(valid=True), label="步骤一",
-                                                          required=False,
+    first_operate_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.filter(valid=True),
+                                                          label="步骤一", required=False,
                                                           widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
-    second_operate_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.filter(valid=True), label="步骤二",
-                                                           required=False,
+    second_operate_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.filter(valid=True),
+                                                           label="步骤二", required=False,
                                                            widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
-    third_operate_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.filter(valid=True), label="步骤三",
-                                                          required=False,
+    third_operate_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.filter(valid=True),
+                                                          label="步骤三", required=False,
                                                           widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
-    fourth_operate_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.filter(valid=True), label="步骤四",
-                                                           required=False,
+    fourth_operate_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.filter(valid=True),
+                                                           label="步骤四", required=False,
                                                            widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
-    page_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.filter(valid=True), label="跑胶", required=False,
+    page_person = forms.ModelMultipleChoiceField(queryset=OperatePerson.objects.filter(valid=True), label="跑胶",
+                                                 required=False,
                                                  widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
     sample_overplus = forms.NullBooleanField(label="样本剩余",
                                              widget=forms.NullBooleanSelect(attrs={'class': 'form-control'}))
     sample_overplus_status = forms.ModelMultipleChoiceField(
         queryset=SampleStatus.objects.all(), label="剩余样本状态", required=False, widget=forms.SelectMultiple(
             attrs={'class': 'form-control'}))
-    project_interrupt = forms.ModelChoiceField(queryset=ProjectInterrupt.objects.all(), label="项目中断类型",
-                                               required=False, widget=forms.Select(attrs={'class': 'form-control'}))
+    project_interrupt = forms.ModelChoiceField(queryset=ProjectInterrupt.objects.all(), label="项目中断类型", required=False,
+                                               widget=forms.Select(attrs={'class': 'form-control'}))
 
     class Meta:
         model = SampleRecord
@@ -95,12 +101,26 @@ class PretreatStageForm(forms.ModelForm):
         ]
 
 
-class TestAnalysisForm(forms.ModelForm):
-    # 定义检测分析信息修改表单
+class TestStageForm(forms.ModelForm):
+    # 定义质谱检测信息修改表单
     instrument_type = forms.ModelChoiceField(queryset=Machine.objects.all(), label="上机仪器",
                                              required=False, widget=forms.Select(attrs={'class': 'form-control'}))
     date_test = forms.DateField(label="上机日期", required=False, widget=forms.DateInput(
         format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
+    test_finish_date = forms.DateField(label="下机日期", required=False, widget=forms.DateInput(
+        format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
+
+    class Meta:
+        model = SampleRecord
+        fields = [
+            'instrument_type',
+            'date_test',
+            'test_finish_date',
+        ]
+
+
+class AnalysisStageForm(forms.ModelForm):
+    # 定义数据分析信息修改表单
     responsible_person = forms.ModelChoiceField(queryset=ResponsiblePerson.objects.all(), label="项目负责人",
                                                 required=False, widget=forms.Select(attrs={'class': 'form-control'}))
     date_searchlib = forms.DateField(label="搜库日期", required=False, widget=forms.DateInput(
@@ -109,14 +129,12 @@ class TestAnalysisForm(forms.ModelForm):
         format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
     date_send_rawdata = forms.DateField(label="原始数据发送日期", required=False, widget=forms.DateInput(
         format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
-    pro_deadline = forms.DateField(label="项目截止日期", widget=forms.DateInput(
+    pro_deadline = forms.DateField(label="项目截止日期", required=False, widget=forms.DateInput(
         format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
 
     class Meta:
         model = SampleRecord
         fields = [
-            'instrument_type',
-            'date_test',
             'responsible_person',
             'date_searchlib',
             'date_send_report',
@@ -127,7 +145,7 @@ class TestAnalysisForm(forms.ModelForm):
 
 class EditAnalysisForm(forms.ModelForm):
     # 定义文件等信息修改表单（销售部专用）
-    project_source = forms.IntegerField(label="项目来源", required=False, widget=forms.Select(
+    project_source = forms.IntegerField(label="项目来源",  widget=forms.Select(  # required=False,
         choices=SampleRecord.source_choice, attrs={'class': 'form-control'}))
     file_input = forms.FileField(label="相关文件", required=False, widget=forms.ClearableFileInput(
         attrs={'multiple': True, 'class': 'form-control-file'}))

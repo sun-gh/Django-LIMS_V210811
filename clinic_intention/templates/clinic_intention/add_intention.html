@@ -1,0 +1,244 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;添加临床意向 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/select2/css/select2.min.css' %}" />
+  <!--customer css-->
+<!--  <link href="{% static 'project_stage/css/sample_record_add.css'  %}" rel="stylesheet" />-->
+{% endblock  %}
+
+{% block content %}
+
+  <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>添加临床意向</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-info ">
+
+              <form class="form-horizontal" method="post" action="{% url 'clinic_intention:add_intention' %}" >
+              <!-- card-body -->
+              <div class="row">
+                <div class="col-md-10 offset-md-1">
+                  <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
+
+                    {% csrf_token %}
+                    <div class="row ">
+                      <div class="col">
+                          <!--客户姓名-->
+                          <div class="form-group row">
+                              {{ form.customer_name.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.customer_name }}
+                            </div>
+                          </div>
+                          <!--联系方式-->
+                          <div class="form-group row">
+                            {{ form.contact_info.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.contact_info }}
+                            </div>
+                          </div>
+                          <!--单位-->
+                          <div class="form-group row">
+                            {{ form.unit.label_tag }}
+                            <div class="col-md-7" id="unit">
+                              {{ form.unit }}
+                            </div>
+                          </div>
+                          <!--科室-->
+                          <div class="form-group row">
+                            {{ form.department.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.department }}
+                            </div>
+                          </div>
+                          <!--负责人-->
+                          <div class="form-group row">
+                            {{ form.leading_official.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.leading_official }}
+                            </div>
+                          </div>
+                          <!--疾病类型-->
+                          <div class="form-group row">
+                            {{ form.disease_type.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.disease_type }}
+                            </div>
+                          </div>
+                          <!--是否需方案设计-->
+                          <div class="form-group row">
+                            {{ form.plan_needed.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.plan_needed }}
+                            </div>
+                          </div>
+                          <!--方案类型-->
+                          <div class="form-group row">
+                            {{ form.plan_type.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.plan_type }}
+                            </div>
+                          </div>
+                          <!--方案截止日期-->
+                          <div class="form-group row">
+                            {{ form.plan_deadline.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.plan_deadline }}
+                            </div>
+                          </div>
+                      </div>
+
+                      <div class="col">
+                          <!--客户预算-->
+                          <div class="form-group row">
+                            {{ form.customer_budget.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.customer_budget }}
+                            </div>
+                          </div>
+                          <!--计划样本数-->
+                          <div class="form-group row">
+                            {{ form.sample_number.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.sample_number }}
+                            </div>
+                          </div>
+                          <!--计划收样日期-->
+                          <div class="form-group row">
+                            {{ form.collect_time.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.collect_time }}
+                            </div>
+                          </div>
+                          <!--计划送样日期-->
+                          <div class="form-group row">
+                            {{ form.send_time.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.send_time }}
+                            </div>
+                          </div>
+                          <!--样本类型-->
+                          <div class="form-group row">
+                            {{ form.sample_type.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.sample_type }}
+                            </div>
+                          </div>
+                          <!--项目阶段-->
+                          <div class="form-group row">
+                            {{ form.project_stage.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.project_stage }}
+                            </div>
+                          </div>
+                          <!--需求预估-->
+                          <div class="form-group row">
+                            {{ form.demand_estimate.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.demand_estimate }}
+                            </div>
+                          </div>
+                          <!--登记人-->
+                          <div class="form-group row">
+                            {{ form.add_person.label_tag }}
+                            <div class="col-md-7">
+                              <input  type="text" name="add_person" class="form-control" value="{{ request.session.user_name }}" readonly="readonly" id="id_add_person" />
+                            </div>
+                          </div>
+
+                      </div>    <!-- /.col-->
+                      </div>   <!-- /.row-->
+                  </div>  <!-- /.card-body-->
+                </div>   <!-- /.col-->
+              </div>  <!-- /.row-->
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card-footer ">
+                    <div class="row">
+                      <div class="col-md-2 offset-md-5">
+                        <a href="{% url 'clinic_intention:intention_page' 'normal_show' %}" class="btn btn-secondary btn-sm">取消</a>
+                        <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
+                      </div>
+                    </div>
+                  </div>  <!-- /.card-footer-->
+                </div>  <!-- /.col-->
+              </div>   <!-- /.row-->
+              </form>
+
+        </div>  <!-- /.card-->
+      </div>   <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+
+{% block script %}
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+<!-- Select2 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/select2/js/select2.full.min.js' %}"></script>
+
+<script type="text/javascript">
+
+  // 给label加上class属性;input加上class;
+  $("form label").addClass("col-md-4 col-form-label");
+
+  // 给必填项添加*
+  var txt1 = '<span style="color:red"> *</span>';
+  $("[for='id_customer_name']").append(txt1);
+  $("[for='id_unit']").append(txt1);
+
+  // 给select添加样式,<!-- Select2 -->
+  $("#id_unit").addClass("select2");
+  $("#id_unit").attr("style","width:100%;");
+  //Initialize Select2 Elements
+  $('.select2').select2();
+
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='add_failed') {
+        toastr.error('添加失败！')
+      }
+    }
+    msgTip();
+
+</script>
+{% endblock %}

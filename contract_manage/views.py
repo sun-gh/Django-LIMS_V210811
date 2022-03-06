@@ -53,7 +53,8 @@ def project_contract_table(request):
             all_order = contract.project_order.all()
             order_count = all_order.count()
             if order_count == 1:
-                project_order = all_order[0].project_order.project_num
+                # project_order = all_order[0].project_order.project_num
+                project_numbers = all_order[0].project_order.project_num
                 # 定义项目类型
                 if all_order[0].project_order.project_type:
                     project_type = all_order[0].project_order.project_type.project_name
@@ -61,7 +62,11 @@ def project_contract_table(request):
                     project_type = "-"
 
             elif order_count > 1:
-                project_order = str(order_count) + "个项目"
+                project_numbers = ''
+                for i in range(order_count-1):
+                    project_numbers += all_order[i].project_order.project_num + "、"
+                project_numbers += all_order[order_count-1].project_order.project_num
+                # project_order = str(order_count) + "个项目"
                 project_type = "见详细信息"
 
             else:
@@ -88,7 +93,7 @@ def project_contract_table(request):
             response_data['rows'].append({
                 "contract_id": contract.id,
                 "contract_num": contract.contract_num,
-                "project_order": project_order,
+                "project_order": project_numbers,
                 "project_type": project_type,
                 "unit": contract.unit_name,
                 "sample_sender": contract.linkman,

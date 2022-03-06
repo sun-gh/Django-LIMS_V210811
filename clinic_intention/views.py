@@ -6,6 +6,9 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 import json
 from datetime import date
+from guardian.shortcuts import get_objects_for_user, assign_perm
+import django.dispatch
+from django.dispatch import receiver
 # from django.core import serializers
 
 # Create your views here.
@@ -22,6 +25,7 @@ def intention_page(request, msg="normal_show"):
 def intention_table(request):
     # 定义临床意向表格
     if request.method == 'GET':
+        intention_get_perm = get_objects_for_user(request.user, 'clinic_intention.view_clinicintention')
 
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
@@ -43,8 +47,8 @@ def intention_table(request):
         if plan_needed != 'unknown':
             conditions['plan_needed'] = plan_needed.title()
 
-        all_intention = ClinicIntention.objects.filter(**conditions)
-
+        # all_intention = ClinicIntention.objects.filter(**conditions)
+        all_intention = intention_get_perm.filter(**conditions)
         all_intention_count = all_intention.count()
         if not pageNum:
             pageNum = 1
@@ -161,6 +165,9 @@ def intention_table(request):
     return HttpResponse(json.dumps(response_data))  # 需要json处理下数据格式
 
 
+add_intention_success = django.dispatch.Signal()
+
+
 @login_required()
 def add_intention(request):
     # 定义意向添加功能
@@ -182,18 +189,27 @@ def add_intention(request):
             else:
                 serial_num = date_today.strftime('%Y%m%d') + '01'
             intention_instance.intention_number = serial_num
-            # 处理添加人
 
             intention_instance.save()
             intention_form.save_m2m()
 
             msg = "add_success"
+            # 处理对象权限
+            add_intention_success.send(add_intention, msg=msg, intention_obj=intention_instance, user=request.user)
 
             return redirect('clinic_intention:intention_page', msg)
         else:
             form = IntentionForm(request.POST)
             msg = "add_failed"
             return render(request, "clinic_intention/add_intention.html", {'form': form, 'msg': msg})
+
+
+@receiver(add_intention_success, sender=add_intention)
+def assign_intention_perm(sender, **kwargs):
+    # 定义意向对象权限添加
+    assign_perm('clinic_intention.view_clinicintention', kwargs['user'], kwargs['intention_obj'])
+
+    return None
 
 
 @login_required()

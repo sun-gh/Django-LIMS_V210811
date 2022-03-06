@@ -1,10 +1,10 @@
 {% extends "customer/base.html"  %}
 {% load static %}
 
-{% block title %} 谱度众合&nbsp;|&nbsp;检测分析详情页 {% endblock %}
+{% block title %} 谱度众合&nbsp;|&nbsp;质谱检测详情页 {% endblock %}
 
 {% block css %}
-    <link href="{% static 'project_stage/css/test_analysis_detail.css'  %}" rel="stylesheet" />
+    <link href="{% static 'project_stage/css/test_stage_detail.css'  %}" rel="stylesheet" />
 {% endblock  %}
 
 {% block content %}
@@ -13,7 +13,7 @@
     <div class="container-fluid">
       <div class="row mb-0">
         <div class="col-sm-6">
-          <h5>检测分析详细信息</h5>
+          <h5>质谱检测详细信息</h5>
         </div>
         <div class="col-sm-6">
 
@@ -33,7 +33,7 @@
           <!-- card-body -->
           <div class="card-body  pb-1  "> <!--pt-0 pl-1 pr-1-->
             <div class="row">
-              <div class="col-md-12">
+              <div class="col-md-10">
                 <h6><b>基本信息:</b></h6>
                 <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
                   <thead>
@@ -42,7 +42,6 @@
                       <th>样本类型</th>
                       <th>机时类型</th>
                       <th>样本数量</th>
-                      <th>项目来源</th>
                       <th>检测仪器</th>
                       <th>项目负责人</th>
                     </tr>
@@ -55,7 +54,6 @@
                         {{ record.machine_time|default:"-" }}
                       </td>
                       <td>{{ record.sample_amount }}</td>
-                      <td>{{ record.get_project_source_display }}</td>
                       <td>
                         {% if record.instrument_type %}
                           <span>{{ record.instrument_type.instrument }}</span>
@@ -100,21 +98,26 @@
               </div>  <!--/.col-->
             </div>  <!--/.row-->
             <div class="row">
-              <div class="col-md-10">
+              <div class="col-md-7">
                 <h6><b>时间节点:</b></h6>
                 <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
                 <thead>
                   <tr>
+                      <th>前处理完成时间</th>
                       <th>上机日期</th>
-                      <th>搜库日期</th>
-                      <th>报告发送日期</th>
-                      <th>原始数据发送日期</th>
+                      <th>下机日期</th>
                       <th>下机截止日期</th>
-                      <th>项目截止日期</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
+                    <td>
+                      {% if record.pretreat_finish_date %}
+                        {{ record.pretreat_finish_date|date:"Y-m-d" }}
+                      {% else %}
+                        -
+                      {% endif  %}
+                    </td>
                     <td>
                       {% if record.date_test %}
                         {{ record.date_test|date:"Y-m-d" }}
@@ -123,22 +126,8 @@
                       {% endif  %}
                     </td>
                     <td>
-                      {% if record.date_searchlib %}
-                        {{ record.date_searchlib|date:"Y-m-d" }}
-                      {% else %}
-                        -
-                      {% endif  %}
-                    </td>
-                    <td>
-                      {% if record.date_send_report %}
-                        {{ record.date_send_report|date:"Y-m-d" }}
-                      {% else %}
-                        -
-                      {% endif  %}
-                    </td>
-                    <td>
-                      {% if record.date_send_rawdata %}
-                        {{ record.date_send_rawdata|date:"Y-m-d" }}
+                      {% if record.test_finish_date %}
+                        {{ record.test_finish_date|date:"Y-m-d" }}
                       {% else %}
                         -
                       {% endif  %}
@@ -146,13 +135,6 @@
                     <td>
                       {% if record.test_deadline %}
                         {{ record.test_deadline|date:"Y-m-d" }}
-                      {% else %}
-                        -
-                      {% endif %}
-                    </td>
-                    <td>
-                      {% if record.pro_deadline %}
-                        {{ record.pro_deadline|date:"Y-m-d" }}
                       {% else %}
                         -
                       {% endif  %}
@@ -163,24 +145,12 @@
 
               </div><!--/.col-->
             </div>  <!--/.row-->
-            <div class="row">
-              <div class="col-md-12">
-                <h6><b>相关文件:</b></h6>
-                <div>
-                  {% for file in record.files.all %}
-                    <div><a href="{{ file.file.url }}">{{ file.file.name|slice:"14:" }}</a>&nbsp;</div>
-                  {% empty %}  <!--增加files为空的判断-->
-                    -
-                  {% endfor %}
-                </div>
-              </div><!--/.col-->
-            </div>  <!--/.row-->
 
           </div>  <!-- /.card-body-->
           <div class="card-footer">
             <div class="row">
               <div class="col-md-12">
-                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'project_stage:test_analysis' 'detail_back' %}" style="color:green;"><strong>返回检测分析列表</strong></a>
+                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'project_stage:test_stage' 'detail_back' %}" style="color:green;"><strong>返回质谱检测列表</strong></a>
               </div>  <!--/.col-->
             </div>
           </div>  <!--/.row-->
@@ -188,5 +158,4 @@
       </div> <!-- /.col-->
     </div>  <!-- /.row-->
   </section>
-
 {% endblock %}

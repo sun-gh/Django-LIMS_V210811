@@ -1,0 +1,573 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;质谱检测进度 {% endblock %}
+
+{% block css %}
+  <!--bootstrap-table-->
+  <link rel="stylesheet" href="{% static 'bootstrap-table-1.17.0/dist/bootstrap-table.min.css' %}">
+  <!--bootstrap-table fixed columns-->
+  <link rel="stylesheet" href="{% static 'bootstrap-table-1.17.0/dist/extensions/fixed-columns/bootstrap-table-fixed-columns.min.css' %}">
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <link href="{% static 'project_stage/css/test_stage.css'  %}" rel="stylesheet" />
+{% endblock  %}
+
+{% block content %}
+  <!-- Content Header (Page header) -->
+  <section class="content-header pb-1">
+    <div class="container-fluid">
+      <div class="row ">
+        <div class="col-sm-6">
+          <h5>质谱检测信息</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-12">
+        <div class="card card-lightblue mb-2">  <!--primary-->
+          <div class="card-header pb-1 pt-2">
+            <h3 class="card-title">条件查询</h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                <i class="fas fa-minus"></i></button>
+            </div>
+          </div>
+          <div class="card-body pt-2 pb-0">
+            <div class="row">
+              <div class="col">
+                <form class="form-horizontal">
+                  <div class="row">
+                    <div class="col">
+                      <div class="form-group row">
+                        <label for="project_number" class="col-md-4 col-form-label col-form-label-sm">项目编号：</label>
+                        <div class="col-md-7">
+                          <input type="text" class="form-control form-control-sm" id="project_number" name="project_num"  >
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        {{ form.project_type.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.project_type }}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="form-group row">
+                        <label for="unit_search" class="col-md-4 col-form-label col-form-label-sm">单位：</label>
+                        <div class="col-md-7">
+                          <input type="text" class="form-control form-control-sm" id="unit_search" name="unit_name"  >
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        {{ form.sample_type.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.sample_type }}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="form-group row">
+                        <label for="sender_search" class="col-md-4 col-form-label col-form-label-sm">送样人：</label>
+                        <div class="col-md-7">
+                          <input type="text" class="form-control form-control-sm" id="sender_search" name="sample_sender"  >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <a class="btn btn-success btn-sm  form-search" id="search-btn" onclick="searchfun()" >搜索</a>&nbsp;
+                      <a class="btn btn-secondary btn-sm  form-search" onclick="clearfun()" >重置</a>
+                    </div>
+                  </div>  <!-- /.row -->
+                </form>
+              </div>  <!-- /.col -->
+            </div>  <!-- /.row -->
+          </div> <!-- /.card-body -->
+        </div>  <!-- /.card -->
+        <!-- 第二个card，表格部分 -->
+        <div class="card">
+          <!-- card-body -->
+          <div class="card-body pt-0 pb-1 pl-1 pr-1">
+            <table id="mytab" class="table table-sm table-bordered table-striped table-hover " style="table-layout:fixed;">
+            </table>
+            <div id="toolbar">
+              {% if perms.project_stage.change_test_analysis %}
+                &nbsp;&nbsp;<a class="btn btn-info btn-sm" href="#" role="button" id="edit-btn" >修改</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div> <!-- /.col-->
+    </div>  <!-- /.row-->
+
+  </section>
+{% endblock %}
+
+{% block script %}
+<!--popper定位库-->
+<script src="{% static 'popper-core-1.14.7/dist/umd/popper.min.js' %}" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<!-- bootstrap table -->
+<script src="{% static 'bootstrap-table-1.17.0/dist/bootstrap-table.min.js' %}"></script>
+<!-- bootstrap table fixed columns-->
+<script src="{% static 'bootstrap-table-1.17.0/dist/extensions/fixed-columns/bootstrap-table-fixed-columns.min.js' %}"></script>
+<!-- tableExport-->
+<script src="{% static 'tableExport.min.js' %}"></script>
+<!-- bootstrap table export-->
+<script src="{% static 'bootstrap-table-1.17.0/dist/extensions/export/bootstrap-table-export.min.js' %}"></script>
+<!-- bootstrap table cookie-->
+<script src="{% static 'bootstrap-table-1.17.0/dist/extensions/cookie/bootstrap-table-cookie.min.js' %}"></script>
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+
+<script type="text/javascript">
+  // 获取csrf
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  const csrftoken = getCookie('csrftoken');
+  function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  };
+  $.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      }
+    }
+  });
+
+  $(function () {
+      initBSTable()
+  });
+  $table = $("#mytab");
+
+  function initBSTable() {
+
+    // num=1是为了规定Num为数字类型
+    var pageSize = sessionStorage.getItem("pageSize");
+    var pageNum = sessionStorage.getItem("pageNum");
+    var num=1;
+    num = pageNum==null?1:parseInt(pageNum);
+    //console.log(pageNum);
+
+    $table.bootstrapTable({
+      {#全部参数#}
+      url:"{% url 'project_stage:test_stage_table' %}",
+      method: 'get',                      //请求方式（*）
+      iconSize:"sm",                     // 设置图标大小  sm小图标 lg大图标
+      cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+      //cookie: true,                       //是否启用cookie
+      //cookieExpire: '2h',                //cookie过期时间
+      //cookieIdTable: 'unit_list',        //cookie的唯一标识符
+
+      pagination: true,                   //是否显示分页（*）
+      sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+      pageNumber: num,                       //初始化加载第一页，默认第一页;原始值为1
+      pageSize: 50,                       //每页的记录行数（*）
+      pageList: [10, 20, 50, 100, 'All'],        //可供选择的每页的行数（*）
+      smartDisplay: false,               //自动判断显示分页信息和 card 视图
+      paginationLoop: false,             //是否启用分页条无限循环
+      queryParamsType: "limit",          //默认设置为limit，此时发生url中包含limit, offset, sort, order四个参数；为空则包含：pageSize, pageNumber, sortName, sortOrder
+      queryParams: getParams,            //定义向后台传递参数
+
+      search: false,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端  true
+      //searchOnEnterKey: true,              //按回车触发搜索方法
+
+      showColumns: true,                  //是否显示所有的列
+      toolbar: "#toolbar",                //一个jQuery 选择器，指明自定义的 toolbar
+
+      showRefresh: false,                  //是否显示刷新按钮  true
+      showExport: true,                    //显示导出按钮
+      exportTypes:['excel','csv'],  //导出文件类型
+      exportOptions: {
+        fileName: '质谱检测进度',  //文件名称设置
+        worksheetName: 'sheet1',  //表格工作区名称
+        tableName: '质谱检测进度',
+        excelstyles: ['background-color', 'color', 'font-size', 'font-weight'],
+      },
+      height: 600,                        //行高，如果没有设置height属性，表格自动高度
+      //theadClasses: "thead-light",       //设置thead-blue为表头样式
+
+      showToggle: false,                    //是否显示详细视图和列表视图的切换按钮
+      cardView: false,                    //是否显示详细视图,使用fixed-columns需要设为false
+      detailView: false,                  //开启详情树形图模式,使用fixed-columns需要设为false
+      showFooter: false,                  //显示摘要页脚行,使用fixed-columns需要设为false
+      fixedColumns: true,
+      fixedNumber: 3,  //固定列数
+      uniqueId: 'project_id',     //为每一行指定唯一的标识符
+
+      //自定义分页字符串显示为中文
+      formatShowingRows:function(pageFrom, pageTo, totalRows) {
+        return "第"+pageFrom+"-"+pageTo+"行，共"+totalRows+"行";
+      },
+      //自定义分页字符串显示为中文
+      formatRecordsPerPage:function(pageNumber) {
+        return pageNumber+' 行/页';
+      },
+      //定义Search placeholder
+      formatSearch:function() {
+        return  "项目编号/送样人/单位";
+      },
+
+      columns: [
+        { checkbox:true, },
+        {
+          field: 'num',  　　　　　　//返回数据rows数组中的每个字典的键名与此处的field值要保持一致
+          title: '序号',
+          width: 55,
+          align: 'center',
+          formatter: function(value,row,index){
+            var pageSize=$('#mytab').bootstrapTable('getOptions').pageSize;//通过表的#id 可以得到每页多少条
+            if (pageSize == 'All'){
+              var totalRows = $('#mytab').bootstrapTable('getOptions').totalRows;
+              pageSize = totalRows;
+            };
+            var pageNumber=$('#mytab').bootstrapTable('getOptions').pageNumber;//通过表的#id 可以得到当前第几页
+            return pageSize * (pageNumber - 1) + index + 1;    //返回每条的序号： 每页条数 * （当前页 - 1 ）+ 序号
+          },
+          cellStyle: function(value,row,index){
+      　　　 if (row.priority=='1'){
+    　　　　　　return {css:{"background-color":"OrangeRed"}}
+      　　　 }else if (row.priority=='2'){
+    　　　　　　return {css:{"background-color":"orange"}}
+      　　　 }else if (row.priority=='3'){
+    　　　　　　return {css:{"background-color":"yellow"}}
+      　　　 }
+            return {} ;
+           },  //.function
+        },
+        {
+          field: 'project_num',
+          title: '项目编号',
+          width: 100,
+          align: 'center',
+          formatter: function (value,row,index) {
+            var result = "";
+            result += "<a href='#'  class='view_detail' id='btn-" +row.project_id +"' >" + value + "</a>";
+
+            return result;
+          },
+        },
+        {
+          field: 'time_percent',
+          title: '剩余周期',
+          width: 100,
+          align: 'center',
+          formatter: progressMatter,
+        },
+        {
+          field: 'project_type',
+          title: '项目类型',
+          width: 150,
+          align: 'center',
+        },
+        {
+          field: 'sample_type',
+          title: '样本类型',
+          width: 105,
+          align: 'center',
+         },
+         {
+          field: 'machine_time',
+          title: '机时类型',
+          width: 135,
+          align: 'center',
+         },
+         {
+          field: 'sample_amount',
+          title: '样本数量',
+          width: 90,
+          align: 'center',
+         },
+         {
+          field: 'leading_official',
+          title: '送样终端',
+          width: 100,
+          align: 'center',
+         },
+         {
+          field: 'unit',
+          title: '单位',
+          width: 290,
+          align: 'center',
+         },
+         {
+          field: 'sample_sender',
+          title: '送样人',
+          width: 100,
+          align: 'center',
+        },
+        {
+          field: 'responsible_person',
+          title: '项目负责人',
+          width: 100,
+          align: 'center',
+        },
+        {
+          field: 'instrument_type',
+          title: '检测仪器',
+          width: 110,
+          align: 'center',
+        },
+        {
+          field: 'date_test',
+          title: '上机日期',
+          width: 100,
+          align: 'center',
+        },
+        {
+          field: 'test_finish_date',
+          title: '下机日期',
+          width: 100,
+          align: 'center',
+         },
+        {
+          field: 'test_deadline',
+          title: '下机截止日期',
+          width: 110,
+          align: 'center',
+        },
+
+      ],
+
+    });  //. $table
+
+  }  //.initBSTable
+
+  // 定义剩余周期函数
+  function progressMatter(value,row,index) {
+    //var data = JSON.stringify(row);
+    var result = "";
+    if (value!="-") {
+      if (value >= 50) {
+        result +='<div class="progress"><div class="progress-bar bg-success" role="progressbar" style="width:'+
+        value+'%;" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100">'+value+'%</div></div>';
+      } else if (value >= 20) {
+        result +='<div class="progress"><div class="progress-bar bg-warning" role="progressbar" style="width:'+
+        value+'%;" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100">'+value+'%</div></div>';
+      } else {
+        result +='<div class="progress"><div class="progress-bar bg-danger" role="progressbar" style="width:'+
+        value+'%;" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100">'+value+'%</div></div>';
+      }
+    }
+    return result;
+  }
+
+  // 给label加上class属性;
+  $("[for='id_project_type']").addClass("col-md-4 col-form-label col-form-label-sm");
+  $("[for='id_sample_type']").addClass("col-md-4 col-form-label col-form-label-sm");
+
+  //定义向后台传递参数的函数
+    function getParams(params) {
+
+      //获取sessionStorage中params的value
+      var pageSize = sessionStorage.getItem("pageSize");
+      var pageNum = sessionStorage.getItem("pageNum");
+      //自定义的搜索条件
+      var project_num = sessionStorage.getItem("project_num");
+      var unit = sessionStorage.getItem("unit");  //原为"unit_search"
+      var sample_sender = sessionStorage.getItem("sample_sender");
+      //定义项目类型获取选择结果
+      var pro_type_id = sessionStorage.getItem("pro_type_id");
+      var pro_type = document.getElementById("id_project_type");
+      //定义样本类型选项
+      var sample_type_id = sessionStorage.getItem("sample_type_id");
+      var sample_type = document.getElementById("id_sample_type");
+
+      var temp = {      //这里的pageSize、pageNum等必须和Controller改成一样的
+        pageSize: pageSize==null?params.limit:pageSize,                      //页面大小
+        pageNum: pageNum==null?(params.offset / params.limit) + 1:pageNum,   //页码
+        //在进行模糊查询的参数
+        // sort: params.sort,      //排序列名
+        // sortOrder: params.order //排位命令（desc，asc）
+        project_num: project_num==null?$("#project_number").val():project_num,
+        unit: unit==null?$("#unit_search").val():unit,
+        sample_sender: sample_sender==null?$("#sender_search").val():sample_sender,
+        pro_type_id: pro_type_id==null?pro_type.selectedIndex:pro_type_id,
+        sample_type_id: sample_type_id==null?sample_type.value:sample_type_id,
+
+      };
+      //在sessionStorage中清除这几个数据
+      sessionStorage.removeItem("pageSize");
+      sessionStorage.removeItem("pageNum");
+      sessionStorage.removeItem("project_num");
+      sessionStorage.removeItem("unit");
+      sessionStorage.removeItem("sample_sender");
+      sessionStorage.removeItem("pro_type_id");
+      sessionStorage.removeItem("sample_type_id");
+      return temp;
+    }  //.getParams
+
+  // 定义鼠标悬停显示内容函数
+  function paramsMatter(value,row,index) {
+    var span=document.createElement('span');
+    span.setAttribute('title',value);
+    span.innerHTML = value;
+    return span.outerHTML;
+  }
+
+  // 设置弹出提示框属性
+    toastr.options = {
+      closeButton: true,
+      debug: true,
+      progressBar: false,
+      positionClass: "toast-center-center",
+      onclick: null,
+      showDuration: "300",
+      hideDuration: "1000",
+      timeOut: "2000",
+      extendedTimeOut: "1000",
+      showEasing: "swing",
+      hideEasing: "linear",
+      showMethod: "fadeIn",
+      hideMethod: "fadeOut"
+    };
+
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='edit_success') {
+        toastr.success('修改成功！')
+      }
+    }
+    msgTip();
+
+  //修改按钮函数
+  $("#edit-btn").on("click", function() {
+    var rows = $("#mytab").bootstrapTable('getSelections');// 获得要修改的数据
+    if (rows.length == 0) {  // 判断是否选中
+      //alert("请先选择要修改的记录!");
+      toastr.info('请先选择要修改的记录！');
+      return;
+    } else {
+      if (rows.length == 1) {
+        var project_number=$("#project_number").val();
+        if(project_number!=null){
+          sessionStorage.setItem("project_num", project_number);
+        }else {
+          project_number="";
+        }
+        var unit_name=$("#unit_search").val();
+        if(unit_name!=null){
+          sessionStorage.setItem("unit", unit_name);
+        }else {
+          unit_name="";
+        }
+        var sample_sender=$("#sender_search").val();
+        if(sample_sender!=null){
+          sessionStorage.setItem("sample_sender", sample_sender);
+        }else {
+          sample_sender="";
+        }
+        var pro_type = document.getElementById("id_project_type");
+        if(pro_type.selectedIndex!=null){
+          sessionStorage.setItem("pro_type_id", pro_type.selectedIndex);
+        }else {
+          pro_type="";   //此时if必然为true
+        }
+        var sample_type = document.getElementById("id_sample_type");
+        sessionStorage.setItem("sample_type_id", sample_type.value);
+
+        sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
+        sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
+
+        var project_id = rows[0].project_id;  // 获取客户id
+        var url="/project_stage/test_stage_edit/" + project_id + "/"  ;
+        // alert(url);
+        location.href=url;
+
+      } else {
+        //alert("一次只能修改一条记录!");
+        toastr.info('一次只能修改一条记录！');
+        return;
+      }
+    }
+  })  // btn.on
+
+  //查看详情页函数
+    $(document).on("click", "a.view_detail", function(){
+      var project_number=$("#project_number").val();
+      if(project_number!=null){
+        sessionStorage.setItem("project_num", project_number);
+      }else {
+        project_number="";
+      }
+      var unit_name=$("#unit_search").val();
+      if(unit_name!=null){
+        sessionStorage.setItem("unit", unit_name);
+      }else {
+        unit_name="";
+      }
+      var sample_sender=$("#sender_search").val();
+      if(sample_sender!=null){
+        sessionStorage.setItem("sample_sender", sample_sender);
+      }else {
+        sample_sender="";
+      }
+      var pro_type = document.getElementById("id_project_type");
+      if(pro_type.selectedIndex!=null){
+        sessionStorage.setItem("pro_type_id", pro_type.selectedIndex);
+      }else {
+        pro_type="";   //此时if必然为true
+      }
+      var sample_type = document.getElementById("id_sample_type");
+      sessionStorage.setItem("sample_type_id", sample_type.value);
+
+      sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
+      sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
+
+      var btn_id = $(this).attr("id");
+      var str_arry = btn_id.split('-');
+      //var file_id = parseInt(str_arry[1]);  // 将string转换为Int
+      var pro_id = str_arry[1];
+      window.location.href="/project_stage/test_stage_detail/" + pro_id + "/";
+
+    } );  // .on
+
+  // 搜索按钮函数
+  function searchfun() {
+    sessionStorage.setItem("pageNum", 1);  // 搜索后结果数据从第一页显示，避免列表页不在第一页搜索时出错；
+	$("#mytab").bootstrapTable('refresh');
+  }
+  // 重置按钮函数
+  function clearfun(){
+    $("#project_number").val("");
+    $("#unit_search").val("");
+    $("#sender_search").val("");
+    //设置项目类型和样本类型为第一选项
+    $("#id_project_type option").attr("selected",false);
+    $("#id_project_type option").first().attr("selected",true);
+    $("#id_sample_type option").attr("selected",false);
+    $("#id_sample_type option").first().attr("selected",true);
+
+    searchfun();
+  }
+
+  //定义搜索框响应回车键
+  $("input").keydown(function (e) {  //当按下按键时
+    if (e.which == 13) {  //.which属性判断按下的是哪个键，回车键的键位序号为13
+      $('#search-btn').trigger("click");  //触发搜索按钮的点击事件
+    }
+  });
+
+</script>
+{% endblock %}

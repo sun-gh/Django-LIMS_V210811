@@ -18,10 +18,15 @@ urlpatterns = [
     path('pretreat_stage_table/', views.pretreat_stage_table, name='pretreat_stage_table'),
     path('pretreat_stage_edit/<int:project_id>/', views.pretreat_stage_edit, name='pretreat_stage_edit'),
     path('pretreat_stage_detail/<int:pro_id>/', views.view_pretreat_detail, name='view_pretreat_detail'),
-    # 检测分析阶段
-    path('test_analysis/<msg>/', views.test_analysis, name='test_analysis'),
-    path('test_analysis_table/', views.test_analysis_table, name='test_analysis_table'),
-    path('test_analysis_edit/<int:project_id>/', views.test_analysis_edit, name='test_analysis_edit'),
-    path('test_analysis_detail/<int:pro_id>/', views.test_analysis_detail, name='test_analysis_detail'),
+    # 质谱检测阶段
+    path('test_stage/<msg>/', views.test_stage, name='test_stage'),
+    path('test_stage_table/', views.test_stage_table, name='test_stage_table'),
+    path('test_stage_edit/<int:pro_id>/', views.test_stage_edit, name='test_stage_edit'),
+    path('test_stage_detail/<int:pro_id>/', views.test_stage_detail, name='test_stage_detail'),
+    # 数据分析阶段
+    path('analysis_stage/<msg>/', views.analysis_stage, name='analysis_stage'),
+    path('analysis_stage_table/', views.analysis_stage_table, name='analysis_stage_table'),
+    path('analysis_stage_edit/<int:project_id>/', views.analysis_stage_edit, name='analysis_stage_edit'),
+    path('analysis_stage_detail/<int:pro_id>/', views.analysis_stage_detail, name='analysis_stage_detail'),
     path('edit_analysis_info/<int:pro_id>/', views.edit_analysis_info, name='edit_analysis_info'),
     ]

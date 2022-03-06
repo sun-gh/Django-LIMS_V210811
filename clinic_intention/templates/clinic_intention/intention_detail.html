@@ -1,0 +1,309 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;临床意向详情 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}" />
+  <link href="{% static 'clinic_intention/css/intention_detail.css'  %}" rel="stylesheet" />
+{% endblock  %}
+
+{% block content %}
+  <!-- Content Header (Page header) -->
+  <section class="content-header ">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>临床意向详细信息</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <!-- card-header -->
+          <div class="card-header ">
+            <h5 class="m-0"><strong class="btn btn-info">意向编号：{{ intention.intention_number }}</strong></h5>
+          </div>
+          <!-- card-body -->
+          <div class="card-body  pb-1  "> <!--pt-0 pl-1 pr-1-->
+            <div class="row">
+              <div class="col-md-12">
+                <h6><b>客户信息:</b></h6>
+                <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
+                  <thead>
+                    <tr>
+                      <th>客户姓名</th>
+                      <th>联系方式</th>
+                      <th>单位</th>
+                      <th>科室/院系</th>
+                      <th>负责人</th>
+                      <th>需求预估</th>
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ intention.customer_name }}</td>
+                      <td>{{ intention.contact_info|default:"-" }}</td>
+                      <td>{{ intention.unit.unit_name }}</td>
+                      <td>{{ intention.department|default:"-" }}</td>
+                      <td>{{ intention.leading_official|default:"-" }}</td>
+                      <td>
+                          {% for demand in intention.demand_estimate.all %}
+                            <div >{{ demand.type_name }}</div>
+                          {% empty %}
+                              -
+                          {% endfor %}
+                      </td>
+
+                    </tr>
+                  </tbody>
+                </table>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+
+            <div class="row">
+              <div class="col-md-12">
+              <h6><b>意向信息:</b></h6>
+              <table border="1" class="table " style="border-left:3px solid orangered;border-bottom:1px solid orangered" >
+                <thead>
+                  <tr>
+                    <th>疾病种类</th>
+                    <th>是否需方案设计</th>
+                    <th>方案类型</th>
+                    <th>方案截止日期</th>
+                    <th>客户预算</th>
+                    <th>计划样本数量</th>
+                    <th>计划收样日期</th>
+                    <th>计划送样日期</th>
+                    <th>样本类型</th>
+                    <th>项目阶段</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{ intention.disease_type|default:"-" }}</td>
+                    <td>
+                        {% if intention.plan_needed is None %}
+                          <span>未知</span>
+                        {% elif intention.plan_needed  %}
+                          <span>是</span>
+                        {% else  %}
+                          <span>否</span>
+                        {% endif  %}
+                    </td>
+                    <td>{{ intention.get_plan_type_display }}</td>
+                    <td>
+                      {% if intention.plan_deadline %}
+                        {{ intention.plan_deadline|date:"Y-m-d" }}
+                      {% else %}
+                        -
+                      {% endif %}
+                    </td>
+                    <td>{{ intention.customer_budget|default:"-" }}</td>
+                    <td>{{ intention.sample_number|default:"-" }}</td>
+                    <td>
+                      {% if intention.collect_time %}
+                        {{ intention.collect_time|date:"Y-m-d" }}
+                      {% else %}
+                        -
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if intention.send_time %}
+                        {{ intention.send_time|date:"Y-m-d" }}</td>
+                      {% else %}
+                        -
+                      {% endif %}
+                    <td>{{ intention.sample_type.type_name|default:"-" }}</td>
+                    <td>{{ intention.get_project_stage_display }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              </div>  <!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
+              <div class="col-md-9">
+                <h6><b>跟进记录:</b></h6>
+                {% if perms.clinic_intention.add_followuprecord %}
+                  {% if intention.add_person == request.session.user_name %}
+                    <form >
+                      {% csrf_token %}
+                      <div class="row mb-2">
+                        <div class="col">
+                          {{ form.communicate_content }}
+                        </div>
+                      </div>
+                      <div class="row" hidden>
+                        <input  type="text" name="recorder" id="id_recorder" value="{{ request.session.user_name }}" />
+                      </div>
+                      <div class="row mb-2">
+                        <div class="col">
+                          {{ form.communicate_time }}
+                        </div>
+                        <div class="col input-group">
+                          {{ form.linkman }}
+                          <div class="input-group-append">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                          </div>
+                        </div>
+                        <div class="col">
+    <!--                      <input type="submit" value="提交" class="btn btn-success btn-sm float-right" id="submit_record"/>-->
+                          <input type="button" value="提交" class="btn btn-success btn-sm float-right" id="submit_record"/>
+                          <input type="reset" style="display:none;" />
+                        </div>
+                      </div>
+                    </form>
+                  {% endif %}
+                {% endif %}
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row mt-3">
+              <div class="col-md-9" id="record_list">
+<!--                <h6><b>跟进记录:</b></h6>-->
+                {% for record in intention.followup_record.all %}
+                  <hr />
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div>
+                        <span >
+                          <a href="#">{{ record.recorder }}</a>
+                        </span>
+                        &nbsp;&nbsp;
+                        <span class="description">{{ record.c_time|date:"Y.m.d" }} {{ record.c_time|time:"H:i" }}</span>
+                      </div>
+                      <p>
+                        {{ record.communicate_time|date:"Y.m.d" }}日，对接人——{{ record.linkman }}，{{ record.communicate_content }}
+                      </p>
+                    </div>
+                  </div>
+                {% empty %}
+                  -
+                {% endfor %}
+
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+
+          </div>  <!-- /.card-body-->
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-md-6">
+                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'clinic_intention:intention_page' 'normal_show' %}" style="color:green;"><strong>返回临床意向信息表</strong></a>
+              </div>  <!--/.col-->
+
+            </div>
+          </div>  <!--/.row-->
+        </div>  <!-- /.card-->
+      </div> <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+{% block script %}
+
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+
+<script type="text/javascript">
+  {#使用ajax方式#}
+    $(document).ready(function() {
+      // 获取csrf
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }  //.function
+      const csrftoken = getCookie('csrftoken');
+      function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+      };
+      $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        }
+      });
+    });
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  //定义跟进记录提交函数
+  $("#submit_record").click(function(){
+    var communicate_content = $("#id_communicate_content").val();
+    var communicate_time = $("#id_communicate_time").val();
+    var linkman = $("#id_linkman").val();
+    var recorder = $("#id_recorder").val();
+    if (communicate_content && communicate_time && linkman) {
+      $.post(
+        "/clinic_intention/add_followup_record/",
+        {
+        "intention_id": {{ intention.id }},
+        "communicate_content": communicate_content,
+        "communicate_time": communicate_time,
+        "linkman": linkman,
+        "recorder": recorder,
+        },
+        function(data, status) {
+          if(status == "success"){
+            toastr.info('添加记录成功！');
+            $("input[type=reset]").trigger("click");
+            var last_record = JSON.parse(data);
+            //console.log(last_record);
+            var communicate_time = last_record.communicate_time;
+            var linkman = last_record.linkman;
+            var communicate_content = last_record.communicate_content;
+            var c_time = last_record.create_time;
+            var recorder = last_record.recorder;
+            var html_str = '';
+            html_str += '<hr /><div class="row"><div class="col-md-12"><div><span><a href="#">'+recorder+'</a></span>&nbsp;<span>'
+            +c_time+'</span></div><p>'+communicate_time+'日，对接人——'+linkman+'，'+communicate_content+'</p></div></div>';
+
+            $('#record_list').prepend(html_str);
+          }else{
+            toastr.error('添加记录失败！');
+          }
+        }  //.function
+      );  //.post
+    } else {
+      toastr.error('请将信息补充完整！');
+      //alert('信息有误！');
+    }
+  }); //.click
+
+
+</script>
+{% endblock %}

@@ -77,10 +77,39 @@
                 </p>
               </div><!--/.col-->
             </div>  <!--/.row-->
+            {% if apply.related_contract.contract_type == 0 %}
+              <div class="row">
+                <div class="col-md-8">
+                <h6><b>合同关联项目:</b></h6>
+                <table border="1" class="table " style="border-left:3px solid orangered;border-bottom:1px solid orangered" >
+                  <thead>
+                    <tr>
+                      <th>序号</th>
+                      <th>项目编号</th>
+                      <th>项目类型</th>
+                      <th>样本数量</th>
+                      <th>项目金额</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for order in apply.related_contract.project_order.all %}
+                      <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ order.project_order.project_num }}</td>
+                        <td>{{ order.project_order.project_type }}</td>
+                        <td>{{ order.project_order.sample_amount }}</td>
+                        <td>{{ order.project_sum }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                </div>  <!--/.col-->
+              </div>  <!--/.row-->
+            {% endif %}
             <div class="row">
               <div class="col-md-8">
               <h6><b>联系人:</b></h6>
-              <table border="1" class="table " style="border-left:3px solid orangered;border-bottom:1px solid orangered" >
+              <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid orangered" >
                 <thead>
                   <tr>
                     <th>姓名</th>

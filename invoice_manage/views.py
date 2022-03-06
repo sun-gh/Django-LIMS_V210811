@@ -451,7 +451,7 @@ def edit_invoice_info(request, invoice_id):
                     contract.save()
                     # 若发票金额无变化，对应合同信息不用修改
             else:
-                # 此时为首次修改,即添加发票
+                # 此时为首次修改,即添加发票（此处包括了红冲时产生一张金额为负的发票添加，并对相关合同的修改）
                 contract = invoice.link_apply.related_contract
                 # 要考虑一个合同对应多张票
                 old_makeout_sum = contract.makeout_invoice_sum

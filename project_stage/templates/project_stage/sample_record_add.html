@@ -9,7 +9,7 @@
   <!-- Select2 -->
   <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/select2/css/select2.min.css' %}" />
   <!--customer css-->
-  <link href="{% static 'project_stage/css/sample_record_add.css'  %}" rel="stylesheet" />
+<!--  <link href="{% static 'project_stage/css/sample_record_add.css'  %}" rel="stylesheet" />-->
 {% endblock  %}
 
 {% block content %}
@@ -92,10 +92,6 @@
                               {{ form.receive_date }}
                             </div>
                           </div>
-
-                      </div>
-
-                      <div class="col">
                           <!--样本质量-->
                           <div class="form-group row">
                             {{ form.sample_quality.label_tag }}
@@ -103,6 +99,10 @@
                               {{ form.sample_quality }}
                             </div>
                           </div>
+
+                      </div>
+
+                      <div class="col">
                           <!--附加项目-->
                           <div class="form-group row">
                             {{ form.addition_item.label_tag }}
@@ -115,6 +115,20 @@
                             {{ form.agent_id.label_tag }}
                             <div class="col-md-7">
                               {{ form.agent_id }}
+                            </div>
+                          </div>
+                          <!--防伪编号-->
+                          <div class="form-group row">
+                            {{ form.anti_fake_number.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.anti_fake_number }}
+                            </div>
+                          </div>
+                          <!--项目启动时间-->
+                          <div class="form-group row">
+                            {{ form.pro_start_date.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.pro_start_date }}
                             </div>
                           </div>
                           <!--备注-->

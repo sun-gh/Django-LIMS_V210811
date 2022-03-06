@@ -13,6 +13,10 @@ class ProjectTypeAdmin(admin.ModelAdmin):
                     'test_cycle', 'analysis_cycle')
 
 
+# class ProjectInterruptAdmin(admin.ModelAdmin):
+#     list_display = ('type_order', 'interrupt_type')
+
+
 admin.site.register(models.SampleType)
 admin.site.register(models.MachineTime)
 admin.site.register(models.SampleQuality)
@@ -22,5 +26,6 @@ admin.site.register(models.SampleRecord, SampleRecordAdmin)
 admin.site.register(models.OperatePerson)
 admin.site.register(models.SampleStatus)
 admin.site.register(models.ProjectInterrupt)
+# admin.site.register(models.ProjectInterrupt, ProjectInterruptAdmin)
 admin.site.register(models.Machine)
 admin.site.register(models.ResponsiblePerson)

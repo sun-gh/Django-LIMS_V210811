@@ -1,0 +1,181 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;需求设计详情 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+<!--  <link href="{% static 'invoice_manage/css/apply_invoice_detail.css'  %}" rel="stylesheet" />-->
+{% endblock  %}
+
+{% block content %}
+  <!-- Content Header (Page header) -->
+  <section class="content-header pb-1">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h4>需求设计详细信息</h4>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <!-- card-header -->
+          <div class="card-header ">
+            <h5 class="m-0">需求编号：{{ design.demand.demand_number }}</h5>
+          </div>
+          <!-- card-body -->
+          <div class="card-body  pb-1  "> <!--pt-0 pl-1 pr-1-->
+            <div class="row">
+              <div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
+              <div class="row">
+                <div class="col-12 col-sm-4">
+                  <div class="info-box bg-light">
+                    <div class="info-box-content">
+                      <span class="info-box-text text-center text-muted">需求类型</span>
+                      <span class="info-box-number text-center text-muted mb-0">{{design.demand.get_demand_type_display}}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                  <div class="info-box bg-light">
+                    <div class="info-box-content">
+                      <span class="info-box-text text-center text-muted">紧急程度</span>
+                      <span class="info-box-number text-center text-muted mb-0">{{design.demand.get_urgent_degree_display}}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                  <div class="info-box bg-light">
+                    <div class="info-box-content">
+                      <span class="info-box-text text-center text-muted">重要程度</span>
+                      <span class="info-box-number text-center text-muted mb-0">{{design.demand.get_important_degree_display}}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  {% if design.demand.file %}
+                    <h5 ><i class="far fa-fw fa-image text-primary"></i> 相关截图</h5>
+                    <img class="img-thumbnail " src="{{design.demand.file.url}}" alt="相关截图">
+                  <p>
+                    <a href="{{design.demand.file.url}}" class="link-black text-sm"><i class="fas fa-link mr-1"></i> {{design.demand.file.name|slice:"14:"}}</a>
+                  </p>
+                  {% endif %}
+
+                </div>
+              </div>
+
+            </div>
+            <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2">
+              <h5 ><i class="fas fa-paint-brush text-primary"></i> 需求描述</h5>
+              <p class="text-muted"> {{design.demand.demand_describe}}</p>
+              <div class="text-sm"><label>状态：</label><span id="status">{{design.get_status_display}}</span></div>
+              <br>
+              <div class="row">
+                <div class="col">
+                  <div class="text-muted">
+                    <p class="text-sm">提出人
+                      <b class="d-block">{{design.demand.sponsor}}</b>
+                    </p>
+                    <p class="text-sm">部门
+                      <b class="d-block">{{design.demand.department}}</b>
+                    </p>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="text-muted">
+                    <p class="text-sm">创建时间
+                      <b class="d-block">{{design.create_time|date:"Y-m-d"}}</b>
+                    </p>
+
+                  </div>
+                </div>
+              </div>
+              <br>
+              <div class="row ">
+                <div class="col">
+                  <h5 ><i class="far fa-credit-card text-primary"></i> 评估结果</h5>
+                  <div class="text-sm"><span id="estimate_result">{{design.get_estimate_result_display}}</span></div>
+                  <p class="text-muted">
+                    {{ design.note|default:"" }}
+                  </p>
+                </div>
+              </div>
+
+            </div>
+            </div>  <!--/.row-->
+            <div class="row mt-4 mb-2">
+              <div class="col-md-8 m-auto">
+                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'demand_manage:demand_design_page' 'detail_back' %}" style="color:green;"><strong>返回需求设计页</strong></a>
+              </div>  <!--/.col-->
+              <div class="col-md-4 text-center">
+                {% if perms.demand_manage.demand_estimate %}
+                  <a class="btn btn-warning btn-sm" href="{% url 'demand_manage:demand_design_estimate' design.id %}" name="estimate_demand" role="button" >评估</a>
+                {% endif %}
+              </div>
+            </div>
+
+          </div>  <!-- /.card-body-->
+
+        </div>  <!-- /.card-->
+      </div> <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+{% block script %}
+
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+<script type="text/javascript">
+  // 对状态进行格式设置
+    var status_code = {{design.status}};
+    switch(status_code){
+      case 1:
+        $("#status").addClass("text-danger");
+        break;
+      case 2:
+        $("#status").addClass("text-info");
+        break;
+      case 3:
+        $("#status").addClass("text-warning");
+        break;
+      case 4:
+        $("#status").addClass("text-secondary");
+        break;
+      case 5:
+        $("#status").addClass("text-success");
+        break;
+    }
+
+  // 评估结果格式化；
+    var estimate_val=new Number;
+    estimate_val = {{ design.estimate_result }};
+    switch(estimate_val){
+      case 0:
+        $("#estimate_result").addClass("badge badge-pill badge-secondary");
+        break;
+      case 1:
+        $("#estimate_result").addClass("badge badge-pill badge-success");
+        break;
+      case 2:
+        $("#estimate_result").addClass("badge badge-pill badge-warning");
+        break;
+      case 3:
+        $("#estimate_result").addClass("badge badge-pill badge-info");
+        break;
+    }
+
+
+</script>
+{% endblock %}

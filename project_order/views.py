@@ -8,7 +8,7 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse
 import json
 from django.dispatch import receiver
-from project_stage.views import sample_record_add, add_success
+from project_stage.views import sample_record_add, add_success, sample_record_edit, edit_success
 from contract_manage.views import project_contract_add, contract_add_success
 from django.db.models import Q
 
@@ -17,20 +17,34 @@ from django.db.models import Q
 
 @receiver(add_success, sender=sample_record_add)
 def add_project_order(sender, **kwargs):
-
     # 使用信号接收器，添加项目订单
     # print(kwargs['sample_rec'])
     sample_record = SampleRecord.objects.get(id=kwargs['sample_rec_id'])
-    project_order = ProjectOrder.objects.create(project_order=sample_record)
+    anti_fake_number = kwargs['anti_fake_number']
+    if anti_fake_number:
+        project_order = ProjectOrder.objects.create(project_order=sample_record, pay_type="预付单结算")
+    else:
+        project_order = ProjectOrder.objects.create(project_order=sample_record)
+
+    return project_order
+
+
+@receiver(edit_success, sender=sample_record_edit)
+def edit_project_order(sender, **kwargs):
+    # 使用信号接收器，修改项目结算中结算方式
+    project_order = ProjectOrder.objects.filter(project_order=kwargs['project_id'])
+    anti_fake_number = kwargs['anti_fake_number']
+    if anti_fake_number:
+        project_order.update(pay_type="预付单结算")
+    else:
+        project_order.update(pay_type="")
 
     return project_order
 
 
 @receiver(contract_add_success, sender=project_contract_add)
 def edit_order_record(sender, **kwargs):
-
     # 使用信号接收器，修改合同记录
-    # print(kwargs['msg'])
     orders = kwargs['project_order']
     for order in orders:
         order.contract_record = True

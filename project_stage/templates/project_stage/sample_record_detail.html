@@ -42,8 +42,9 @@
                         <th>样本类型</th>
                         <th>机时类型</th>
                         <th>样本数量</th>
-                        <th>样本运送条件和质量</th>
+                        <th>运送条件和质量</th>
                         <th>收样日期</th>
+                        <th>项目启动时间</th>
                         <th>附加项目</th>
                         <th>项目负责人</th>
                     </tr>
@@ -58,6 +59,13 @@
                       <td>{{ record.sample_amount }}</td>
                       <td>{{ record.sample_quality.quality_type }}</td>
                       <td>{{ record.receive_date|date:"Y-m-d" }}</td>
+                      <td>
+                        {% if record.pro_start_date %}
+                          {{ record.pro_start_date|date:"Y-m-d" }}
+                        {% else %}
+                          -
+                        {% endif  %}
+                      </td>
                       <td>
                         {% for item in record.addition_item.all %}
                           <span class="badge badge-warning">{{ item.item_type }}</span>  <!--4.3中label已废除-->
@@ -88,6 +96,7 @@
                     <th>单位</th>
                     <th>送样终端</th>
                     <th>代理ID</th>
+                    <th>防伪编号</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -97,6 +106,7 @@
                     <td>{{ record.unit|default:"-" }}</td>
                     <td>{{ record.terminal|default:"-" }}</td>
                     <td>{{ record.agent_id|default:"-" }}</td>
+                    <td>{{ record.anti_fake_number|default:"-" }}</td>
                   </tr>
                 </tbody>
               </table>

@@ -1,7 +1,7 @@
 {% extends "customer/base.html"  %}
 {% load static %}
 
-{% block title %} 谱度众合&nbsp;|&nbsp;修改检测分析信息 {% endblock %}
+{% block title %} 谱度众合&nbsp;|&nbsp;修改质谱检测信息 {% endblock %}
 
 {% block css %}
   <!--toastr提示框-->
@@ -19,7 +19,7 @@
     <div class="container-fluid">
       <div class="row mb-0">
         <div class="col-sm-6">
-          <h5>检测分析信息修改</h5>
+          <h5>修改质谱检测信息</h5>
         </div>
         <div class="col-sm-6">
 
@@ -34,7 +34,7 @@
       <div class="col-md-12">
         <div class="card card-secondary">
         <div class="card-header">
-          <h3 class="card-title">项目号：&nbsp;{{ project_info.project_num }}</h3>
+          <h3 class="card-title">项目号：&nbsp;{{ pro_test.project_num }}</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
@@ -44,16 +44,16 @@
         <div class="card-body">
           <div class="row">
             <div class="col">
-              <p><span> 项目类型 </span>： {{ project_info.project_type.project_name }}</p>
+              <p><span> 项目类型 </span>： {{ pro_test.project_type.project_name }}</p>
               <p><span> 机时类型 </span>：
-                  {{ project_info.machine_time|default:"-" }}
+                  {{ pro_test.machine_time|default:"-" }}
               </p>
             </div>
             <div class="col">
               <p><span class="link_info"> 单位 </span> ：
-                {{ project_info.unit|default:"-" }}
+                {{ pro_test.unit|default:"-" }}
               </p>
-              <p><span class="link_info"> 送样人 </span> ：{{ project_info.sample_sender.customer_name }} </p>
+              <p><span class="link_info"> 送样人 </span> ：{{ pro_test.sample_sender.customer_name }} </p>
             </div>
           </div>
 
@@ -61,67 +61,38 @@
         </div>
         <div class="card card-info ">
 
-              <form class="form-horizontal" method="post" action="{% url 'project_stage:test_analysis_edit' project_info.id %}">
+              <form class="form-horizontal" method="post" action="{% url 'project_stage:test_stage_edit' pro_test.id %}" >
               <!-- card-body -->
               <div class="row">
                 <div class="col-md-10 offset-md-1">
                   <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
                     {% csrf_token %}
                     <div class="row ">
-                      <div class="col">
-
+                      <div class="col-md-8 offset-md-2">
                         <!--上机仪器-->
                         <div class="form-group row">
                           {{ form.instrument_type.label_tag }}
-                          <div class="col-md-7">
+                          <div class="col-md-6">
                             {{ form.instrument_type }}
                           </div>
                         </div>
                         <!--上机日期-->
                         <div class="form-group row">
                           {{ form.date_test.label_tag }}
-                          <div class="col-md-7" id="unit">
+                          <div class="col-md-6">
                             {{ form.date_test }}
                           </div>
+                          <div class="col m-auto"><span ><a href="#" id="set_test_date">今天</a></span></div>
                         </div>
-                        <!--项目负责人-->
+                        <!--下机日期-->
                         <div class="form-group row">
-                          {{ form.responsible_person.label_tag }}
-                          <div class="col-md-7">
-                            {{ form.responsible_person }}
+                          {{ form.test_finish_date.label_tag }}
+                          <div class="col-md-6">
+                            {{ form.test_finish_date }}
                           </div>
-                        </div>
-                        <!--搜库日期-->
-                        <div class="form-group row">
-                          {{ form.date_searchlib.label_tag }}
-                          <div class="col-md-7">
-                            {{ form.date_searchlib }}
-                          </div>
+                          <div class="col m-auto"><span ><a href="#" id="set_finish_date">今天</a></span></div>
                         </div>
                       </div>
-                      <div class="col">
-                        <!--报告发送日期-->
-                        <div class="form-group row">
-                          {{ form.date_send_report.label_tag }}
-                          <div class="col-md-7">
-                            {{ form.date_send_report }}
-                          </div>
-                        </div>
-                        <!--原始数据发送日期-->
-                        <div class="form-group row">
-                          {{ form.date_send_rawdata.label_tag }}
-                          <div class="col-md-7">
-                            {{ form.date_send_rawdata }}
-                          </div>
-                        </div>
-                        <!--项目截止日期-->
-                        <div class="form-group row">
-                          {{ form.pro_deadline.label_tag }}
-                          <div class="col-md-7">
-                            {{ form.pro_deadline }}
-                          </div>
-                        </div>
-                      </div>    <!-- /.col-->
                       </div>   <!-- /.row-->
                   </div>  <!-- /.card-body-->
                 </div>   <!-- /.col-->
@@ -131,7 +102,7 @@
                   <div class="card-footer ">
                     <div class="row">
                       <div class="col-md-2 offset-md-5">
-                        <a href="{% url 'project_stage:test_analysis' 'edit_back' %}" class="btn btn-secondary btn-sm">取消</a>
+                        <a href="{% url 'project_stage:test_stage' 'edit_back' %}" class="btn btn-secondary btn-sm">取消</a>
                         <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
                       </div>
                     </div>
@@ -185,7 +156,28 @@
       }
     }
     msgTip();
-
+  // 定义获取当前日期函数
+  function getdate(){
+    var current_date = new Date();
+    var year = current_date.getFullYear();
+    var mon = current_date.getMonth()+1;
+    var day = current_date.getDate();
+    var date_str =year + "-" + mon + "-" + day;
+    return date_str;
+  }
+  //设置上机日期函数
+  $("#set_test_date").on("click",function (){
+      var current_date = getdate();
+      //toastr.info(current_date)
+      $("#id_date_test").attr("value",current_date);
+    }
+  )
+  //设置下机日期函数
+  $("#set_finish_date").on("click",function (){
+      var current_date = getdate();
+      $("#id_test_finish_date").attr("value",current_date);
+    }
+  )
   });  // .ready
 
 </script>

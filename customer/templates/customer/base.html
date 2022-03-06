@@ -118,8 +118,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item has-treeview ">
-<!--            <a href="#" class="nav-link active">-->
-              <a href="#" class="nav-link ">
+            <a href="#" class="nav-link ">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 客户相关信息
@@ -143,8 +142,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           </li>
 
           <li class="nav-item has-treeview ">
-<!--            <a href="#" class="nav-link active">-->
-              <a href="#" class="nav-link ">
+            <a href="#" class="nav-link ">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 项目实施
@@ -165,9 +163,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{% url 'project_stage:test_analysis' 'normal_show' %}" class="nav-link">
+                <a href="{% url 'project_stage:test_stage' 'normal_show' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>检测分析阶段</p>
+                  <p>质谱检测阶段</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'project_stage:analysis_stage' 'normal_show' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>数据分析阶段</p>
                 </a>
               </li>
             </ul>
@@ -182,7 +186,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
           <li class="nav-item has-treeview ">
 <!--            <a href="#" class="nav-link active">-->
-              <a href="#" class="nav-link ">
+            <a href="#" class="nav-link ">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 合同管理
@@ -242,7 +246,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </ul>
 
           </li>
-
+          {% if perms.clinic_intention.show_clinic_intention_page %}
           <li class="nav-item">
             <a href="{% url 'clinic_intention:intention_page' 'normal_show' %}" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
@@ -250,6 +254,30 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 临床意向信息
               </p>
             </a>
+          </li>
+          {% endif %}
+          <li class="nav-item has-treeview ">
+            <a href="#" class="nav-link ">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>
+                需求管理
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{% url 'demand_manage:demand_page' 'normal_show' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>需求梳理</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'demand_manage:demand_design_page' 'normal_show' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>需求设计</p>
+                </a>
+              </li>
+            </ul>
           </li>
         </ul>
       </nav>
@@ -285,12 +313,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
 {% block script %}{% endblock %}
 <script>
   $('ul.nav-sidebar li a').each(function(i){
+    if($(this).attr('href')==='{{ request.path }}'){
+      //console.log('{{request.path}}');
 
-         if($(this).attr('href')==='{{ request.path }}'){
-            $(this).addClass('active');
-            $(this).parents("li.has-treeview").first().addClass('menu-open');
-        }else{
-        }
+      $(this).addClass('active');
+      $(this).parents("li.has-treeview").first().addClass('menu-open');
+    }else{
+    }
   });
 </script>
 </body>
