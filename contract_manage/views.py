@@ -29,6 +29,7 @@ def project_contract_table(request):
         contract_number = request.GET.get('contract_number')
         unit = request.GET.get('unit')
         linkman = request.GET.get('linkman')
+        project_number = request.GET.get('project_number')
 
         conditions = {"contract_type": 0, }  # 构造字典存储查询条件
 
@@ -38,6 +39,8 @@ def project_contract_table(request):
             conditions['unit_name__contains'] = unit
         if linkman:
             conditions['linkman__contains'] = linkman
+        if project_number:
+            conditions['project_order__project_order__project_num__contains'] = project_number
         all_contracts = ProjectContract.objects.filter(**conditions)
 
         all_contract_count = all_contracts.count()

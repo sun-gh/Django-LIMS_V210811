@@ -177,11 +177,28 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </ul>
           </li>
 
-          <li class="nav-item">
-            <a href="{% url 'project_order:project_order_page' %}" class="nav-link">
-              <i class="nav-icon fas fa-th"></i>
-              <p>项目结算信息</p>
+          <li class="nav-item has-treeview ">
+            <a href="#" class="nav-link ">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>
+                项目结算信息
+                <i class="right fas fa-angle-left"></i>
+              </p>
             </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{% url 'project_order:order_not_distribute_page' 'normal_show' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>待分配项目</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'project_order:project_order_page' 'normal_show' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>已分配项目</p>
+                </a>
+              </li>
+            </ul>
           </li>
 
           <li class="nav-item has-treeview ">

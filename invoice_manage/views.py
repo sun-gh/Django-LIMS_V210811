@@ -99,6 +99,12 @@ def apply_invoice_table(request):
         response_data = {'total': all_apply_count, 'rows': []}
         for apply in paginator.page(pageNum):
             # 下面这些key，都是我们在前端定义好了的，前后端必须一致，前端才能接受到数据并且请求.
+            # 定义合同编号（可能存在合同被删除的情况）
+            related_contract = apply.related_contract
+            if related_contract:
+                contract = related_contract.contract_num
+            else:
+                contract = "-"
             # 开票要求处理
             all_require = apply.invoice_require.all()
             if all_require:
@@ -157,7 +163,8 @@ def apply_invoice_table(request):
                 "apply_id": apply.id,
                 "serial_number": apply.serial_number,
                 "status": apply.status,
-                "related_contract": apply.related_contract.contract_num,
+                # "related_contract": apply.related_contract.contract_num,
+                "related_contract": contract,
                 "unit": apply.unit,
                 "invoice_sum": str(apply.invoice_sum),
                 "sheet_num": apply.sheet_num,
@@ -364,6 +371,12 @@ def invoice_info_table(request):
                 invoice_num = invoice_num
             else:
                 invoice_num = "待开票"
+            # 定义关联合同(可能会存在合同被删除的情况)
+            related_contract = invoice.link_apply.related_contract
+            if related_contract:
+                contract = related_contract.contract_num
+            else:
+                contract = "-"
             # 定义发票金额
             invoice_sum = invoice.invoice_sum
             if invoice_sum:
@@ -408,7 +421,8 @@ def invoice_info_table(request):
             response_data['rows'].append({
                 "invoice_id": invoice.id,
                 "invoice_number": invoice_num,
-                "link_contract": invoice.link_apply.related_contract.contract_num,
+                # "link_contract": invoice.link_apply.related_contract.contract_num,
+                "link_contract": contract,
                 "unit": invoice.unit_invoice,
                 "linkman": invoice.linkman,
                 "applicant": invoice.applicant,

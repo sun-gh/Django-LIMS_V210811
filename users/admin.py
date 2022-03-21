@@ -58,6 +58,18 @@ class UserGroupInline(admin.StackedInline):
 class GroupAdmin(BaseGroupAdmin):
     # define a new group admin
     inlines = (UserGroupInline,)
+    list_display = ('name', 'get_chinese_name', 'get_type')
+
+    @staticmethod
+    def get_chinese_name(self):
+        return self.usergroup.name
+
+    @staticmethod
+    def get_type(self):
+        return self.usergroup.get_type_display()
+
+    # get_type.admin_order_field = 'self.usergroup__type'
+    # ordering = ('get_type',)
 
 
 # 重新注册GroupAdmin

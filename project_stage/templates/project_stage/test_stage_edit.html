@@ -127,12 +127,11 @@
 <script type="text/javascript">
 
   $(document).ready(function() {
+    // 给label加上class属性;input加上class;
+    $("form label").addClass("col-md-4 col-form-label");
 
-  // 给label加上class属性;input加上class;
-  $("form label").addClass("col-md-4 col-form-label");
-
-  // 设置弹出提示框属性
-    toastr.options = {
+    // 设置弹出提示框属性
+      toastr.options = {
         closeButton: true,
         debug: true,
         progressBar: false,
@@ -146,38 +145,43 @@
         hideEasing: "linear",
         showMethod: "fadeIn",
         hideMethod: "fadeOut"
-    };
+      };
 
-  // 定义message显示
-    function msgTip(){
-      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
-      if (msgs=='failed') {
-        toastr.error('修改失败！')
+    // 定义message显示
+      function msgTip(){
+        var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+        if (msgs=='failed') {
+          toastr.error('修改失败！')
+        }
       }
+      msgTip();
+    // 定义获取当前日期函数
+    function getdate(){
+      var current_date = new Date();
+      var year = current_date.getFullYear();
+      var mon = current_date.getMonth()+1;
+      var day = current_date.getDate();
+      var date_str;
+      if (mon<10) {
+        date_str =year + "-" + "0" + mon + "-" + day;
+      }else {
+        date_str =year + "-" + mon + "-" + day;
+      }
+      return date_str;
     }
-    msgTip();
-  // 定义获取当前日期函数
-  function getdate(){
-    var current_date = new Date();
-    var year = current_date.getFullYear();
-    var mon = current_date.getMonth()+1;
-    var day = current_date.getDate();
-    var date_str =year + "-" + mon + "-" + day;
-    return date_str;
-  }
-  //设置上机日期函数
-  $("#set_test_date").on("click",function (){
-      var current_date = getdate();
-      //toastr.info(current_date)
-      $("#id_date_test").attr("value",current_date);
-    }
-  )
-  //设置下机日期函数
-  $("#set_finish_date").on("click",function (){
-      var current_date = getdate();
-      $("#id_test_finish_date").attr("value",current_date);
-    }
-  )
+    //设置上机日期函数
+    $("#set_test_date").on("click",function (){
+        var current_date = getdate();
+        //toastr.info(current_date);
+        $("#id_date_test").attr("value",current_date);
+      }
+    )
+    //设置下机日期函数
+    $("#set_finish_date").on("click",function (){
+        var current_date = getdate();
+        $("#id_test_finish_date").attr("value",current_date);
+      }
+    )
   });  // .ready
 
 </script>

@@ -42,6 +42,7 @@ class ProjectOrder(models.Model):
     project_sum = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="项目金额", null=True, blank=True)
     sale_person = models.CharField(max_length=32, verbose_name="销售人员", null=True, blank=True)
     pay_type = models.CharField(max_length=32, verbose_name="结算方式", null=True, blank=True)
+    whether_distribute = models.BooleanField(verbose_name="分配与否", default=False)
     contract_record = models.BooleanField(verbose_name="合同记录", default=False)
     note = models.CharField(max_length=256, verbose_name="备注", blank=True, null=True)
 

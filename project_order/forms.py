@@ -7,8 +7,8 @@ class ProjectOrderForm(forms.ModelForm):
 
     project_sum = forms.DecimalField(label="项目金额", required=False, max_digits=10, decimal_places=2,
                                      widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    sale_person = forms.ModelChoiceField(queryset=SalePerson.objects.filter(valid=True), label="销售人员", required=False,
-                                         widget=forms.Select(attrs={'class': 'form-control'}))
+    # sale_person = forms.ModelChoiceField(queryset=SalePerson.objects.filter(valid=True), label="销售人员", required=False,
+    #                                      widget=forms.Select(attrs={'class': 'form-control'}))
     pay_type = forms.ModelChoiceField(queryset=PayType.objects.all(), label="结算方式", required=False,
                                       widget=forms.Select(attrs={'class': 'form-control'}))
     note = forms.CharField(label="备注", required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))

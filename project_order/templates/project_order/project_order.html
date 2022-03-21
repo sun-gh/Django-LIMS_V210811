@@ -20,7 +20,7 @@
     <div class="container-fluid">
       <div class="row ">
         <div class="col-sm-6">
-          <h5>项目结算信息</h5>
+          <h5>已分配项目结算</h5>
         </div>
         <div class="col-sm-6">
 
@@ -90,6 +90,7 @@
               {% if perms.project_order.change_projectorder %}
                 &nbsp;&nbsp;<a class="btn btn-info btn-sm" href="#" role="button" id="edit-btn" >修改</a>
               {% endif %}
+
             </div>
           </div>
         </div>
@@ -388,7 +389,16 @@
       showMethod: "fadeIn",
       hideMethod: "fadeOut"
     };
-
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='edit_success') {
+        toastr.success('修改成功！');
+      }else if (msgs=='untread_success') {
+        toastr.success('归还成功！');
+      }
+    }
+    msgTip();
   //修改按钮函数
   $("#edit-btn").on("click", function() {
 

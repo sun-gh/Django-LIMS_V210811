@@ -10,7 +10,7 @@ import django.dispatch
 from django.dispatch import receiver
 from customer.views import customer_edit, project_add_unit, project_add_terminal
 import chinese_calendar
-# Create your views here.
+from guardian.shortcuts import get_objects_for_user
 
 
 # 定义样本登记中单位信息修改
@@ -50,6 +50,8 @@ def sample_record(request, msg="normal_show"):
 def sample_record_table(request):
     # 定义样本登记列表数据
     if request.method == 'GET':
+        projects_get_perm = get_objects_for_user(request.user, 'project_stage.view_samplerecord')
+
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
         project_num = request.GET.get('project_num')
@@ -70,7 +72,8 @@ def sample_record_table(request):
         if pro_type_id:
             conditions['project_type__id'] = pro_type_id
 
-        all_projects = SampleRecord.objects.filter(**conditions)
+        # all_projects = SampleRecord.objects.filter(**conditions)
+        all_projects = projects_get_perm.filter(**conditions)
         all_projects_count = all_projects.count()
         if not pageNum:
             pageNum = 1
@@ -386,6 +389,7 @@ def pretreat_stage(request, msg="normal_show"):
 def pretreat_stage_table(request):
     # 定义前处理列表数据
     if request.method == 'GET':
+        projects_get_perm = get_objects_for_user(request.user, 'project_stage.view_samplerecord')
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
         project_num = request.GET.get('project_num')
@@ -411,7 +415,8 @@ def pretreat_stage_table(request):
         # else:
         #     # 默认显示这个阶段的数据
         # test_pro = SampleRecord.objects.filter(priority__range=(1, 20))
-        all_projects = SampleRecord.objects.filter(**conditions)
+        # all_projects = SampleRecord.objects.filter(**conditions)
+        all_projects = projects_get_perm.filter(**conditions)
         all_projects_count = all_projects.count()
         if not pageNum:
             pageNum = 1
@@ -636,6 +641,7 @@ def test_stage(request, msg="normal_show"):
 def test_stage_table(request):
     # 定义质谱检测表格数据
     if request.method == 'GET':
+        projects_get_perm = get_objects_for_user(request.user, 'project_stage.view_samplerecord')
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
         project_num = request.GET.get('project_num')
@@ -657,7 +663,8 @@ def test_stage_table(request):
             sample_type = SampleType.objects.get(id=int(sample_type_id))
             conditions['sample_type'] = sample_type.type_name
 
-        all_projects = SampleRecord.objects.filter(**conditions)
+        # all_projects = SampleRecord.objects.filter(**conditions)
+        all_projects = projects_get_perm.filter(**conditions)
         all_projects_count = all_projects.count()
         if not pageNum:
             pageNum = 1
@@ -793,6 +800,7 @@ def analysis_stage(request, msg="normal_show"):
 def analysis_stage_table(request):
     # 定义数据分析表格数据
     if request.method == 'GET':
+        projects_get_perm = get_objects_for_user(request.user, 'project_stage.view_samplerecord')
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
         project_num = request.GET.get('project_num')
@@ -813,7 +821,8 @@ def analysis_stage_table(request):
         if pro_type_id:
             conditions['project_type__id'] = pro_type_id
 
-        all_projects = SampleRecord.objects.filter(**conditions)
+        # all_projects = SampleRecord.objects.filter(**conditions)
+        all_projects = projects_get_perm.filter(**conditions)
         all_projects_count = all_projects.count()
         if not pageNum:
             pageNum = 1

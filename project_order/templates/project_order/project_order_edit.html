@@ -89,12 +89,7 @@
                             </div>
                           </div>
                           <!--销售人员-->
-                          <div class="form-group row">
-                            {{ form.sale_person.label_tag }}
-                            <div class="col-md-7" id="unit">
-                              {{ form.sale_person }}
-                            </div>
-                          </div>
+
                           <!--结算方式-->
                           <div class="form-group row">
                             {{ form.pay_type.label_tag }}
@@ -121,7 +116,7 @@
                   <div class="card-footer ">
                     <div class="row">
                       <div class="col-md-2 offset-md-5">
-                        <a href="{% url 'project_order:project_order_page' %}" class="btn btn-secondary btn-sm">取消</a>
+                        <a href="{% url 'project_order:project_order_page' 'edit_back' %}" class="btn btn-secondary btn-sm">取消</a>
                         <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
                       </div>
                     </div>

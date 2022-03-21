@@ -4,7 +4,10 @@
 {% block title %} 谱度众合&nbsp;|&nbsp;项目结算详情 {% endblock %}
 
 {% block css %}
-    <link href="{% static 'project_order/css/project_order_detail.css'  %}" rel="stylesheet" />
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <!--customer css-->
+  <link href="{% static 'project_order/css/project_order_detail.css'  %}" rel="stylesheet" />
 {% endblock  %}
 
 {% block content %}
@@ -38,11 +41,11 @@
                 <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
                   <thead>
                     <tr>
-                        <th>项目类型</th>
-                        <th>样本类型</th>
-                        <th>机时类型</th>
-                        <th>样本数量</th>
-                        <th>销售人员</th>
+                      <th>项目类型</th>
+                      <th>样本类型</th>
+                      <th>机时类型</th>
+                      <th>样本数量</th>
+                      <th>销售人员</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -56,7 +59,6 @@
                       <td>
                         {{ order.sale_person|default:"-" }}
                       </td>
-
                     </tr>
                   </tbody>
                 </table>
@@ -68,9 +70,9 @@
               <table border="1" class="table " style="border-left:3px solid orangered;border-bottom:1px solid orangered" >
                 <thead>
                   <tr>
-                      <th>姓名</th>
-                      <th>单位</th>
-                      <th>送样终端</th>
+                    <th>姓名</th>
+                    <th>单位</th>
+                    <th>送样终端</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -80,7 +82,6 @@
                      {{ order.project_order.unit|default:"-" }}
                     </td>
                     <td>{{ order.project_order.terminal|default:"-" }}</td>
-
                   </tr>
                 </tbody>
               </table>
@@ -92,27 +93,26 @@
               <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
                 <thead>
                   <tr>
-                      <th>附加费用</th>
-                      <th>项目金额</th>
-                      <th>结算方式</th>
-                      <th>合同记录</th>
+                    <th>附加费用</th>
+                    <th>项目金额</th>
+                    <th>结算方式</th>
+                    <th>合同记录</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>
-                        {% for item in order.project_order.addition_item.all %}
-                        <span class="badge badge-warning">{{ item.item_type }}</span>  <!--4.3中label已废除-->
-                        {% empty %}
-                            -
-                        {% endfor %}
+                      {% for item in order.project_order.addition_item.all %}
+                      <span class="badge badge-warning">{{ item.item_type }}</span>  <!--4.3中label已废除-->
+                      {% empty %}
+                          -
+                      {% endfor %}
                     </td>
                     <td>{{ order.project_sum|default_if_none:"-" }}</td>
                     <td>
                       {{ order.pay_type|default:"-" }}
                     </td>
                     <td>{{ order.contract_record|yesno:"有,无,maybe" }}</td>
-
                   </tr>
                 </tbody>
               </table>
@@ -128,14 +128,58 @@
           </div>  <!-- /.card-body-->
           <div class="card-footer">
             <div class="row">
-              <div class="col-md-12">
-                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'project_order:project_order_page'%}" style="color:green;"><strong>返回项目结算列表</strong></a>
+              <div class="col-md-6">
+                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'project_order:project_order_page' 'detail_back' %}" style="color:green;"><strong>返回项目结算列表</strong></a>
               </div>  <!--/.col-->
+              <div class="col-md-6">
+                <a href="#" class="btn btn-sm btn-info" role="button" id="untread_project">归还项目</a>
+              </div>
             </div>
           </div>  <!--/.row-->
         </div>  <!-- /.card-->
       </div> <!-- /.col-->
     </div>  <!-- /.row-->
   </section>
+{% endblock %}
 
+{% block script %}
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 退回功能
+    $("#untread_project").on("click", function() {
+      var contract_record='{{ order.contract_record }}';
+      // console.log(contract_record);
+      if (contract_record == 'True') {
+        toastr.error('已有关联合同，无法进行该操作！');
+      }else {
+        toastr.info('无关联合同，可进行该操作！');
+        var pro_id = '{{ order.id}}';
+        window.location.href="/project_order/untread_project/" + pro_id + "/";
+      }
+
+    });  //btn.on
+
+  });  // .ready
+</script>
 {% endblock %}

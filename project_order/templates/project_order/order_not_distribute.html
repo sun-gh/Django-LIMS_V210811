@@ -1,7 +1,7 @@
 {% extends "customer/base.html"  %}
 {% load static %}
 
-{% block title %} 谱度众合&nbsp;|&nbsp;项目合同 {% endblock %}
+{% block title %} 谱度众合&nbsp;|&nbsp;项目结算 {% endblock %}
 
 {% block css %}
   <!--bootstrap-table-->
@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="{% static 'bootstrap-table-1.17.0/dist/extensions/fixed-columns/bootstrap-table-fixed-columns.min.css' %}">
   <!--toastr提示框-->
   <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
-  <link href="{% static 'contract_manage/css/project_contract.css'  %}" rel="stylesheet" />
+  <link href="{% static 'project_order/css/order_not_distribute.css'  %}" rel="stylesheet" />
 
 {% endblock  %}
 
@@ -20,7 +20,7 @@
     <div class="container-fluid">
       <div class="row ">
         <div class="col-sm-6">
-          <h5>项目合同信息</h5>
+          <h5>待分配项目信息</h5>
         </div>
         <div class="col-sm-6">
 
@@ -28,7 +28,8 @@
       </div>
     </div><!-- /.container-fluid -->
   </section>
-  <!-- card部分 -->
+
+  <!-- 正文部分 -->
   <section class="content">
     <div class="row">
       <div class="col-12">
@@ -46,19 +47,12 @@
                 <form class="form-horizontal">
                   <div class="row">
                     <div class="col">
-                      <div class="form-group row ">
-                        <label for="contract_number" class="col-md-4 col-form-label col-form-label-sm">合同编号：</label>
-                        <div class="col-md-7">
-                          <input type="text" class="form-control form-control-sm" id="contract_number" name="contract_num"  >
-                        </div>
-                      </div>
-                      <div class="form-group row ">
+                      <div class="form-group row">
                         <label for="project_number" class="col-md-4 col-form-label col-form-label-sm">项目编号：</label>
                         <div class="col-md-7">
                           <input type="text" class="form-control form-control-sm" id="project_number" name="project_num"  >
                         </div>
                       </div>
-
                     </div>
                     <div class="col">
                       <div class="form-group row">
@@ -70,16 +64,15 @@
                     </div>
                     <div class="col">
                       <div class="form-group row">
-                        <label for="linkman_search" class="col-md-4 col-form-label col-form-label-sm">联系人：</label>
+                        <label for="sender_search" class="col-md-4 col-form-label col-form-label-sm">送样人：</label>
                         <div class="col-md-7">
-                          <input type="text" class="form-control form-control-sm" id="linkman_search" name="linkman"  >
+                          <input type="text" class="form-control form-control-sm" id="sender_search" name="sample_sender"  >
                         </div>
                       </div>
                     </div>
                     <div class="col-md-2">
-                        <a class="btn btn-success btn-sm  form-search" id="search-btn" onclick="searchfun()" >搜索</a>&nbsp;
-                        <a class="btn btn-secondary btn-sm  form-search" onclick="clearfun()" >重置</a>
-
+                      <a class="btn btn-success btn-sm  form-search" id="search-btn" onclick="searchfun()" >搜索</a>&nbsp;
+                      <a class="btn btn-secondary btn-sm  form-search" onclick="clearfun()" >重置</a>
                     </div>
                   </div>  <!-- /.row -->
                 </form>
@@ -94,20 +87,15 @@
             <table id="mytab" class="table table-sm table-bordered table-striped table-hover " style="table-layout:fixed;">
             </table>
             <div id="toolbar">
-              {% if perms.contract_manage.add_projectcontract %}
-                <a class="btn btn-primary btn-sm" href="#" role="button" onclick="add_contract()">添加</a>
-              {% endif %}
-              {% if perms.contract_manage.change_projectcontract %}
-                <a class="btn btn-info btn-sm" href="#" role="button" id="edit-btn" >修改</a>
-              {% endif %}
-              {% if perms.contract_manage.delete_projectcontract %}
-                <button type="button" class="btn btn-secondary btn-sm" id="remove-btn">删除</button>
+              {% if perms.project_order.change_projectorder %}
+                &nbsp;&nbsp;<a class="btn btn-info btn-sm" href="#" role="button" id="edit-btn" >领取项目</a>
               {% endif %}
             </div>
           </div>
         </div>
       </div> <!-- /.col-->
     </div>  <!-- /.row-->
+
   </section>
 {% endblock %}
 
@@ -174,9 +162,9 @@
     $table.bootstrapTable({
 
       {#全部参数#}
-      url:"{% url 'contract_manage:project_contract_table' %}",
+      url:"{% url 'project_order:order_not_distribute_table' %}",
       method: 'get',                      //请求方式（*）
-      iconSize:"sm",                     // 1,设置修改图标  sm小图标 lg大图标
+      iconSize:"sm",                     // 设置图标大小  sm小图标 lg大图标
       cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
       //cookie: true,                       //是否启用cookie
       //cookieExpire: '2h',                //cookie过期时间
@@ -190,7 +178,7 @@
       smartDisplay: false,               //自动判断显示分页信息和 card 视图
       paginationLoop: false,             //是否启用分页条无限循环
       queryParamsType: "limit",          //默认设置为limit，此时发生url中包含limit, offset, sort, order四个参数；为空则包含：pageSize, pageNumber, sortName, sortOrder
-      queryParams: getParams,            //定义向后台传递参数
+      queryParams: getParams,             //定义向后台传递参数
 
       search: false,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
       //searchOnEnterKey: true,              //按回车触发搜索方法
@@ -199,12 +187,12 @@
       toolbar: "#toolbar",                //一个jQuery 选择器，指明自定义的 toolbar
 
       showRefresh: false,                  //是否显示刷新按钮
-      showExport: true,                    //显示导出按钮
+      showExport: false,                    //显示导出按钮
       exportTypes:['excel','csv'],  //导出文件类型
       exportOptions: {
-        fileName: '项目合同信息表',  //文件名称设置
+        fileName: '待分配项目信息表',  //文件名称设置
         worksheetName: 'sheet1',  //表格工作区名称
-        tableName: '项目合同信息',
+        tableName: '待分配项目信息',
         excelstyles: ['background-color', 'color', 'font-size', 'font-weight'],
 
       },
@@ -217,7 +205,7 @@
       showFooter: false,                  //显示摘要页脚行,使用fixed-columns需要设为false
       fixedColumns: true,
       fixedNumber: 3,  //固定列数
-      uniqueId: 'contract_id',     //为每一行指定唯一的标识符
+      uniqueId: 'project_order_id',     //为每一行指定唯一的标识符
 
       //自定义分页字符串显示为中文
       formatShowingRows:function(pageFrom, pageTo, totalRows) {
@@ -229,7 +217,7 @@
       },
       //定义Search placeholder
       formatSearch:function() {
-        return  "合同编号/联系人/单位";
+        return  "项目编号/送样人/单位";
       },
 
       columns: [
@@ -248,104 +236,57 @@
             var pageNumber=$('#mytab').bootstrapTable('getOptions').pageNumber;//通过表的#id 可以得到当前第几页
             return pageSize * (pageNumber - 1) + index + 1;    //返回每条的序号： 每页条数 * （当前页 - 1 ）+ 序号
           },
-
         },
         {
-          field: 'contract_num',
-          title: '合同编号',
+          field: 'project_num',
+          title: '项目编号',
           width: 100,
           align: 'center',
-          formatter: function (value,row,index) {
-            var result = "";
-            result += "<a href='#'  class='view_detail' id='btn-" +row.contract_id +"' >" + value + "</a>";
-
-            return result;
-          },
-        },
-        {
-          field: 'project_order',
-          title: '关联项目',
-          width: 90,
-          align: 'center',
-          formatter: function (value,row,index) {
-            var span=document.createElement('span');
-            span.setAttribute('title',value);
-            span.innerHTML = value;
-            return span.outerHTML;
-          },
+          cellStyle: function(value,row,index){
+    　　　　　return {css:{"color":"blue"}};    　　　
+           },  //.function
         },
         {
           field: 'project_type',
           title: '项目类型',
-          width: 130,
+          width: 150,
           align: 'center',
         },
+        {
+          field: 'sample_type',
+          title: '样本类型',
+          width: 105,
+          align: 'center',
+         },
+         {
+          field: 'sample_amount',
+          title: '样本数量',
+          width: 90,
+          align: 'center',
+         },
+         {
+          field: 'leading_official',
+          title: '送样终端',
+          width: 100,
+          align: 'center',
+         },
          {
           field: 'unit',
           title: '单位',
           width: 290,
           align: 'center',
-         },
-         {
-          field: 'sample_sender',
-          title: '联系人',
-          width: 90,
-          align: 'center',
-        },
-        {
-          field: 'contract_sum',
-          title: '合同金额',
-          width: 85,
-          align: 'right',
-        },
-        {
-          field: 'file_display',
-          title: '合同附件',
-          width: 110,
-          align: 'center',
-          formatter: linkMatter,
-        },
-        {
-          field: 'call_date',
-          title: '回收日期',
-          width: 100,
-          align: 'center',
-        },
-        {
-          field: 'creator',
-          title: '创建人',
-          width: 90,
-          align: 'center',
-        },
-        {
-          field: 'makeout_invoice_sum',
-          title: '已开票金额',
-          width: 100,
-          align: 'right',
-        },
-        {
-          field: 'not_makeout_invoice_sum',
-          title: '未开票金额',
-          width: 100,
-          align: 'right',
-        },
-        {
-          field: 'payment_sum',
-          title: '回款金额',
-          width: 100,
-          align: 'right',
-        },
-        {
-          field: 'note',
-          title: '备注',
-          width: 120,
-          align: 'center',
           formatter: function (value,row,index) {
             var span=document.createElement('span');
             span.setAttribute('title',value);
             span.innerHTML = value;
             return span.outerHTML;
           },
+         },
+         {
+          field: 'sample_sender',
+          title: '送样人',
+          width: 100,
+          align: 'center',
         },
 
       ],
@@ -361,44 +302,28 @@
       var pageSize = sessionStorage.getItem("pageSize");
       var pageNum = sessionStorage.getItem("pageNum");
       //自定义的搜索条件
-      var contract_number = sessionStorage.getItem("contract_number");
+      var project_num = sessionStorage.getItem("project_num");
       var unit = sessionStorage.getItem("unit");  //原为"unit_search"
-      var linkman = sessionStorage.getItem("linkman");
-      var project_number = sessionStorage.getItem("project_number");
-
+      var sample_sender = sessionStorage.getItem("sample_sender");
       var temp = {      //这里的pageSize、pageNum等必须和Controller改成一样的
         pageSize: pageSize==null?params.limit:pageSize,                      //页面大小
         pageNum: pageNum==null?(params.offset / params.limit) + 1:pageNum,   //页码
         //在进行模糊查询的参数
         // sort: params.sort,      //排序列名
         // sortOrder: params.order //排位命令（desc，asc）
-        contract_number: contract_number==null?$("#contract_number").val():contract_number,
+        project_num: project_num==null?$("#project_number").val():project_num,
         unit: unit==null?$("#unit_search").val():unit,
-        linkman: linkman==null?$("#linkman_search").val():linkman,
-        project_number: project_number==null?$("#project_number").val():project_number,
+        sample_sender: sample_sender==null?$("#sender_search").val():sample_sender,
+
       };
       //在sessionStorage中清除这几个数据
       sessionStorage.removeItem("pageSize");
       sessionStorage.removeItem("pageNum");
-      sessionStorage.removeItem("contract_number");
+      sessionStorage.removeItem("project_num");
       sessionStorage.removeItem("unit");
-      sessionStorage.removeItem("linkman");
-      sessionStorage.removeItem("project_number");
-
+      sessionStorage.removeItem("sample_sender");
       return temp;
     }  //.getParams
-
-  // 定义文件为链接形式函数
-  function linkMatter(value,row,index) {
-    //var data = JSON.stringify(row);
-    var result = "";
-    if (!value) {
-      result = "-";
-    }else {
-      result += "<a href='/media/contract_files/" + value + "'>" + value + "</a>";
-    }
-    return result;
-  }
 
   // 设置弹出提示框属性
     toastr.options = {
@@ -416,55 +341,29 @@
       showMethod: "fadeIn",
       hideMethod: "fadeOut"
     };
-
-  //添加按钮函数
-  function add_contract() {
-    var contract_number=$("#contract_number").val();
-    if(contract_number!=null){
-      sessionStorage.setItem("contract_number", contract_number);
-    }else {
-      contract_number="";
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='fetch_success') {
+        toastr.success('领取成功！')
+      }
     }
-    var unit_name=$("#unit_search").val();
-    if(unit_name!=null){
-      sessionStorage.setItem("unit", unit_name);
-    }else {
-      unit_name="";
-    }
-    var linkman=$("#linkman_search").val();
-    if(linkman!=null){
-      sessionStorage.setItem("linkman", linkman);
-    }else {
-      linkman="";
-    }
-    var project_number=$("#project_number").val();
-    if(project_number!=null){
-      sessionStorage.setItem("project_number", project_number);
-    }else {
-      project_number="";
-    }
+    msgTip();
 
-    sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
-    sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
-
-    window.location.href="/contract_manage/project_contract_add/";
-  }
-
-  //修改按钮函数
+  //领取项目按钮函数
   $("#edit-btn").on("click", function() {
 
     var rows = $("#mytab").bootstrapTable('getSelections');// 获得要修改的数据
     if (rows.length == 0) {  // 判断是否选中
-        //alert("请先选择要修改的记录!");
-        toastr.info('请先选择要修改的记录！');
-        return;
+      toastr.info('请先选择要领取的项目！');
+      return;
     } else {
       if (rows.length == 1) {
-        var contract_number=$("#contract_number").val();
-        if(contract_number!=null){
-          sessionStorage.setItem("contract_number", contract_number);
+        var project_number=$("#project_number").val();
+        if(project_number!=null){
+          sessionStorage.setItem("project_num", project_number);
         }else {
-          contract_number="";
+          project_number="";
         }
         var unit_name=$("#unit_search").val();
         if(unit_name!=null){
@@ -472,112 +371,27 @@
         }else {
           unit_name="";
         }
-        var linkman=$("#linkman_search").val();
-        if(linkman!=null){
-          sessionStorage.setItem("linkman", linkman);
+        var sample_sender=$("#sender_search").val();
+        if(sample_sender!=null){
+          sessionStorage.setItem("sample_sender", sample_sender);
         }else {
-          linkman="";
+          sample_sender="";
         }
-        var project_number=$("#project_number").val();
-        if(project_number!=null){
-          sessionStorage.setItem("project_number", project_number);
-        }else {
-          project_number="";
-        }
+
         sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
         sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
 
-        var contract_id = rows[0].contract_id;  // 获取客户id
-        var url="/contract_manage/project_contract_edit/" + contract_id + "/"  ;
+        var project_order_id = rows[0].project_order_id;  // 获取客户id
+        var url="/project_order/distribute_project_order/" + project_order_id + "/"  ;
         // alert(url);
         location.href=url;
 
       } else {
-        //alert("一次只能修改一条记录!");
-        toastr.info('一次只能修改一条记录！');
+        toastr.info('一次只能选择一个项目！');
         return;
       }
     }
   })  // btn.on
-
-  // 删除按钮事件
-    $("#remove-btn").on("click", function() {
-
-      var rows = $("#mytab").bootstrapTable('getSelections');// 获得要删除的数据
-      if (rows.length == 0) {  // rows 主要是为了判断是否选中
-          //alert("请先选择要删除的记录!");
-          toastr.info('请先选择要删除的记录！');
-          return;
-      } else {
-        if (confirm("是否确认删除？") == true) {
-          var ids = new Array();// 声明一个数组
-          $(rows).each(function() {  // 通过循环获得选中的记录
-              ids.push(this.contract_id);
-              //alert(ids);
-          });
-          deleteMs(ids);
-        } else {
-          return false;
-        }
-      }
-    })  // btn.on
-  //定义ajax请求函数
-    function deleteMs(ids) {
-      $.post(
-        "/contract_manage/project_contract_del/",
-        {
-        "ids": JSON.stringify(ids) ,
-        "method":"post",
-        },
-        function(data,status) {
-
-          if (data == 'del_success') {
-            toastr.success('删除成功！');
-            $('#mytab').bootstrapTable('refresh', {
-            url : "/contract_manage/project_contract_table/"
-          });
-          }  //.if
-        }  //. function
-      )  //.post
-    }
-
-  //查看详情页函数
-    $(document).on("click", "a.view_detail", function(){
-      //将分页等信息保持到缓存
-      var contract_number=$("#contract_number").val();
-      if(contract_number!=null){
-        sessionStorage.setItem("contract_number", contract_number);
-      }else {
-        contract_number="";
-      }
-      var unit_name=$("#unit_search").val();
-      if(unit_name!=null){
-        sessionStorage.setItem("unit", unit_name);
-      }else {
-        unit_name="";
-      }
-      var linkman=$("#linkman_search").val();
-      if(linkman!=null){
-        sessionStorage.setItem("linkman", linkman);
-      }else {
-        linkman="";
-      }
-      var project_number=$("#project_number").val();
-      if(project_number!=null){
-        sessionStorage.setItem("project_number", project_number);
-      }else {
-        project_number="";
-      }
-      sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
-      sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
-
-      var btn_id = $(this).attr("id");
-      var str_arry = btn_id.split('-');
-      //var file_id = parseInt(str_arry[1]);  // 将string转换为Int
-      var contract_id = str_arry[1];
-      window.location.href="/contract_manage/project_contract_detail/" + contract_id + "/";
-
-    } );  // .on
 
   // 搜索按钮函数
   function searchfun() {
@@ -586,10 +400,9 @@
   }
   // 重置按钮函数
   function clearfun(){
-    $("#contract_number").val("");
-    $("#unit_search").val("");
-    $("#linkman_search").val("");
     $("#project_number").val("");
+    $("#unit_search").val("");
+    $("#sender_search").val("");
 
     searchfun();
   }

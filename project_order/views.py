@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import ProjectOrder, SalePerson, PayType
 from project_stage.models import SampleRecord
@@ -11,6 +11,7 @@ from django.dispatch import receiver
 from project_stage.views import sample_record_add, add_success, sample_record_edit, edit_success
 from contract_manage.views import project_contract_add, contract_add_success
 from django.db.models import Q
+from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
 
 # Create your views here.
 
@@ -54,15 +55,16 @@ def edit_order_record(sender, **kwargs):
 
 
 @login_required()
-def project_order_page(request):
+def project_order_page(request, msg="normal_show"):
     # 定义项目结算列表页
 
-    return render(request, 'project_order/project_order.html')
+    return render(request, 'project_order/project_order.html', {'msg': msg})
 
 
 def project_order_table(request):
     # 定义项目结算表格数据
     if request.method == 'GET':
+        projects_get_perm = get_objects_for_user(request.user, 'project_stage.view_samplerecord')
 
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
@@ -71,7 +73,8 @@ def project_order_table(request):
         unit_name = request.GET.get('unit')
         sample_sender = request.GET.get('sample_sender')
 
-        conditions = {}  # 构造字典存储查询条件
+        conditions = {"projectorder__whether_distribute": True, }  # 构造字典存储查询条件
+        # conditions = {}
 
         if project_num:
             conditions['project_num__contains'] = project_num
@@ -79,7 +82,8 @@ def project_order_table(request):
             conditions['unit__contains'] = unit_name
         if sample_sender:
             conditions['sample_sender__customer_name__contains'] = sample_sender
-        all_projects = SampleRecord.objects.filter(**conditions)
+        all_projects = projects_get_perm.filter(**conditions)
+        # all_projects = SampleRecord.objects.filter(**conditions)
 
         all_projects_count = all_projects.count()
         if not pageNum:
@@ -191,12 +195,7 @@ def project_order_edit(request, pro_id):
             contract_record = project_order.contract_record
 
             project_order_form.save(commit=False)
-            # 定义销售人员修改
-            sale_person = project_order_form.cleaned_data.get("sale_person")
-            if sale_person:
-                project_order.sale_person = sale_person.name_person
-            else:
-                project_order.sale_person = None
+            # 定义销售人员修改（因采用领取项目模式后废弃）
             # 定义结算方式修改
             pay_type = project_order_form.cleaned_data.get("pay_type")
             if pay_type:
@@ -218,7 +217,8 @@ def project_order_edit(request, pro_id):
             project_order_form.save_m2m()
 
             msg = "edit_success"
-            return render(request, 'project_order/project_order.html', {'msg': msg})
+            # return render(request, 'project_order/project_order.html', {'msg': msg})
+            return redirect('project_order:project_order_page', msg)
         else:
             project_order_form = ProjectOrderForm(request.POST)
             msg = 'failed'
@@ -226,36 +226,127 @@ def project_order_edit(request, pro_id):
                                                                              'project_order': project_order})
     elif request.method == 'GET':
         pay_type = project_order.pay_type
-        sale_person = project_order.sale_person
-        if not pay_type and not sale_person:
-            # 此时为添加信息
-            project_order_form = ProjectOrderForm(instance=project_order)
-        elif sale_person and not pay_type:
-            # 此时销售人员存在
-            salesman = SalePerson.objects.filter(name_person=sale_person, valid=True)
-            if salesman:
-                project_order_form = ProjectOrderForm(initial={'sale_person': salesman[0]}, instance=project_order)
-            else:
-                # 此时销售人员属于离职
-                salesman = SalePerson.objects.filter(name_person=sale_person, valid=False)
-                new_men = SalePerson.objects.filter(Q(valid=True) | Q(name_person=sale_person))
-                project_order_form = ProjectOrderForm(initial={'sale_person': salesman[0]}, instance=project_order)
-                project_order_form.fields['sale_person'].queryset = new_men
-        elif pay_type and not sale_person:
+        # sale_person = project_order.sale_person
+
+        if pay_type:
+            pay_type = PayType.objects.filter(type_name=pay_type)
             project_order_form = ProjectOrderForm(initial={'pay_type': pay_type[0]}, instance=project_order)
         else:
-            pay_type = PayType.objects.filter(type_name=pay_type)
-            salesman = SalePerson.objects.filter(name_person=sale_person, valid=True)
-            if salesman:
-                project_order_form = ProjectOrderForm(initial={'pay_type': pay_type[0], 'sale_person': salesman[0]},
-                                                      instance=project_order)
-            else:
-                # 此时销售人员属于离职
-                salesman = SalePerson.objects.filter(name_person=sale_person, valid=False)
-                new_men = SalePerson.objects.filter(Q(valid=True) | Q(name_person=sale_person))
-                project_order_form = ProjectOrderForm(initial={'pay_type': pay_type[0], 'sale_person': salesman[0]},
-                                                      instance=project_order)
-                project_order_form.fields['sale_person'].queryset = new_men
+            project_order_form = ProjectOrderForm(instance=project_order)
 
         return render(request, 'project_order/project_order_edit.html', {'form': project_order_form,
                                                                          'project_order': project_order})
+
+
+@login_required()
+def order_not_distribute_page(request, msg="normal_show"):
+    # 定义未分配项目结算列表页
+
+    return render(request, 'project_order/order_not_distribute.html', {'msg': msg})
+
+
+def order_not_distribute_table(request):
+    # 定义未分配项目的表格数据
+
+    if request.method == 'GET':
+
+        limit = request.GET.get('pageSize')  # how many items per page
+        pageNum = request.GET.get('pageNum')  # how many items in total in the DB
+        # search = request.GET.get('search')
+        project_num = request.GET.get('project_num')
+        unit_name = request.GET.get('unit')
+        sample_sender = request.GET.get('sample_sender')
+
+        conditions = {"projectorder__whether_distribute": False, }  # 构造字典存储查询条件
+
+        if project_num:
+            conditions['project_num__contains'] = project_num
+        if unit_name:
+            conditions['unit__contains'] = unit_name
+        if sample_sender:
+            conditions['sample_sender__customer_name__contains'] = sample_sender
+        all_projects = SampleRecord.objects.filter(**conditions)
+
+        all_projects_count = all_projects.count()
+        if not pageNum:
+            pageNum = 1
+        if not limit:
+            limit = 50  # 默认是每页10行的内容，与前端默认行数一致
+        paginator = Paginator(all_projects, limit)  # 开始做分页
+
+        # page = int(int(offset) / int(limit) + 1)
+        response_data = {'total': all_projects_count, 'rows': []}  # 必须带有rows和total这2个key
+        for project in paginator.page(pageNum):
+            # 下面这些key，都是我们在前端定义好了的，前后端必须一致，前端才能接受到数据并且请求.
+            if project.project_type:
+                project_type = project.project_type.project_name
+            else:
+                project_type = "-"
+            # 以下为单位和负责人不存在的情况
+            unit = project.unit
+            if unit:
+                unit_name = unit
+            else:
+                unit_name = "-"
+            person = project.terminal
+            if person:
+                leading_official = person
+            else:
+                leading_official = "-"
+
+            response_data['rows'].append({
+                "project_order_id": project.projectorder.id,
+                "project_num": project.project_num,
+                "project_type": project_type,
+                "sample_type": project.sample_type,
+                "sample_amount": project.sample_amount,
+                "leading_official": leading_official,
+                "unit": unit_name,
+                "sample_sender": project.sample_sender.customer_name,
+
+            })
+
+    return HttpResponse(json.dumps(response_data))  # 需要json处理下数据格式
+
+
+@login_required()
+def distribute_project_order(request, pro_id):
+    # 定义项目分配
+    project_order = ProjectOrder.objects.get(id=pro_id)
+
+    if request.method == 'GET':
+
+        return render(request, 'project_order/distribute_project_order.html', {'project_order': project_order})
+
+
+@login_required()
+def fetch_project_order(request, pro_id):
+    # 定义实际项目分配功能
+    if request.method == 'GET':
+        project_order = ProjectOrder.objects.get(id=pro_id)
+        project_order.whether_distribute = True
+        project_order.sale_person = request.user.first_name
+        project_order.save()
+        # 给领取人分配项目对象权限
+        assign_perm('project_stage.view_samplerecord', request.user, project_order.project_order)
+        msg = "fetch_success"
+
+        return redirect('project_order:order_not_distribute_page', msg)
+
+
+@login_required()
+def untread_project_order(request, pro_id):
+    # 定义项目退回功能
+    if request.method == 'GET':
+        project_order = ProjectOrder.objects.get(id=pro_id)
+        project_order.project_sum = 0
+        project_order.sale_person = None
+        project_order.pay_type = None
+        project_order.whether_distribute = False
+        project_order.note = None
+        project_order.save()
+        # 给归还人解除对象级权限
+        remove_perm('project_stage.view_samplerecord', request.user, project_order.project_order)
+        msg = "untread_success"
+
+        return redirect('project_order:project_order_page', msg)
