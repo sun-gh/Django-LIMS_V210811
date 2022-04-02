@@ -1,0 +1,204 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;数据展示 {% endblock %}
+
+{% block css %}
+  <!--chartjs css-->
+  <link href="{% static 'chart.js-2.9.4/package/dist/Chart.min.css'  %}" rel="stylesheet" />
+  <!--<link href="{% static 'css/inv_detail.css'  %}" rel="stylesheet" />-->
+{% endblock  %}
+
+{% block content %}
+  <!-- Content Header (Page header) -->
+  <div class="content-header pb-1">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0 text-dark">数据可视化</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+  <!-- Main content -->
+  <div class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-6">
+          <!--项目数量柱状图-->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">项目数量统计</h3>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <p>总计：<span id="project_amount"></span></p>
+                </div>
+                <div class="col">
+                  <p class="text-right">时间：<span>近一年</span></p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <canvas id="myChart1" ></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--项目类型饼图-->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">各项目类型项目数量统计</h3>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <p>倒序：<span>TOP10</span></p>
+                </div>
+                <div class="col">
+                  <p class="text-right">时间：<span>2021年9月至今</span></p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <canvas id="myChart3" ></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">样本数量统计</h3>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <p>总计：<span id="sample_amount"></span></p>
+                </div>
+                <div class="col">
+                  <p class="text-right">时间：<span>近一年</span></p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <canvas id="myChart2" ></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- /.row -->
+
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content -->
+{% endblock %}
+
+{% block script %}
+<!-- chartjs js -->
+<script src="{% static 'chart.js-2.9.4/package/dist/Chart.min.js' %}"></script>
+<script type="text/javascript">
+  function ProjectSampleStatistics() {
+    $.ajax({
+      url:'/user/project_and_sample_statistics/',
+      success: function(data) {
+        var result_data = JSON.parse(data);
+        //console.log(result_data);
+        $('#project_amount').text(result_data.all_projects);
+        $('#sample_amount').text(result_data.all_samples);
+        // 定义项目数量统计
+        var ctx1 = document.getElementById('myChart1').getContext('2d');
+        var chart1 = new Chart(ctx1, {
+          // 要创建的图表类型
+          type: 'bar',
+          // 数据集
+          data: {
+            labels:  result_data.month_list ,  // X轴标签数据（一般为列表）
+            datasets: [{
+              label: "项目数量",
+              backgroundColor: 'rgb(144,238,144)',
+              borderColor: 'rgb(255, 99, 132)',
+              data:  result_data.project_amount ,  // 柱状图数据（一般为列表）
+            }]
+          },
+          // 配置选项
+          options: {
+            scales: {
+              yAxes: [{
+                ticks: {
+                  beginAtZero: true,
+                }
+              }]
+            }
+          }
+        });
+        // 定义样本数量统计
+        var ctx2 = document.getElementById('myChart2').getContext('2d');
+        var chart2 = new Chart(ctx2, {
+          // 要创建的图表类型
+          type: 'bar',
+          // 数据集
+          data: {
+            labels:  result_data.month_list ,  // X轴标签数据（一般为列表）
+            datasets: [{
+              label: "样本数量",
+              backgroundColor: '#007bff',
+              borderColor: '#007bff',
+              data:  result_data.sample_amount ,  // 柱状图数据（一般为列表）
+            }]
+          },
+          // 配置选项
+          options: {
+            scales: {
+              yAxes: [{
+                ticks: {
+                  beginAtZero: true,
+                }
+              }]
+            }
+          }
+        });
+      }  // end success
+    });  // end ajax
+
+  }
+  ProjectSampleStatistics();
+  function ProjectTypeStatistics() {
+    $.ajax({
+      url:'/user/project_type_statistics/',
+      success: function(data) {
+        var result_data = JSON.parse(data);
+        // 定义项目类型饼图
+        var ctx3 = document.getElementById('myChart3').getContext('2d');
+        var chart3 = new Chart(ctx3, {
+          // 要创建的图表类型
+          type: 'pie',
+          // 数据集
+          data: {
+            labels: result_data.type_list,  // X轴标签数据（一般为列表）
+            datasets: [{
+              data: result_data.project_num ,  // 饼图数据（一般为列表）
+              backgroundColor : ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', '#FFFF00', '#800080','#808000','#FFC0CB'],
+            }]
+          },
+          // 配置选项
+          options: {
+            legend: {
+              position: 'right',
+            }
+          }
+        });
+      }
+    });
+
+  }
+  ProjectTypeStatistics();
+</script>
+{% endblock %}

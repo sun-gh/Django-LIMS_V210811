@@ -45,6 +45,10 @@
                       <th>样本类型</th>
                       <th>机时类型</th>
                       <th>样本数量</th>
+                      <th>项目来源</th>
+                      <th>客户来源</th>
+                      <th>项目负责人</th>
+                      <th>报告发送日期</th>
                       <th>销售人员</th>
                     </tr>
                   </thead>
@@ -56,6 +60,18 @@
                         {{ order.project_order.machine_time|default:"-" }}
                       </td>
                       <td>{{ order.project_order.sample_amount }}</td>
+                      <td>{{ order.get_project_source_display }}</td>
+                      <td>
+                          {{ order.get_customer_source_display|default:"-" }}
+                      </td>
+                      <td>{{ order.project_order.responsible_person.name|default:"-" }}</td><!--项目负责人-->
+                      <td>
+                        {% if order.project_order.date_send_report %}
+                          {{ order.project_order.date_send_report|date:"Y-m-d" }}
+                        {% else %}
+                          -
+                        {% endif %}
+                      </td><!--报告发送日期-->
                       <td>
                         {{ order.sale_person|default:"-" }}
                       </td>

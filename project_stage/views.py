@@ -861,7 +861,13 @@ def analysis_stage_table(request):
                 note = "-"
             # 以下为数据分析阶段新添加字段
             # 定义项目来源
-            project_source = project.get_project_source_display()
+            project_source = project.projectorder.get_project_source_display()
+            # 定义客户来源
+            customer_source = project.projectorder.customer_source
+            if customer_source:
+                customer_source_choice = project.projectorder.get_customer_source_display()
+            else:
+                customer_source_choice = "-"
             # 定义文件显示
             files = project.files.all()
             if files:
@@ -928,6 +934,7 @@ def analysis_stage_table(request):
                 # 以下为检测分析阶段新添加字段
                 "priority": project.priority,
                 "project_source": project_source,
+                "customer_source": customer_source_choice,
                 "files": file_display,
                 "instrument_type": instrument_type,
                 "responsible_person": responsible_person,

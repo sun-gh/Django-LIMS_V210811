@@ -19,7 +19,7 @@
     <div class="container-fluid">
       <div class="row mb-0">
         <div class="col-sm-6">
-          <h5>修改文件等信息</h5>
+          <h5>文件上传</h5>
         </div>
         <div class="col-sm-6">
 
@@ -69,13 +69,7 @@
                     {% csrf_token %}
                     <div class="row ">
                       <div class="col-md-8 offset-md-2">
-                        <!--项目来源-->
-                        <div class="form-group row">
-                          {{ form.project_source.label_tag }}
-                          <div class="col-md-7">
-                            {{ form.project_source }}
-                          </div>
-                        </div>
+
                         <!--相关文件-->
                         <div class="form-group row">
                           {{ form.file_input.label_tag }}

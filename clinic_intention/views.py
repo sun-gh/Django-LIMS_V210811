@@ -140,6 +140,11 @@ def intention_table(request):
                     demand_estimate = demand_estimate.count()
             else:
                 demand_estimate = "-"
+            # 定义备注
+            if intention.note:
+                note = intention.note
+            else:
+                note = "-"
 
             response_data['rows'].append({
                 "intention_id": intention.id,
@@ -160,6 +165,7 @@ def intention_table(request):
                 "sample_type": sample_type,
                 "project_stage": project_stage,
                 "demand_estimate": demand_estimate,
+                "note": note,
             })
 
     return HttpResponse(json.dumps(response_data))  # 需要json处理下数据格式

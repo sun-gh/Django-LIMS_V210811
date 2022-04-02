@@ -8,7 +8,6 @@
 {% endblock  %}
 
 {% block content %}
-
     <!-- Main content -->
     <div class="content">
         <div class="container-fluid">
@@ -44,7 +43,8 @@
 
                   </div>   <!-- /.col-->
             </div> <!-- /.row -->
-            <div class="row mt-1" >  <!--style="display:none;"-->
+            {% if perms.users.add_custom_perm %}
+            <div class="row mt-1" >
                 <div class="col">
                     <p>
                         <a href="{% url 'users:add_permission' %}" class="link-black text-sm">
@@ -53,8 +53,12 @@
                     </p>
                 </div>
             </div>
+            {% endif %}
         </div><!-- /.container-fluid -->
     </div>
     <!-- /.content -->
+
+{% endblock %}
+{% block script %}
 
 {% endblock %}

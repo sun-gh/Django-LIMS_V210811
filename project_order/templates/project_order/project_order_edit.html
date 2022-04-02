@@ -13,7 +13,6 @@
 {% endblock  %}
 
 {% block content %}
-
   <!-- Content Header (Page header) -->
   <section class="content-header ">
     <div class="container-fluid">
@@ -27,7 +26,6 @@
       </div>
     </div><!-- /.container-fluid -->
   </section>
-
   <!-- card部分 -->
   <section class="content">
     <div class="row">
@@ -66,70 +64,79 @@
               <p><span class="link_info"> 负责人 </span> ：{{ project_order.project_order.terminal|default:"-" }} </p>
             </div>
           </div>
-
         </div> <!-- /.card-body -->
         </div>
 
         <div class="card card-info ">
-
-              <form class="form-horizontal" method="post" action="{% url 'project_order:project_order_edit' project_order.id %}">
-              <!-- card-body -->
-              <div class="row">
-                <div class="col-md-10 offset-md-1">
-                  <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
-
-                    {% csrf_token %}
-                    <div class="row ">
-                      <div class="col-md-8 offset-md-2">
-                          <!--项目金额-->
-                          <div class="form-group row">
-                            {{ form.project_sum.label_tag }}
-                            <div class="col-md-7">
-                              {{ form.project_sum }}
-                            </div>
-                          </div>
-                          <!--销售人员-->
-
-                          <!--结算方式-->
-                          <div class="form-group row">
-                            {{ form.pay_type.label_tag }}
-                            <div class="col-md-7">
-                              {{ form.pay_type }}
-                            </div>
-                          </div>
-                          <!--备注-->
-                          <div class="form-group row">
-                            {{ form.note.label_tag }}
-                            <div class="col-md-7">
-                              {{ form.note }}
-                            </div>
-                          </div>
-                          <!--合同记录-->
-                          <div style="display:none;">{{  form.contract_record }}</div>
-                      </div>    <!-- /.col-->
-                      </div>   <!-- /.row-->
-                  </div>  <!-- /.card-body-->
-                </div>   <!-- /.col-->
-              </div>  <!-- /.row-->
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="card-footer ">
-                    <div class="row">
-                      <div class="col-md-2 offset-md-5">
-                        <a href="{% url 'project_order:project_order_page' 'edit_back' %}" class="btn btn-secondary btn-sm">取消</a>
-                        <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
+          <form class="form-horizontal" method="post" action="{% url 'project_order:project_order_edit' project_order.id %}">
+            <!-- card-body -->
+            <div class="row">
+              <div class="col-md-10 offset-md-1">
+                <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
+                  {% csrf_token %}
+                  <div class="row ">
+                    <div class="col">
+                      <!--项目来源-->
+                      <div class="form-group row">
+                        {{ form.project_source.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.project_source }}
+                        </div>
+                      </div>
+                      <!--客户来源-->
+                      <div class="form-group row">
+                        {{ form.customer_source.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.customer_source }}
+                        </div>
+                      </div>
+                      <!--备注-->
+                      <div class="form-group row">
+                        {{ form.note.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.note }}
+                        </div>
                       </div>
                     </div>
-                  </div>  <!-- /.card-footer-->
-                </div>  <!-- /.col-->
-              </div>   <!-- /.row-->
-              </form>
-
+                    <div class="col">
+                      <!--项目金额-->
+                      <div class="form-group row">
+                        {{ form.project_sum.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.project_sum }}
+                        </div>
+                      </div>
+                      <!--结算方式-->
+                      <div class="form-group row">
+                        {{ form.pay_type.label_tag }}
+                        <div class="col-md-7">
+                          {{ form.pay_type }}
+                        </div>
+                      </div>
+                      <!--合同记录-->
+                      <div style="display:none;">{{  form.contract_record }}</div>
+                    </div>    <!-- /.col-->
+                  </div>   <!-- /.row-->
+                </div>  <!-- /.card-body-->
+              </div>   <!-- /.col-->
+            </div>  <!-- /.row-->
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card-footer ">
+                  <div class="row">
+                    <div class="col-md-2 offset-md-5">
+                      <a href="{% url 'project_order:project_order_page' 'edit_back' %}" class="btn btn-secondary btn-sm">取消</a>
+                      <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
+                    </div>
+                  </div>
+                </div>  <!-- /.card-footer-->
+              </div>  <!-- /.col-->
+            </div>   <!-- /.row-->
+          </form>
         </div>  <!-- /.card-->
       </div>   <!-- /.col-->
     </div>  <!-- /.row-->
   </section>
-
 {% endblock %}
 
 {% block script %}
@@ -137,14 +144,15 @@
 <script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
 <!-- Select2 -->
 <script src="{% static 'AdminLTE-3.0.2/plugins/select2/js/select2.full.min.js' %}"></script>
-
 <script type="text/javascript">
-
   $(document).ready(function() {
 
   // 给label加上class属性;input加上class;
   $("form label").addClass("col-md-4 col-form-label");
-
+  // 给必填项添加*
+  var txt1 = '<span style="color:red"> *</span>';
+  $("[for='id_project_source']").append(txt1);
+  $("[for='id_customer_source']").append(txt1);
 
   // 设置弹出提示框属性
     toastr.options = {
@@ -173,6 +181,5 @@
     msgTip();
 
   });  // .ready
-
 </script>
 {% endblock %}

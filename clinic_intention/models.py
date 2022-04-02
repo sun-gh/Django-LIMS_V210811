@@ -79,6 +79,7 @@ class ClinicIntention(models.Model):
     sample_type = models.ForeignKey(SampleType, verbose_name="样本类型", on_delete=models.SET_NULL, null=True, blank=True)
     project_stage = models.SmallIntegerField(choices=project_stage_choice, verbose_name="项目阶段", blank=True, null=True)
     demand_estimate = models.ManyToManyField(DemandType, verbose_name="需求预估", blank=True)
+    note = models.CharField(max_length=256, verbose_name="备注", blank=True, null=True)
     followup_record = models.ManyToManyField(FollowUpRecord, verbose_name="跟进记录", blank=True)
     add_person = models.CharField(max_length=16, verbose_name="添加人")
     c_time = models.DateTimeField(verbose_name="添加时间", auto_now_add=True)

@@ -1,11 +1,9 @@
 from django.db import models
 from project_stage.models import SampleRecord
-
 # Create your models here.
 
 
 class SalePerson(models.Model):
-
     # 定义销售人员
     name_person = models.CharField(verbose_name="销售人员", max_length=64)
     # 为以后调整顺序用，可手动设置order编号
@@ -23,7 +21,6 @@ class SalePerson(models.Model):
 
 
 class PayType(models.Model):
-
     # 定义结算方式
     type_name = models.CharField(max_length=128, verbose_name="结算方式", unique=True)
 
@@ -37,8 +34,17 @@ class PayType(models.Model):
 
 class ProjectOrder(models.Model):
     # 定义项目结算模型
-
+    project_source_choice = (
+        (0, "常规项目"),
+        (1, "临床项目"),
+    )
+    customer_source_choice = (
+        (1, "终端"),
+        (2, "代理商"),
+    )
     project_order = models.OneToOneField(SampleRecord, verbose_name="项目编号", on_delete=models.CASCADE)
+    project_source = models.SmallIntegerField(choices=project_source_choice, verbose_name="项目来源", default=0)
+    customer_source = models.SmallIntegerField(choices=customer_source_choice, verbose_name="客户来源", null=True, blank=True)
     project_sum = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="项目金额", null=True, blank=True)
     sale_person = models.CharField(max_length=32, verbose_name="销售人员", null=True, blank=True)
     pay_type = models.CharField(max_length=32, verbose_name="结算方式", null=True, blank=True)

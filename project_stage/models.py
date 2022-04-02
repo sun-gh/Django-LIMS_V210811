@@ -158,10 +158,6 @@ class SampleRecord(models.Model):
         (2, "预实验"),
         (3, "优先"),
     )
-    source_choice = (
-        (0, "常规项目"),
-        (1, "临床项目"),
-    )
     status_choices = (
         (11, "待启动"),
         (21, "准备实验"),
@@ -219,7 +215,6 @@ class SampleRecord(models.Model):
     preexperiment_deadline = models.DateField(verbose_name="预实验截止日期", null=True, blank=True)
     pretreat_deadline = models.DateField(verbose_name="制备截止日期", null=True, blank=True)
     # 以下为检测-数据分析阶段
-    project_source = models.SmallIntegerField(choices=source_choice, verbose_name="项目来源", default=0)
     instrument_type = models.ForeignKey(Machine, verbose_name="上机仪器", on_delete=models.SET_NULL, blank=True, null=True)
     date_test = models.DateField(verbose_name="上机日期", blank=True, null=True)
     test_finish_date = models.DateField(verbose_name="下机日期", blank=True, null=True)

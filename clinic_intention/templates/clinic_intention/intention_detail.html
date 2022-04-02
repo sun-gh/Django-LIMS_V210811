@@ -131,6 +131,12 @@
               </div>  <!--/.col-->
             </div>  <!--/.row-->
             <div class="row">
+              <div class="col-md-12">
+                <h6><b>备注:</b></h6>
+                <p>{{ intention.note|default:"-" }}</p>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
               <div class="col-md-9">
                 <h6><b>跟进记录:</b></h6>
                 {% if perms.clinic_intention.add_followuprecord %}

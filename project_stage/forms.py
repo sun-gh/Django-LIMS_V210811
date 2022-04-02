@@ -145,15 +145,13 @@ class AnalysisStageForm(forms.ModelForm):
 
 class EditAnalysisForm(forms.ModelForm):
     # 定义文件等信息修改表单（销售部专用）
-    project_source = forms.IntegerField(label="项目来源",  widget=forms.Select(  # required=False,
-        choices=SampleRecord.source_choice, attrs={'class': 'form-control'}))
+
     file_input = forms.FileField(label="相关文件", required=False, widget=forms.ClearableFileInput(
         attrs={'multiple': True, 'class': 'form-control-file'}))
 
     class Meta:
         model = SampleRecord
         fields = [
-            'project_source',
             'files',
         ]
 

@@ -126,7 +126,23 @@ def project_order_table(request):
                     addition_item = str(all_item.count()) + "个附加项"
             else:
                 addition_item = "-"
+            # 定义项目负责人和报告发送日期
+            responsible_person = project.responsible_person
+            if responsible_person:
+                project_responsible_person = responsible_person.name
+            else:
+                project_responsible_person = "-"
+            report_date = project.date_send_report
+            if report_date:
+                report_send_date = report_date.strftime('%Y-%m-%d')
+            else:
+                report_send_date = "-"
             # 定义项目结算特有字段（OneToOne反向关联只用模型小写名称）
+            customer_source = project.projectorder.customer_source
+            if customer_source:
+                customer_source_choice = project.projectorder.get_customer_source_display()
+            else:
+                customer_source_choice = "-"
             project_bill = project.projectorder.project_sum
             if project_bill is not None:
                 project_sum = project_bill
@@ -164,11 +180,15 @@ def project_order_table(request):
                 "unit": unit_name,
                 "sample_sender": project.sample_sender.customer_name,
                 "addition_item": addition_item,
+                "project_source": project.projectorder.get_project_source_display(),
+                "customer_source": customer_source_choice,
                 "project_sum": str(project_sum),
                 "sale_person": sale_person,
                 "pay_type": pay_type,
                 "note": note,
                 "contract_record": contract_record,
+                "responsible_person": project_responsible_person,
+                "report_date": report_send_date,
             })
 
     return HttpResponse(json.dumps(response_data))  # 需要json处理下数据格式

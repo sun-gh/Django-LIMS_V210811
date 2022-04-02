@@ -102,7 +102,7 @@
                 &nbsp;&nbsp;<a class="btn btn-info btn-sm" href="#" role="button" id="edit-btn" >修改</a>
               {% endif %}
               {% if perms.project_stage.change_analysis_info %}
-                &nbsp;&nbsp;<a class="btn btn-info btn-sm" href="#" role="button" id="edit-analysis-btn" >修改文件等信息</a>
+                &nbsp;&nbsp;<a class="btn btn-info btn-sm" href="#" role="button" id="edit-analysis-btn" >文件上传</a>
               {% endif %}
             </div>
           </div>
@@ -326,7 +326,13 @@
         {
           field: 'project_source',
           title: '项目来源',
-          width: 120,
+          width: 110,
+          align: 'center',
+        },
+        {
+          field: 'customer_source',
+          title: '客户来源',
+          width: 100,
           align: 'center',
         },
         {

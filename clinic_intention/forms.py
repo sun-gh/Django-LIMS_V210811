@@ -32,6 +32,7 @@ class IntentionForm(forms.ModelForm):
         choices=ClinicIntention.project_stage_choice, attrs={'class': 'form-control'}))
     demand_estimate = forms.ModelMultipleChoiceField(queryset=DemandType.objects.all(), label="需求预估", required=False,
                                                      widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
+    note = forms.CharField(label="备注", required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = ClinicIntention
@@ -52,6 +53,7 @@ class IntentionForm(forms.ModelForm):
             'sample_type',
             'project_stage',
             'demand_estimate',
+            'note',
             'add_person',
         ]
 
