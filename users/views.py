@@ -127,7 +127,10 @@ def project_and_sample_statistics(request):
 
 def project_type_statistics(request):
     # 按项目类型进行统计
-    project_type_statistics = ProjectType.objects.annotate(
+    today = date.today()
+    last_year = today.year - 1
+    last_today = date(last_year, today.month, today.day)
+    project_type_statistics = ProjectType.objects.filter(samplerecord__receive_date__gte=last_today).annotate(
         pro_num=Count('samplerecord')).order_by('-pro_num').values('project_name', 'pro_num')[:10]
     type_list = []
     project_num = []
@@ -137,4 +140,5 @@ def project_type_statistics(request):
         project_num.append(project_type['pro_num'])
     data['type_list'] = type_list
     data['project_num'] = project_num
+
     return HttpResponse(json.dumps(data))

@@ -379,6 +379,12 @@
           title: '备注',
           width: 110,
           align: 'center',
+          formatter: function (value,row,index) {
+            var span=document.createElement('span');
+            span.setAttribute('title',value);
+            span.innerHTML = value;
+            return span.outerHTML;
+          },
         },
       ],
 
