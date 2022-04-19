@@ -143,8 +143,8 @@ def sample_record_table(request):
                 note = project.note
             else:
                 note = "-"
-            # 要将date对象转化为字符串，才能进行json转换
-            receive_date = project.receive_date.strftime('%Y-%m-%d')
+            # 要将datetime对象转化为字符串，才能进行json转换
+            receive_time = project.receive_time.strftime('%Y-%m-%d %H:%M')
             # 定义文件显示
             files = project.files.all()
             if files:
@@ -171,7 +171,7 @@ def sample_record_table(request):
                 "sample_quality": sample_quality,
                 "message_template": message_template,
                 "addition_item": addition_item,
-                "receive_date": receive_date,
+                "receive_time": receive_time,
                 # "pro_start_date": pro_start_date,
                 "responsible_person": responsible_person,
                 "note": note,

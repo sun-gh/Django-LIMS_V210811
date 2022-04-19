@@ -274,6 +274,7 @@ def add_followup_record(request):
         intention_id = request.POST.get("intention_id")
         followup_record = FollowUpRecord()
         followup_record_form = FollowUpRecordForm(request.POST, instance=followup_record)
+
         if followup_record_form.is_valid():
             followup_record_form.save()
             intention = ClinicIntention.objects.get(id=intention_id)

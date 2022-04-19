@@ -87,12 +87,14 @@
                           {{ form.sample_sender }}
                         </div>
                       </div>
-                      <!--收样日期-->
+
+                      <!--收样时间-->
                       <div class="form-group row">
-                        {{ form.receive_date.label_tag }}
-                        <div class="col-md-7">
-                          {{ form.receive_date }}
+                        {{ form.receive_time.label_tag }}
+                        <div class="col-md-6">
+                          {{ form.receive_time }}
                         </div>
+                        <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_receive_date">现在</button></div>
                       </div>
                       <!--样本质量-->
                       <div class="form-group row">
@@ -176,8 +178,6 @@
 
 <script type="text/javascript">
 
-  $(document).ready(function() {
-
   // 给label加上class属性;input加上class;
   $("form label").addClass("col-md-4 col-form-label");
 
@@ -188,15 +188,13 @@
   $("[for='id_sample_amount']").append(txt1);
   $("[for='id_sample_sender']").append(txt1);
   $("[for='id_sample_quality']").append(txt1);
-  $("[for='id_receive_date']").append(txt1);
+  $("[for='id_receive_time']").append(txt1);
 
   // 给select添加样式,<!-- Select2 -->
   $("#id_sample_sender").addClass("select2");
   $("#id_sample_sender ").attr("style","width:100%;");
   //Initialize Select2 Elements
   $('.select2').select2();
-
-
 
   // 设置弹出提示框属性
     toastr.options = {
@@ -226,7 +224,26 @@
     }
     msgTip();
 
-  });  // .ready
+
+  // 定义获取当前时间函数
+    function getdatetime(){
+      var current_date = new Date();
+      var year = current_date.getFullYear();
+      var mon = current_date.getMonth()+1<10?"0" + (current_date.getMonth()+1):current_date.getMonth()+1;
+      var day = current_date.getDate()<10?"0" + current_date.getDate():current_date.getDate();
+      var hour = current_date.getHours()<10?"0" + current_date.getHours():current_date.getHours();
+      var minute = current_date.getMinutes()<10?"0" + current_date.getMinutes():current_date.getMinutes();
+      var date_str = year + "-" + mon + "-" + day + "T" + hour + ":" + minute;
+
+      return date_str;
+    }
+  //设置当前时间函数
+    $("#set_receive_date").on("click",function (){
+        var current_date = getdatetime();
+        //toastr.info(current_date);
+        $("#id_receive_time").attr("value",current_date);
+      }
+    )
 
 </script>
 {% endblock %}

@@ -186,7 +186,7 @@ class SampleRecord(models.Model):
     # sample_quality = models.ManyToManyField(SampleQuality, verbose_name="样本质量")
     sample_quality = models.ForeignKey(SampleQuality, verbose_name="样本运送条件和质量", on_delete=models.SET_NULL, null=True)
     addition_item = models.ManyToManyField(AdditionalItem, verbose_name="附加项目", blank=True)
-    receive_date = models.DateField(verbose_name="收样日期")
+    receive_time = models.DateTimeField(verbose_name="收样时间", null=True)
     pro_start_date = models.DateField(verbose_name="项目启动时间", null=True, blank=True)
     person_record = models.CharField(max_length=32, verbose_name="登记人")
     c_time = models.DateTimeField(verbose_name="登记时间", auto_now_add=True)

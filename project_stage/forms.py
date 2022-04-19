@@ -24,8 +24,9 @@ class SampleRecordForm(forms.ModelForm):
                                             widget=forms.Select(attrs={'class': 'form-control'}))
     addition_item = forms.ModelMultipleChoiceField(queryset=AdditionalItem.objects.all(), label="附加项目", required=False,
                                                    widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
-    receive_date = forms.DateField(label="收样日期",  widget=forms.DateInput(
-        format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
+    receive_time = forms.DateTimeField(label="收样时间", input_formats=['%Y-%m-%dT%H:%M'], widget=forms.DateTimeInput(
+        format='%Y-%m-%dT%H:%M',
+        attrs={'type': 'datetime-local', 'class': 'form-control', 'readonly': 'readonly'}))
     pro_start_date = forms.DateField(label="项目启动时间", required=False, widget=forms.DateInput(
         format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}))
     person_record = forms.CharField(label="登记人", widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -41,7 +42,7 @@ class SampleRecordForm(forms.ModelForm):
             'anti_fake_number',
             'sample_quality',
             'addition_item',
-            'receive_date',
+            'receive_time',
             'pro_start_date',
             'person_record',
             'note',

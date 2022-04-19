@@ -1,6 +1,7 @@
 from django import forms
 from .models import ClinicIntention, SampleType, DemandType, FollowUpRecord
 from customer.models import UnitInvoice
+from django.contrib.admin import widgets
 
 
 class IntentionForm(forms.ModelForm):
@@ -61,7 +62,8 @@ class IntentionForm(forms.ModelForm):
 class FollowUpRecordForm(forms.ModelForm):
     # 定义跟进记录表单
     communicate_time = forms.DateField(label="沟通时间", widget=forms.DateInput(
-        format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control form-control-sm'}))
+        format='%Y-%m-%d',
+        attrs={'type': 'date', 'class': 'form-control form-control-sm'}))
     linkman = forms.CharField(label="对接人", widget=forms.TextInput(attrs={'class': 'form-control form-control-sm',
                                                                          'placeholder': '对接人'}))
     communicate_content = forms.CharField(label="沟通内容", widget=forms.Textarea(

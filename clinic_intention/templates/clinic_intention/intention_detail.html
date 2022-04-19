@@ -162,11 +162,11 @@
                           </div>
                         </div>
                         <div class="col">
-    <!--                      <input type="submit" value="提交" class="btn btn-success btn-sm float-right" id="submit_record"/>-->
-                          <input type="button" value="提交" class="btn btn-success btn-sm float-right" id="submit_record"/>
-                          <input type="reset" style="display:none;" />
-                        </div>
+                        <input type="button" value="提交" class="btn btn-success btn-sm float-right" id="submit_record"/>
+                        <input type="reset" style="display:none;" />
                       </div>
+                      </div>
+
                     </form>
                   {% endif %}
                 {% endif %}
@@ -273,6 +273,10 @@
     var communicate_time = $("#id_communicate_time").val();
     var linkman = $("#id_linkman").val();
     var recorder = $("#id_recorder").val();
+    //var edit_time = $("#id_edit_time").val();
+    //var time_array = edit_time.split('T');
+    //var time_format = time_array.join(" ");
+    //console.log(time_format);
     if (communicate_content && communicate_time && linkman) {
       $.post(
         "/clinic_intention/add_followup_record/",
@@ -309,7 +313,6 @@
       //alert('信息有误！');
     }
   }); //.click
-
 
 </script>
 {% endblock %}
