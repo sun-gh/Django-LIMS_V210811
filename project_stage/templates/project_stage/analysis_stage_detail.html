@@ -107,46 +107,46 @@
                 <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
                 <thead>
                   <tr>
-                      <th>下机日期</th>
-                      <th>搜库日期</th>
-                      <th>报告发送日期</th>
-                      <th>原始数据发送日期</th>
-                      <th>项目截止日期</th>
+                      <th>下机时间</th>
+                      <th>搜库时间</th>
+                      <th>报告发送时间</th>
+                      <th>原始数据发送时间</th>
+                      <th>项目截止时间</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>
                       {% if record.test_finish_date %}
-                        {{ record.test_finish_date|date:"Y-m-d" }}
+                        {{ record.test_finish_date|date:"Y-m-d H:i" }}
                       {% else %}
                         -
                       {% endif  %}
                     </td>
                     <td>
                       {% if record.date_searchlib %}
-                        {{ record.date_searchlib|date:"Y-m-d" }}
+                        {{ record.date_searchlib|date:"Y-m-d H:i" }}
                       {% else %}
                         -
                       {% endif  %}
                     </td>
                     <td>
                       {% if record.date_send_report %}
-                        {{ record.date_send_report|date:"Y-m-d" }}
+                        {{ record.date_send_report|date:"Y-m-d H:i" }}
                       {% else %}
                         -
                       {% endif  %}
                     </td>
                     <td>
                       {% if record.date_send_rawdata %}
-                        {{ record.date_send_rawdata|date:"Y-m-d" }}
+                        {{ record.date_send_rawdata|date:"Y-m-d H:i" }}
                       {% else %}
                         -
                       {% endif  %}
                     </td>
                     <td>
                       {% if record.pro_deadline %}
-                        {{ record.pro_deadline|date:"Y-m-d" }}
+                        {{ record.pro_deadline|date:"Y-m-d H:i" }}
                       {% else %}
                         -
                       {% endif  %}

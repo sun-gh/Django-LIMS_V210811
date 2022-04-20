@@ -61,7 +61,7 @@ class PretreatStageForm(forms.ModelForm):
     # 定义前处理修改表单
     priority = forms.IntegerField(label="优先级", required=False, widget=forms.Select(choices=SampleRecord.priority_level,
                                                                                    attrs={'class': 'form-control'}))
-    start_date = forms.DateTimeField(label="实验开始日期",
+    start_date = forms.DateTimeField(label="实验开始时间",
                                      input_formats=['%Y-%m-%dT%H:%M'],
                                      required=False,
                                      widget=forms.DateTimeInput(format='%Y-%m-%dT%H:%M',
@@ -129,14 +129,14 @@ class TestStageForm(forms.ModelForm):
     # 定义质谱检测信息修改表单
     instrument_type = forms.ModelChoiceField(queryset=Machine.objects.all(), label="上机仪器",
                                              required=False, widget=forms.Select(attrs={'class': 'form-control'}))
-    date_test = forms.DateTimeField(label="上机日期",
+    date_test = forms.DateTimeField(label="上机时间",
                                     input_formats=['%Y-%m-%dT%H:%M'],
                                     required=False,
                                     widget=forms.DateTimeInput(format='%Y-%m-%dT%H:%M',
                                                                attrs={'type': 'datetime-local',
                                                                       'class': 'form-control',
                                                                       'readonly': 'readonly'}))
-    test_finish_date = forms.DateTimeField(label="下机日期",
+    test_finish_date = forms.DateTimeField(label="下机时间",
                                            input_formats=['%Y-%m-%dT%H:%M'],
                                            required=False,
                                            widget=forms.DateTimeInput(format='%Y-%m-%dT%H:%M',
@@ -157,28 +157,28 @@ class AnalysisStageForm(forms.ModelForm):
     # 定义数据分析信息修改表单
     responsible_person = forms.ModelChoiceField(queryset=ResponsiblePerson.objects.all(), label="项目负责人",
                                                 required=False, widget=forms.Select(attrs={'class': 'form-control'}))
-    date_searchlib = forms.DateTimeField(label="搜库日期",
+    date_searchlib = forms.DateTimeField(label="搜库时间",
                                          input_formats=['%Y-%m-%dT%H:%M'],
                                          required=False,
                                          widget=forms.DateTimeInput(format='%Y-%m-%dT%H:%M',
                                                                     attrs={'type': 'datetime-local',
                                                                            'class': 'form-control',
                                                                            'readonly': 'readonly'}))
-    date_send_report = forms.DateTimeField(label="报告发送日期",
+    date_send_report = forms.DateTimeField(label="报告发送时间",
                                            input_formats=['%Y-%m-%dT%H:%M'],
                                            required=False,
                                            widget=forms.DateTimeInput(format='%Y-%m-%dT%H:%M',
                                                                       attrs={'type': 'datetime-local',
                                                                              'class': 'form-control',
                                                                              'readonly': 'readonly'}))
-    date_send_rawdata = forms.DateTimeField(label="原始数据发送日期",
+    date_send_rawdata = forms.DateTimeField(label="原始数据发送时间",
                                             input_formats=['%Y-%m-%dT%H:%M'],
                                             required=False,
                                             widget=forms.DateTimeInput(format='%Y-%m-%dT%H:%M',
                                                                        attrs={'type': 'datetime-local',
                                                                               'class': 'form-control',
                                                                               'readonly': 'readonly'}))
-    pro_deadline = forms.DateTimeField(label="项目截止日期",
+    pro_deadline = forms.DateTimeField(label="项目截止时间",
                                        input_formats=['%Y-%m-%dT%H:%M'],
                                        required=False,
                                        widget=forms.DateTimeInput(format='%Y-%m-%dT%H:%M',

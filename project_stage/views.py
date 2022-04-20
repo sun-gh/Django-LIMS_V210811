@@ -461,16 +461,16 @@ def pretreat_stage_table(request):
             else:
                 project_start_date = "-"
             if project.start_date:
-                start_date = project.start_date.strftime('%Y-%m-%d')
+                start_date = project.start_date.strftime('%Y-%m-%d %H:%M')
             else:
                 start_date = "-"
             if project.preexperiment_finish_date:
-                preexperiment_finish_date = project.preexperiment_finish_date.strftime('%Y-%m-%d')
+                preexperiment_finish_date = project.preexperiment_finish_date.strftime('%Y-%m-%d %H:%M')
             else:
                 preexperiment_finish_date = "-"
             # 格式化前处理完成日期，同时计算前处理剩余周期
             if project.pretreat_finish_date:
-                pretreat_finish_date = project.pretreat_finish_date.strftime('%Y-%m-%d')
+                pretreat_finish_date = project.pretreat_finish_date.strftime('%Y-%m-%d %H:%M')
                 time_percent = "-"
             else:
                 pretreat_finish_date = "-"
@@ -554,15 +554,15 @@ def pretreat_stage_table(request):
             else:
                 project_interrupt = "-"
             if project.start_deadline:
-                start_deadline = project.start_deadline.strftime('%Y-%m-%d')
+                start_deadline = project.start_deadline.strftime('%Y-%m-%d %H:%M')
             else:
                 start_deadline = "-"
             if project.preexperiment_deadline:
-                preexperiment_deadline = project.preexperiment_deadline.strftime('%Y-%m-%d')
+                preexperiment_deadline = project.preexperiment_deadline.strftime('%Y-%m-%d %H:%M')
             else:
                 preexperiment_deadline = "-"
             if project.pretreat_deadline:
-                pretreat_deadline = project.pretreat_deadline.strftime('%Y-%m-%d')
+                pretreat_deadline = project.pretreat_deadline.strftime('%Y-%m-%d %H:%M')
             else:
                 pretreat_deadline = "-"
 
@@ -710,17 +710,17 @@ def test_stage_table(request):
                 instrument_type = "-"
             # 上机日期
             if project.date_test:
-                date_test = project.date_test.strftime('%Y-%m-%d')
+                date_test = project.date_test.strftime('%Y-%m-%d %H:%M')
             else:
                 date_test = "-"
             # 下机日期
             if project.test_finish_date:
-                test_finish_date = project.test_finish_date.strftime('%Y-%m-%d')
+                test_finish_date = project.test_finish_date.strftime('%Y-%m-%d %H:%M')
             else:
                 test_finish_date = "-"
             # 下机截止日期（同时定义剩余周期）
             if project.test_deadline:  # 此时有两种情况：1、检测阶段已完成；2、检测阶段未完成；
-                test_deadline = project.test_deadline.strftime('%Y-%m-%d')
+                test_deadline = project.test_deadline.strftime('%Y-%m-%d %H:%M')
                 if project.test_finish_date:  # 此时已下机
                     time_percent = "-"
                 else:  # 此时未下机
@@ -883,7 +883,7 @@ def analysis_stage_table(request):
                 instrument_type = "-"
             # 项目截止日期
             if project.pro_deadline:
-                pro_deadline = project.pro_deadline.strftime('%Y-%m-%d')
+                pro_deadline = project.pro_deadline.strftime('%Y-%m-%d %H:%M')
             else:
                 pro_deadline = "-"
             # 项目负责人
@@ -893,12 +893,12 @@ def analysis_stage_table(request):
             else:
                 responsible_person = "-"
             if project.date_searchlib:
-                date_searchlib = project.date_searchlib.strftime('%Y-%m-%d')
+                date_searchlib = project.date_searchlib.strftime('%Y-%m-%d %H:%M')
             else:
                 date_searchlib = "-"
             # 定义报告发送日期，同时处理项目剩余周期
             if project.date_send_report:
-                date_send_report = project.date_send_report.strftime('%Y-%m-%d')
+                date_send_report = project.date_send_report.strftime('%Y-%m-%d %H:%M')
                 time_percent = "-"
             else:
                 date_send_report = "-"
@@ -916,7 +916,7 @@ def analysis_stage_table(request):
                 else:
                     time_percent = "-"
             if project.date_send_rawdata:
-                date_send_rawdata = project.date_send_rawdata.strftime('%Y-%m-%d')
+                date_send_rawdata = project.date_send_rawdata.strftime('%Y-%m-%d %H:%M')
             else:
                 date_send_rawdata = "-"
 

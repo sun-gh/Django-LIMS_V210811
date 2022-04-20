@@ -96,11 +96,10 @@
                 <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
                 <thead>
                   <tr>
-                    <th>实验开始日期</th>
+                    <th>实验开始时间</th>
                     <th>预实验完成时间</th>
                     <th>前处理完成时间</th>
-
-                    <th>实验开始截止日期</th>
+                    <th>实验开始截止时间</th>
                     <th>预实验截止时间</th>
                     <th>前处理截止时间</th>
                   </tr>
@@ -109,42 +108,42 @@
                   <tr>
                     <td>
                       {% if record.start_date %}
-                        {{ record.start_date|date:"Y-m-d" }}
+                        {{ record.start_date|date:"Y-m-d H:i" }}
                       {% else %}
                         -
                       {% endif  %}
                     </td>
                     <td>
                       {% if record.preexperiment_finish_date %}
-                        {{ record.preexperiment_finish_date|date:"Y-m-d" }}
+                        {{ record.preexperiment_finish_date|date:"Y-m-d H:i" }}
                       {% else %}
                         -
                       {% endif  %}
                     </td>
                     <td>
                       {% if record.pretreat_finish_date %}
-                        {{ record.pretreat_finish_date|date:"Y-m-d" }}
+                        {{ record.pretreat_finish_date|date:"Y-m-d H:i" }}
                       {% else %}
                         -
                       {% endif  %}
                     </td>
                     <td>
                       {% if record.start_deadline %}
-                        {{ record.start_deadline|date:"Y-m-d" }}
+                        {{ record.start_deadline|date:"Y-m-d H:i" }}
                       {% else %}
                         -
                       {% endif  %}
                     </td>
                     <td>
                       {% if record.preexperiment_deadline %}
-                        {{ record.preexperiment_deadline|date:"Y-m-d" }}
+                        {{ record.preexperiment_deadline|date:"Y-m-d H:i" }}
                       {% else %}
                         -
                       {% endif  %}
                     </td>
                     <td>
                       {% if record.pretreat_deadline %}
-                        {{ record.pretreat_deadline|date:"Y-m-d" }}
+                        {{ record.pretreat_deadline|date:"Y-m-d H:i" }}
                       {% else %}
                         -
                       {% endif  %}
