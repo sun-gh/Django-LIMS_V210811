@@ -87,7 +87,6 @@
                           {{ form.sample_sender }}
                         </div>
                       </div>
-
                       <!--收样时间-->
                       <div class="form-group row">
                         {{ form.receive_time.label_tag }}
@@ -130,9 +129,10 @@
                       <!--项目启动时间-->
                       <div class="form-group row">
                         {{ form.pro_start_date.label_tag }}
-                        <div class="col-md-7">
+                        <div class="col-md-6">
                           {{ form.pro_start_date }}
                         </div>
+                        <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_start_date">现在</button></div>
                       </div>
                       <!--备注-->
                       <div class="form-group row">
@@ -141,7 +141,6 @@
                           {{ form.note }}
                         </div>
                       </div>
-
                       <!--登记人-->
                       <div style="display:none;">{{  form.person_record }}</div>
 
@@ -224,7 +223,6 @@
     }
     msgTip();
 
-
   // 定义获取当前时间函数
     function getdatetime(){
       var current_date = new Date();
@@ -237,11 +235,18 @@
 
       return date_str;
     }
-  //设置当前时间函数
+  //设置收样时间函数
     $("#set_receive_date").on("click",function (){
         var current_date = getdatetime();
         //toastr.info(current_date);
         $("#id_receive_time").attr("value",current_date);
+      }
+    )
+  //设置项目启动时间函数
+    $("#set_start_date").on("click",function (){
+        var current_date = getdatetime();
+        //toastr.info(current_date);
+        $("#id_pro_start_date").attr("value",current_date);
       }
     )
 

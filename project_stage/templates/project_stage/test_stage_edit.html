@@ -82,7 +82,7 @@
                           <div class="col-md-6">
                             {{ form.date_test }}
                           </div>
-                          <div class="col m-auto"><span ><a href="#" id="set_test_date">今天</a></span></div>
+                          <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_test_date">现在</button></div>
                         </div>
                         <!--下机日期-->
                         <div class="form-group row">
@@ -90,7 +90,7 @@
                           <div class="col-md-6">
                             {{ form.test_finish_date }}
                           </div>
-                          <div class="col m-auto"><span ><a href="#" id="set_finish_date">今天</a></span></div>
+                          <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_finish_date">现在</button></div>
                         </div>
                       </div>
                       </div>   <!-- /.row-->
@@ -125,7 +125,6 @@
 <script src="{% static 'AdminLTE-3.0.2/plugins/select2/js/select2.full.min.js' %}"></script>
 
 <script type="text/javascript">
-
   $(document).ready(function() {
     // 给label加上class属性;input加上class;
     $("form label").addClass("col-md-4 col-form-label");
@@ -156,29 +155,27 @@
       }
       msgTip();
     // 定义获取当前日期函数
-    function getdate(){
+    function getdatetime(){
       var current_date = new Date();
       var year = current_date.getFullYear();
-      var mon = current_date.getMonth()+1;
-      var day = current_date.getDate();
-      var date_str;
-      if (mon<10) {
-        date_str =year + "-" + "0" + mon + "-" + day;
-      }else {
-        date_str =year + "-" + mon + "-" + day;
-      }
+      var mon = current_date.getMonth()+1<10?"0" + (current_date.getMonth()+1):current_date.getMonth()+1;
+      var day = current_date.getDate()<10?"0" + current_date.getDate():current_date.getDate();
+      var hour = current_date.getHours()<10?"0" + current_date.getHours():current_date.getHours();
+      var minute = current_date.getMinutes()<10?"0" + current_date.getMinutes():current_date.getMinutes();
+      var date_str = year + "-" + mon + "-" + day + "T" + hour + ":" + minute;
+
       return date_str;
     }
     //设置上机日期函数
     $("#set_test_date").on("click",function (){
-        var current_date = getdate();
+        var current_date = getdatetime();
         //toastr.info(current_date);
         $("#id_date_test").attr("value",current_date);
       }
     )
     //设置下机日期函数
     $("#set_finish_date").on("click",function (){
-        var current_date = getdate();
+        var current_date = getdatetime();
         $("#id_test_finish_date").attr("value",current_date);
       }
     )

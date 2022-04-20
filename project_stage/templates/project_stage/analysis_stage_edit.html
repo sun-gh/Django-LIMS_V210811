@@ -79,26 +79,28 @@
                         <!--搜库日期-->
                         <div class="form-group row">
                           {{ form.date_searchlib.label_tag }}
-                          <div class="col-md-7">
+                          <div class="col-md-6">
                             {{ form.date_searchlib }}
                           </div>
+                          <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_searchlib_date">现在</button></div>
                         </div>
                         <!--报告发送日期-->
                         <div class="form-group row">
                           {{ form.date_send_report.label_tag }}
-                          <div class="col-md-7">
+                          <div class="col-md-6">
                             {{ form.date_send_report }}
                           </div>
+                          <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_report_date">现在</button></div>
                         </div>
                       </div>
                       <div class="col">
-
                         <!--原始数据发送日期-->
                         <div class="form-group row">
                           {{ form.date_send_rawdata.label_tag }}
-                          <div class="col-md-7">
+                          <div class="col-md-6">
                             {{ form.date_send_rawdata }}
                           </div>
+                          <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_rawdata_date">现在</button></div>
                         </div>
                         <!--项目截止日期-->
                         <div class="form-group row">
@@ -183,6 +185,40 @@
       }
     }
     msgTip();
+
+  // 定义获取当前时间函数
+    function getdatetime(){
+      var current_date = new Date();
+      var year = current_date.getFullYear();
+      var mon = current_date.getMonth()+1<10?"0" + (current_date.getMonth()+1):current_date.getMonth()+1;
+      var day = current_date.getDate()<10?"0" + current_date.getDate():current_date.getDate();
+      var hour = current_date.getHours()<10?"0" + current_date.getHours():current_date.getHours();
+      var minute = current_date.getMinutes()<10?"0" + current_date.getMinutes():current_date.getMinutes();
+      var date_str = year + "-" + mon + "-" + day + "T" + hour + ":" + minute;
+
+      return date_str;
+    }
+  //设置搜库时间函数
+    $("#set_searchlib_date").on("click",function (){
+        var current_date = getdatetime();
+        //toastr.info(current_date);
+        $("#id_date_searchlib").attr("value",current_date);
+      }
+    )
+  //设置报告发送时间函数
+    $("#set_report_date").on("click",function (){
+        var current_date = getdatetime();
+        //toastr.info(current_date);
+        $("#id_date_send_report").attr("value",current_date);
+      }
+    )
+  //设置原始数据发送时间函数
+    $("#set_rawdata_date").on("click",function (){
+        var current_date = getdatetime();
+        //toastr.info(current_date);
+        $("#id_date_send_rawdata").attr("value",current_date);
+      }
+    )
 
   });  // .ready
 

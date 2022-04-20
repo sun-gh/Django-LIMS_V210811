@@ -59,36 +59,37 @@
         </div>
 
         <div class="card card-info ">
-
               <form class="form-horizontal" method="post" action="{% url 'project_stage:pretreat_stage_edit' project_info.id %}">
               <!-- card-body -->
               <div class="row">
                 <div class="col-md-10 offset-md-1">
                   <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
-
                     {% csrf_token %}
                     <div class="row ">
                       <div class="col">
                           <!--项目启动时间-->
                           <div class="form-group row">
                             {{ form.start_date.label_tag }}
-                            <div class="col-md-7" id="unit">
+                            <div class="col-md-6" id="unit">
                               {{ form.start_date }}
                             </div>
+                            <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_start_date">现在</button></div>
                           </div>
                           <!--预实验完成时间-->
                           <div class="form-group row">
                             {{ form.preexperiment_finish_date.label_tag }}
-                            <div class="col-md-7">
+                            <div class="col-md-6">
                               {{ form.preexperiment_finish_date }}
                             </div>
+                            <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_preexperiment_date">现在</button></div>
                           </div>
                           <!--前处理完成时间-->
                           <div class="form-group row">
                             {{ form.pretreat_finish_date.label_tag }}
-                            <div class="col-md-7">
+                            <div class="col-md-6">
                               {{ form.pretreat_finish_date }}
                             </div>
+                            <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_pretreat_date">现在</button></div>
                           </div>
                           <!--步骤一-->
                           <div class="form-group row">
@@ -240,6 +241,40 @@
       }
     }
     msgTip();
+
+  // 定义获取当前时间函数
+    function getdatetime(){
+      var current_date = new Date();
+      var year = current_date.getFullYear();
+      var mon = current_date.getMonth()+1<10?"0" + (current_date.getMonth()+1):current_date.getMonth()+1;
+      var day = current_date.getDate()<10?"0" + current_date.getDate():current_date.getDate();
+      var hour = current_date.getHours()<10?"0" + current_date.getHours():current_date.getHours();
+      var minute = current_date.getMinutes()<10?"0" + current_date.getMinutes():current_date.getMinutes();
+      var date_str = year + "-" + mon + "-" + day + "T" + hour + ":" + minute;
+
+      return date_str;
+    }
+  //设置实验开始时间函数
+    $("#set_start_date").on("click",function (){
+        var current_date = getdatetime();
+        //toastr.info(current_date);
+        $("#id_start_date").attr("value",current_date);
+      }
+    )
+  //设置预实验完成时间函数
+    $("#set_preexperiment_date").on("click",function (){
+        var current_date = getdatetime();
+        //toastr.info(current_date);
+        $("#id_preexperiment_finish_date").attr("value",current_date);
+      }
+    )
+  //设置前处理完成时间函数
+    $("#set_pretreat_date").on("click",function (){
+        var current_date = getdatetime();
+        //toastr.info(current_date);
+        $("#id_pretreat_finish_date").attr("value",current_date);
+      }
+    )
 
   });  // .ready
 

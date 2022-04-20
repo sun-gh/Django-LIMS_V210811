@@ -5,7 +5,7 @@ from .forms import SampleRecordForm, PretreatStageForm, TestStageForm, AnalysisS
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 import json
-from datetime import date
+from datetime import date, datetime
 import django.dispatch
 from django.dispatch import receiver
 from customer.views import customer_edit, project_add_unit, project_add_terminal
@@ -425,7 +425,7 @@ def pretreat_stage_table(request):
         paginator = Paginator(all_projects, limit)  # 开始做分页
 
         response_data = {'total': all_projects_count, 'rows': []}  # 必须带有rows和total这2个key
-        date_now = date.today()    # 为后面计算周期做准备
+        date_now = datetime.now()    # 为后面计算周期做准备
         for project in paginator.page(pageNum):
             # 下面这些key，都是我们在前端定义好了的，前后端必须一致.
             if project.project_type:
@@ -457,7 +457,7 @@ def pretreat_stage_table(request):
             # 定义项目启动日期
             pro_start_date = project.pro_start_date
             if pro_start_date:
-                project_start_date = pro_start_date.strftime('%Y-%m-%d')
+                project_start_date = pro_start_date.strftime('%Y-%m-%d %H:%M')
             else:
                 project_start_date = "-"
             if project.start_date:
@@ -673,7 +673,7 @@ def test_stage_table(request):
         paginator = Paginator(all_projects, limit)  # 开始做分页
 
         response_data = {'total': all_projects_count, 'rows': []}  # 必须带有rows和total这2个key
-        date_now = date.today()  # 为后面计算剩余周期需要
+        date_now = datetime.now()  # 为后面计算剩余周期需要
         for project in paginator.page(pageNum):
             # 下面这些key，都是我们在前端定义好了的，前后端必须一致，
             if project.project_type:
@@ -831,7 +831,7 @@ def analysis_stage_table(request):
         paginator = Paginator(all_projects, limit)  # 开始做分页
 
         response_data = {'total': all_projects_count, 'rows': []}  # 必须带有rows和total这2个key
-        date_now = date.today()  # 为后面计算剩余周期需要
+        date_now = datetime.now()  # 为后面计算剩余周期需要
         for project in paginator.page(pageNum):
             # 下面这些key，都是我们在前端定义好了的，前后端必须一致，
             if project.project_type:

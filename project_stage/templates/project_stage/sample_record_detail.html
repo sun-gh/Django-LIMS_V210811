@@ -61,7 +61,7 @@
                       <td>{{ record.receive_time|date:"Y-m-d H:i" }}</td>
                       <td>
                         {% if record.pro_start_date %}
-                          {{ record.pro_start_date|date:"Y-m-d" }}
+                          {{ record.pro_start_date|date:"Y-m-d H:i" }}
                         {% else %}
                           -
                         {% endif  %}
