@@ -106,6 +106,7 @@
                         <th>阶段</th>
                         <th>参与统计项目数</th>
                         <th>延期项目数</th>
+                        <th>延期率</th>
                       </tr>
                     </thead>
 
@@ -367,6 +368,7 @@
           var trSrc = "<tr><td>" + row.stage
             + "</td><td>" + row.projects
             + "</td><td>" + row.delay
+            + "</td><td>" + row.delay_rate
             + "</td></tr>";
           $('#myTable1').append(trSrc);
         };

@@ -460,41 +460,45 @@
       return;
     } else {
       if (rows.length == 1) {
-        var project_number=$("#project_number").val();
-        if(project_number!=null){
-          sessionStorage.setItem("project_num", project_number);
-        }else {
-          project_number="";
-        }
-        var unit_name=$("#unit_search").val();
-        if(unit_name!=null){
-          sessionStorage.setItem("unit", unit_name);
-        }else {
-          unit_name="";
-        }
-        var sample_sender=$("#sender_search").val();
-        if(sample_sender!=null){
-          sessionStorage.setItem("sample_sender", sample_sender);
-        }else {
-          sample_sender="";
-        }
-        var pro_type = document.getElementById("id_project_type");
-        if(pro_type.selectedIndex!=null){
-          sessionStorage.setItem("pro_type_id", pro_type.selectedIndex);
-        }else {
-          pro_type="";   //此时if必然为true
-        }
-        var sample_type = document.getElementById("id_sample_type");
-        sessionStorage.setItem("sample_type_id", sample_type.value);
+        var editable = rows[0].editable;
+        if (editable==true){
+          var project_number=$("#project_number").val();
+          if(project_number!=null){
+            sessionStorage.setItem("project_num", project_number);
+          }else {
+            project_number="";
+          }
+          var unit_name=$("#unit_search").val();
+          if(unit_name!=null){
+            sessionStorage.setItem("unit", unit_name);
+          }else {
+            unit_name="";
+          }
+          var sample_sender=$("#sender_search").val();
+          if(sample_sender!=null){
+            sessionStorage.setItem("sample_sender", sample_sender);
+          }else {
+            sample_sender="";
+          }
+          var pro_type = document.getElementById("id_project_type");
+          if(pro_type.selectedIndex!=null){
+            sessionStorage.setItem("pro_type_id", pro_type.selectedIndex);
+          }else {
+            pro_type="";   //此时if必然为true
+          }
+          var sample_type = document.getElementById("id_sample_type");
+          sessionStorage.setItem("sample_type_id", sample_type.value);
 
-        sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
-        sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
+          sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
+          sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
 
-        var project_id = rows[0].project_id;  // 获取客户id
-        var url="/project_stage/test_stage_edit/" + project_id + "/"  ;
-        // alert(url);
-        location.href=url;
-
+          var project_id = rows[0].project_id;  // 获取客户id
+          var url="/project_stage/test_stage_edit/" + project_id + "/"  ;
+          // alert(url);
+          location.href=url;
+        } else {
+          toastr.info('项目未启动或无需修改！');
+        }
       } else {
         //alert("一次只能修改一条记录!");
         toastr.info('一次只能修改一条记录！');

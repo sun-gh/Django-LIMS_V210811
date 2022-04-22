@@ -231,7 +231,7 @@ def sample_record_add(request):
                 preexperiment_days = pro_type.pre_experiment_cycle
                 if preexperiment_days:
                     sample_rec.preexperiment_deadline = chinese_calendar.find_workday(preexperiment_days, pro_start_date)
-                # 定义前处理截至日期和下机截止日期
+                # 定义前处理截止日期和下机截止日期
                 pre_process_days = pro_type.pre_process_cycle
                 test_days = pro_type.test_cycle
                 if pre_process_days:
@@ -720,6 +720,7 @@ def test_stage_table(request):
                 test_finish_date = "-"
             # 下机截止日期（同时定义剩余周期）
             if project.test_deadline:  # 此时有两种情况：1、检测阶段已完成；2、检测阶段未完成；
+                editable = True  # 用于该条目能否被修改
                 test_deadline = project.test_deadline.strftime('%Y-%m-%d %H:%M')
                 if project.test_finish_date:  # 此时已下机
                     time_percent = "-"
@@ -737,6 +738,7 @@ def test_stage_table(request):
             else:  # 此时有两种情况：1、该项目无检测阶段；2、项目未启动；此时无需计算剩余周期
                 test_deadline = "-"
                 time_percent = "-"
+                editable = False
 
             response_data['rows'].append({
                 "project_id": project.id,
@@ -748,6 +750,7 @@ def test_stage_table(request):
                 "leading_official": leading_official,
                 "unit": unit_name,
                 "sample_sender": project.sample_sender.customer_name,
+                "editable": editable,
                 # 以下为检测分析阶段新添加字段
                 "priority": project.priority,
                 "responsible_person": responsible_person,
@@ -904,6 +907,7 @@ def analysis_stage_table(request):
                 date_send_report = "-"
                 pro_start_date = project.pro_start_date
                 if pro_start_date:
+                    editable = True
                     real_period = chinese_calendar.get_workdays(pro_start_date, project.pro_deadline)
                     if date_now == project.pro_deadline:
                         time_percent = 0
@@ -914,6 +918,7 @@ def analysis_stage_table(request):
                         remain_time = chinese_calendar.get_workdays(project.pro_deadline, date_now)
                         time_percent = -len(remain_time) * 100 // len(real_period)
                 else:
+                    editable = False
                     time_percent = "-"
             if project.date_send_rawdata:
                 date_send_rawdata = project.date_send_rawdata.strftime('%Y-%m-%d %H:%M')
@@ -940,6 +945,7 @@ def analysis_stage_table(request):
                 "responsible_person": responsible_person,
                 "date_searchlib": date_searchlib,
                 "date_send_report": date_send_report,
+                "editable": editable,
                 "date_send_rawdata": date_send_rawdata,
                 "pro_deadline": pro_deadline,
                 "time_percent": time_percent,

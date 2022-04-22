@@ -211,20 +211,26 @@ def total_delay_rate(request):
     data = []
     project_started = SampleRecord.objects.filter(pro_start_date__isnull=False)
     # 前处理阶段计算
-    pretreat_finished = project_started.filter(pretreat_finish_date__isnull=False)
+    pretreat_finished = project_started.filter(pretreat_deadline__isnull=False, pretreat_finish_date__isnull=False)
     pretreat_finish_delay = pretreat_finished.filter(pretreat_finish_date__gt=F('pretreat_deadline'))
-    pretreat_not_finish_delay = project_started.filter(pretreat_finish_date__isnull=True, pretreat_deadline__lt=current_time)
+    pretreat_not_finish_delay = project_started.filter(pretreat_deadline__isnull=False,
+                                                       pretreat_finish_date__isnull=True,
+                                                       pretreat_deadline__lt=current_time)
     pretreat_projects = pretreat_finished.count() + pretreat_not_finish_delay.count()
     pretreat_delay = pretreat_finish_delay.count() + pretreat_not_finish_delay.count()
-    row1 = {'stage': "前处理阶段", 'projects': pretreat_projects, 'delay': pretreat_delay}
+    pretreat_delay_rate = round(pretreat_delay / pretreat_projects, 3) * 100
+    row1 = {'stage': "前处理阶段", 'projects': pretreat_projects, 'delay': pretreat_delay, "delay_rate": str(pretreat_delay_rate)+'%'}
     data.append(row1)
     # 质谱检测阶段计算
-    test_finished = project_started.filter(test_finish_date__isnull=False)
+    test_finished = project_started.filter(test_deadline__isnull=False, test_finish_date__isnull=False)
     test_finish_delay = test_finished.filter(test_finish_date__gt=F('test_deadline'))
-    test_not_finish_delay = project_started.filter(test_finish_date__isnull=True, test_deadline__lt=current_time)
+    test_not_finish_delay = project_started.filter(test_deadline__isnull=False,
+                                                   test_finish_date__isnull=True,
+                                                   test_deadline__lt=current_time)
     test_projects = test_finished.count() + test_not_finish_delay.count()
     test_delay = test_finish_delay.count() + test_not_finish_delay.count()
-    row2 = {'stage': "质谱检测阶段", 'projects': test_projects, 'delay': test_delay}
+    test_delay_rate = round(test_delay / test_projects, 3) * 100
+    row2 = {'stage': "质谱检测阶段", 'projects': test_projects, 'delay': test_delay, "delay_rate": str(test_delay_rate)+'%'}
     data.append(row2)
     # 数据分析阶段
     analysis_finished = project_started.filter(date_send_report__isnull=False)
@@ -232,7 +238,8 @@ def total_delay_rate(request):
     analysis_not_finish_delay = project_started.filter(date_send_report__isnull=True, pro_deadline__lt=current_time)
     analysis_projects = analysis_finished.count() + analysis_not_finish_delay.count()
     analysis_delay = analysis_finish_delay.count() + analysis_not_finish_delay.count()
-    row3 = {'stage': "数据分析阶段", 'projects': analysis_projects, 'delay': analysis_delay}
+    analysis_delay_rate = round(analysis_delay / analysis_projects, 3) * 100
+    row3 = {'stage': "数据分析阶段", 'projects': analysis_projects, 'delay': analysis_delay, "delay_rate": str(analysis_delay_rate)+'%'}
     data.append(row3)
 
     return HttpResponse(json.dumps(data))
