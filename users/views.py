@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import auth
-from datetime import date
+from datetime import date, datetime
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
@@ -9,7 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from .forms import PermissionForm
 from django.db.models.functions import ExtractMonth, ExtractYear
 from project_stage.models import SampleRecord, ProjectType, SampleType
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, F
 import json
 from django.http import HttpResponse
 
@@ -201,5 +201,38 @@ def sample_type_statistics(request):
     data['project_num'] = project_num
     data['type_list_by_sample'] = type_list_by_sample
     data['sample_num'] = sample_num
+
+    return HttpResponse(json.dumps(data))
+
+
+def total_delay_rate(request):
+    # 总体延期率统计(超期分为两种情况：1、实际日期大于截止日期；2、实际日期为空，但当前日期已大于截止日期；)
+    current_time = datetime.now()
+    data = []
+    project_started = SampleRecord.objects.filter(pro_start_date__isnull=False)
+    # 前处理阶段计算
+    pretreat_finished = project_started.filter(pretreat_finish_date__isnull=False)
+    pretreat_finish_delay = pretreat_finished.filter(pretreat_finish_date__gt=F('pretreat_deadline'))
+    pretreat_not_finish_delay = project_started.filter(pretreat_finish_date__isnull=True, pretreat_deadline__lt=current_time)
+    pretreat_projects = pretreat_finished.count() + pretreat_not_finish_delay.count()
+    pretreat_delay = pretreat_finish_delay.count() + pretreat_not_finish_delay.count()
+    row1 = {'stage': "前处理阶段", 'projects': pretreat_projects, 'delay': pretreat_delay}
+    data.append(row1)
+    # 质谱检测阶段计算
+    test_finished = project_started.filter(test_finish_date__isnull=False)
+    test_finish_delay = test_finished.filter(test_finish_date__gt=F('test_deadline'))
+    test_not_finish_delay = project_started.filter(test_finish_date__isnull=True, test_deadline__lt=current_time)
+    test_projects = test_finished.count() + test_not_finish_delay.count()
+    test_delay = test_finish_delay.count() + test_not_finish_delay.count()
+    row2 = {'stage': "质谱检测阶段", 'projects': test_projects, 'delay': test_delay}
+    data.append(row2)
+    # 数据分析阶段
+    analysis_finished = project_started.filter(date_send_report__isnull=False)
+    analysis_finish_delay = analysis_finished.filter(date_send_report__gt=F('pro_deadline'))
+    analysis_not_finish_delay = project_started.filter(date_send_report__isnull=True, pro_deadline__lt=current_time)
+    analysis_projects = analysis_finished.count() + analysis_not_finish_delay.count()
+    analysis_delay = analysis_finish_delay.count() + analysis_not_finish_delay.count()
+    row3 = {'stage': "数据分析阶段", 'projects': analysis_projects, 'delay': analysis_delay}
+    data.append(row3)
 
     return HttpResponse(json.dumps(data))

@@ -92,6 +92,28 @@
               </div>
             </div>
           </div>
+          <!--项目总体延期率统计表-->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">项目实施各阶段延期率统计</h3>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <table class="table table-bordered text-center" id="myTable1" >
+                    <thead>
+                      <tr>
+                        <th>阶段</th>
+                        <th>参与统计项目数</th>
+                        <th>延期项目数</th>
+                      </tr>
+                    </thead>
+
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="col-md-6">
           <!--样本数统计饼图-->
@@ -335,6 +357,23 @@
 
   }
   SampleTypeStatistics();
+  // 总体延期率统计函数
+  function TotalDelayRate() {
+    $.ajax({
+      url:'/user/total_delay_rate/',
+      success: function(data) {
+        var result_data = JSON.parse(data);
+        for (const row of result_data){
+          var trSrc = "<tr><td>" + row.stage
+            + "</td><td>" + row.projects
+            + "</td><td>" + row.delay
+            + "</td></tr>";
+          $('#myTable1').append(trSrc);
+        };
 
+      }    // success
+    });    // ajax
+  }
+  TotalDelayRate();
 </script>
 {% endblock %}
