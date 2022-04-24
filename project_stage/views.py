@@ -887,8 +887,10 @@ def analysis_stage_table(request):
             # 项目截止日期
             if project.pro_deadline:
                 pro_deadline = project.pro_deadline.strftime('%Y-%m-%d %H:%M')
+                item_editable = True  # 定义item是否可编辑
             else:
                 pro_deadline = "-"
+                item_editable = False
             # 项目负责人
             technical_support = project.responsible_person
             if technical_support:
@@ -907,7 +909,6 @@ def analysis_stage_table(request):
                 date_send_report = "-"
                 pro_start_date = project.pro_start_date
                 if pro_start_date:
-                    editable = True
                     real_period = chinese_calendar.get_workdays(pro_start_date, project.pro_deadline)
                     if date_now == project.pro_deadline:
                         time_percent = 0
@@ -918,7 +919,7 @@ def analysis_stage_table(request):
                         remain_time = chinese_calendar.get_workdays(project.pro_deadline, date_now)
                         time_percent = -len(remain_time) * 100 // len(real_period)
                 else:
-                    editable = False
+                    # item_editable = False
                     time_percent = "-"
             if project.date_send_rawdata:
                 date_send_rawdata = project.date_send_rawdata.strftime('%Y-%m-%d %H:%M')
@@ -945,7 +946,7 @@ def analysis_stage_table(request):
                 "responsible_person": responsible_person,
                 "date_searchlib": date_searchlib,
                 "date_send_report": date_send_report,
-                "editable": editable,
+                "editable": item_editable,
                 "date_send_rawdata": date_send_rawdata,
                 "pro_deadline": pro_deadline,
                 "time_percent": time_percent,

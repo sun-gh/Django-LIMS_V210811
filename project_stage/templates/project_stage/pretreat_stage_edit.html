@@ -263,18 +263,23 @@
     )
   //设置预实验完成时间函数
     $("#set_preexperiment_date").on("click",function (){
+      //var start_date = $("#id_start_date").val();
+      //if (start_date){
         var current_date = getdatetime();
         //toastr.info(current_date);
         $("#id_preexperiment_finish_date").attr("value",current_date);
-      }
-    )
+      //} else {
+      //  toastr.info("请补充实验开始时间！");
+      //}
+    })
   //设置前处理完成时间函数
     $("#set_pretreat_date").on("click",function (){
+
         var current_date = getdatetime();
         //toastr.info(current_date);
         $("#id_pretreat_finish_date").attr("value",current_date);
-      }
-    )
+
+    })
 
   });  // .ready
 
