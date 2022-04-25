@@ -148,18 +148,6 @@
   // 给label加上class属性;input加上class;
   $("form label").addClass("col-md-4 col-form-label");
 
-  function SetDeadline(){
-    var pro_deadline = $("#id_pro_deadline").val();
-    if (pro_deadline){
-      //console.log("截止日期不为空");
-      $("#id_pro_deadline").attr("required",true);
-    } else {
-      $("#id_pro_deadline").attr("readonly",true);
-      //console.log("截止日期为空");
-    }
-  }
-  SetDeadline();
-
   // 设置弹出提示框属性
     toastr.options = {
         closeButton: true,

@@ -180,7 +180,6 @@ class AnalysisStageForm(forms.ModelForm):
                                                                               'readonly': 'readonly'}))
     pro_deadline = forms.DateTimeField(label="项目截止时间",
                                        input_formats=['%Y-%m-%dT%H:%M'],
-                                       required=False,
                                        widget=forms.DateTimeInput(format='%Y-%m-%dT%H:%M',
                                                                   attrs={'type': 'datetime-local',
                                                                          'class': 'form-control'}))

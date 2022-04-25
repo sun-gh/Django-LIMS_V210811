@@ -95,8 +95,9 @@ def data_show_page(request):
 def get_today_last_year():
     # 定义去年的今天日期获取函数
     today = date.today()
-    last_year = today.year - 1
-    today_last_year = date(last_year, today.month, today.day)
+    # last_year = today.year - 1
+    # today_last_year = date(last_year, today.month, today.day)
+    today_last_year = today.replace(year=today.year-1)
 
     return today_last_year
 
@@ -105,7 +106,7 @@ def project_and_sample_statistics(request):
     # 项目数量和样本数量按月份统计函数
     last_today = get_today_last_year()
     # 查询近一年的项目
-    project_one_year = SampleRecord.objects.filter(receive_time__gte=last_today)
+    project_one_year = SampleRecord.objects.filter(receive_time__gt=last_today)
     # 计算项目总数、样本总数
     all_projects = project_one_year.count()
     all_samples = project_one_year.aggregate(sample_amount=Sum('sample_amount'))['sample_amount']
@@ -135,7 +136,7 @@ def project_and_sample_statistics(request):
 def project_type_statistics(request):
     # 项目类型统计
     last_today = get_today_last_year()
-    project_type_statistics = ProjectType.objects.filter(samplerecord__receive_time__gte=last_today).annotate(
+    project_type_statistics = ProjectType.objects.filter(samplerecord__receive_time__gt=last_today).annotate(
         pro_num=Count('samplerecord')).annotate(sample_num=Sum('samplerecord__sample_amount'))
     # 项目数量进行TOP9和剩余部分计算
     project_type_order = project_type_statistics.order_by('-pro_num').values('project_name', 'pro_num')
@@ -172,7 +173,7 @@ def project_type_statistics(request):
 def sample_type_statistics(request):
     # 样本类型统计
     last_today = get_today_last_year()
-    sample_type_statistics = SampleRecord.objects.filter(receive_time__gte=last_today).values('sample_type')\
+    sample_type_statistics = SampleRecord.objects.filter(receive_time__gt=last_today).values('sample_type')\
         .order_by('sample_type').annotate(pro_num=Count('id')).annotate(sample_sum=Sum('sample_amount'))
     # 项目数量进行TOP9和剩余部分计算
     sample_type_order = sample_type_statistics.order_by('-pro_num')
@@ -209,7 +210,10 @@ def total_delay_rate(request):
     # 总体延期率统计(超期分为两种情况：1、实际日期大于截止日期；2、实际日期为空，但当前日期已大于截止日期；)
     current_time = datetime.now()
     data = []
-    project_started = SampleRecord.objects.filter(pro_start_date__isnull=False)
+    row = {}
+    date_now = current_time.date()
+    last_year = date_now.replace(year=date_now.year-1)
+    project_started = SampleRecord.objects.filter(receive_time__gt=last_year, pro_start_date__isnull=False)
     # 前处理阶段计算
     pretreat_finished = project_started.filter(pretreat_deadline__isnull=False, pretreat_finish_date__isnull=False)
     pretreat_finish_delay = pretreat_finished.filter(pretreat_finish_date__gt=F('pretreat_deadline'))
@@ -219,8 +223,8 @@ def total_delay_rate(request):
     pretreat_projects = pretreat_finished.count() + pretreat_not_finish_delay.count()
     pretreat_delay = pretreat_finish_delay.count() + pretreat_not_finish_delay.count()
     pretreat_delay_rate = round(pretreat_delay * 100 / pretreat_projects, 1)
-    row1 = {'stage': "前处理阶段", 'projects': pretreat_projects, 'delay': pretreat_delay, "delay_rate": str(pretreat_delay_rate)+'%'}
-    data.append(row1)
+    row = {'stage': "前处理阶段", 'projects': pretreat_projects, 'delay': pretreat_delay, "delay_rate": str(pretreat_delay_rate)+'%'}
+    data.append(row)
     # 质谱检测阶段计算
     test_finished = project_started.filter(test_deadline__isnull=False, test_finish_date__isnull=False)
     test_finish_delay = test_finished.filter(test_finish_date__gt=F('test_deadline'))
@@ -230,8 +234,8 @@ def total_delay_rate(request):
     test_projects = test_finished.count() + test_not_finish_delay.count()
     test_delay = test_finish_delay.count() + test_not_finish_delay.count()
     test_delay_rate = round(test_delay * 100 / test_projects, 1)
-    row2 = {'stage': "质谱检测阶段", 'projects': test_projects, 'delay': test_delay, "delay_rate": str(test_delay_rate)+'%'}
-    data.append(row2)
+    row = {'stage': "质谱检测阶段", 'projects': test_projects, 'delay': test_delay, "delay_rate": str(test_delay_rate)+'%'}
+    data.append(row)
     # 数据分析阶段
     analysis_finished = project_started.filter(date_send_report__isnull=False)
     analysis_finish_delay = analysis_finished.filter(date_send_report__gt=F('pro_deadline'))
@@ -239,7 +243,7 @@ def total_delay_rate(request):
     analysis_projects = analysis_finished.count() + analysis_not_finish_delay.count()
     analysis_delay = analysis_finish_delay.count() + analysis_not_finish_delay.count()
     analysis_delay_rate = round(analysis_delay * 100 / analysis_projects, 1)
-    row3 = {'stage': "数据分析阶段", 'projects': analysis_projects, 'delay': analysis_delay, "delay_rate": str(analysis_delay_rate)+'%'}
-    data.append(row3)
+    row = {'stage': "数据分析阶段", 'projects': analysis_projects, 'delay': analysis_delay, "delay_rate": str(analysis_delay_rate)+'%'}
+    data.append(row)
 
     return HttpResponse(json.dumps(data))
