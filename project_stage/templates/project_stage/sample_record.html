@@ -10,7 +10,10 @@
   <link rel="stylesheet" href="{% static 'bootstrap-table-1.17.0/dist/extensions/fixed-columns/bootstrap-table-fixed-columns.min.css' %}">
   <!--toastr提示框-->
   <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <!--datepicker-->
+  <link rel="stylesheet" href="{% static 'bootstrap-datepicker-1.9.0-dist/css/bootstrap-datepicker3.min.css' %}">
   <link href="{% static 'project_stage/css/sample_record.css'  %}" rel="stylesheet" />
+
 {% endblock  %}
 
 {% block content %}
@@ -51,6 +54,32 @@
                           <input type="text" class="form-control form-control-sm" id="project_number" name="project_num"  >
                         </div>
                       </div>
+
+                    </div>
+                    <div class="col">
+                      <div class="form-group row">
+                        <label for="unit_search" class="col-md-4 col-form-label col-form-label-sm">单位：</label>
+                        <div class="col-md-7">
+                          <input type="text" class="form-control form-control-sm" id="unit_search" name="unit_name"  >
+                        </div>
+                      </div>
+
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group row">
+                        <label for="sender_search" class="col-md-5 col-form-label col-form-label-sm">送样人：</label>
+                        <div class="col-md-7">
+                          <input type="text" class="form-control form-control-sm" id="sender_search" name="sample_sender"  >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-2 pl-3">
+                      <a class="btn btn-success btn-sm  form-search" id="search-btn" onclick="searchfun()" >搜索</a>&nbsp;
+                      <a class="btn btn-secondary btn-sm  form-search" onclick="clearfun()" >重置</a>
+                    </div>
+                  </div>  <!-- /.row -->
+                  <div class="row">
+                    <div class="col">
                       <div class="form-group row">
                         <label for="note_search" class="col-md-4 col-form-label col-form-label-sm">备注：</label>
                         <div class="col-md-7">
@@ -60,32 +89,21 @@
                     </div>
                     <div class="col">
                       <div class="form-group row">
-                        <label for="unit_search" class="col-md-4 col-form-label col-form-label-sm">单位：</label>
-                        <div class="col-md-7">
-                          <input type="text" class="form-control form-control-sm" id="unit_search" name="unit_name"  >
-                        </div>
-                      </div>
-                      <div class="form-group row">
                         {{ form.project_type.label_tag }}
                         <div class="col-md-7">
                           {{ form.project_type }}
                         </div>
                       </div>
                     </div>
-                    <div class="col">
-                      <div class="form-group row">
-                        <label for="sender_search" class="col-md-4 col-form-label col-form-label-sm">送样人：</label>
-                        <div class="col-md-7">
-                          <input type="text" class="form-control form-control-sm" id="sender_search" name="sample_sender"  >
-                        </div>
+                    <div class="col-md-5">
+                      <div class="input-daterange input-group" id="datepicker">
+                        <label class="col-md-3 col-form-label col-form-label-sm">收样时间：</label>
+                        <input type="text" class="form-control form-control-sm" name="start" id="start_time" placeholder="开始时间" readonly="readonly" />
+                        &nbsp;<span class="input-group-addon">-</span>&nbsp;
+                        <input type="text" class="form-control form-control-sm" name="end" id="end_time" placeholder="结束时间" readonly="readonly" />
                       </div>
                     </div>
-                    <div class="col-md-2">
-                        <a class="btn btn-success btn-sm  form-search" id="search-btn" onclick="searchfun()" >搜索</a>&nbsp;
-                        <a class="btn btn-secondary btn-sm  form-search" onclick="clearfun()" >重置</a>
-
-                    </div>
-                  </div>  <!-- /.row -->
+                  </div>
                 </form>
               </div>  <!-- /.col -->
             </div>  <!-- /.row -->
@@ -130,6 +148,9 @@
 <script src="{% static 'bootstrap-table-1.17.0/dist/extensions/cookie/bootstrap-table-cookie.min.js' %}"></script>
 <!-- toastr提示框插件 -->
 <script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+<!-- datepicker -->
+<script src="{% static 'bootstrap-datepicker-1.9.0-dist/js/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'bootstrap-datepicker-1.9.0-dist/locales/bootstrap-datepicker.zh-CN.min.js' %}"></script>
 
 <script type="text/javascript">
   // 获取csrf
@@ -395,6 +416,14 @@
   // 给label加上class属性;
   $("[for='id_project_type']").addClass("col-md-4 col-form-label col-form-label-sm");
 
+  // 初始化datepicker
+  $('#datepicker').datepicker({
+    language: "zh-CN",
+    autoclose: true, //选择后自动关闭
+    todayHighlight: true, //设置当天日期高亮
+    //clearBtn: true, //清除按钮
+  });
+
   //定义向后台传递参数的函数
   function getParams(params) {
     //获取sessionStorage中params的value
@@ -409,6 +438,9 @@
     //定义项目类型获取选择结果
     var pro_type_id = sessionStorage.getItem("pro_type_id");
     var pro_type = document.getElementById("id_project_type");
+    //定义起止时间
+    var start_time = sessionStorage.getItem('start_time');
+    var end_time = sessionStorage.getItem('end_time');
 
     var temp = {      //这里的pageSize、pageNum等必须和Controller改成一样的
       pageSize: pageSize==null?params.limit:pageSize,                      //页面大小
@@ -422,6 +454,8 @@
       sample_sender: sample_sender==null?$("#sender_search").val():sample_sender,
       note: note==null?$("#note_search").val():note,
       pro_type_id: pro_type_id==null?pro_type.selectedIndex:pro_type_id,
+      start_time:start_time==null?$('#start_time').val():start_time,
+      end_time:end_time==null?$('#end_time').val():end_time,
     };
     //在sessionStorage中清除这几个数据
     sessionStorage.removeItem("pageSize");
@@ -431,6 +465,8 @@
     sessionStorage.removeItem("sample_sender");
     sessionStorage.removeItem("note");
     sessionStorage.removeItem("pro_type_id");
+    sessionStorage.removeItem("start_time");
+    sessionStorage.removeItem("end_time");
     return temp;
   }  //.getParams
 
@@ -655,6 +691,8 @@
     //设置项目类型为第一选项
     $("#id_project_type option").attr("selected",false);
     $("#id_project_type option").first().attr("selected",true);
+    //清除起止时间
+    $('#datepicker').datepicker('clearDates');
 
     searchfun();
   }

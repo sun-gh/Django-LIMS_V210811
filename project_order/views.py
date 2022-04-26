@@ -10,7 +10,7 @@ import json
 from django.dispatch import receiver
 from project_stage.views import sample_record_add, add_success, sample_record_edit, edit_success
 from contract_manage.views import project_contract_add, contract_add_success
-from django.db.models import Q
+from datetime import datetime
 from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
 
 # Create your views here.
@@ -72,9 +72,10 @@ def project_order_table(request):
         project_num = request.GET.get('project_num')
         unit_name = request.GET.get('unit')
         sample_sender = request.GET.get('sample_sender')
+        start_time = request.GET.get('start_time')
+        end_time = request.GET.get('end_time')
 
         conditions = {"projectorder__whether_distribute": True, }  # 构造字典存储查询条件
-        # conditions = {}
 
         if project_num:
             conditions['project_num__contains'] = project_num
@@ -82,6 +83,11 @@ def project_order_table(request):
             conditions['unit__contains'] = unit_name
         if sample_sender:
             conditions['sample_sender__customer_name__contains'] = sample_sender
+        if start_time and end_time:
+            fmt = '%Y-%m-%d'
+            start_time = datetime.strptime(start_time, fmt)
+            end_time = datetime.strptime(end_time, fmt)
+            conditions['receive_time__range'] = (start_time, end_time)
         all_projects = projects_get_perm.filter(**conditions)
         # all_projects = SampleRecord.objects.filter(**conditions)
 

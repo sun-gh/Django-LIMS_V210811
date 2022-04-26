@@ -59,6 +59,8 @@ def sample_record_table(request):
         sample_sender = request.GET.get('sample_sender')
         note = request.GET.get('note')
         pro_type_id = int(request.GET.get('pro_type_id'))
+        start_time = request.GET.get('start_time')
+        end_time = request.GET.get('end_time')
 
         conditions = {}  # 构造字典存储查询条件
         if project_num:
@@ -71,6 +73,11 @@ def sample_record_table(request):
             conditions['note__contains'] = note
         if pro_type_id:
             conditions['project_type__id'] = pro_type_id
+        if start_time and end_time:
+            fmt = '%Y-%m-%d'
+            start_time = datetime.strptime(start_time, fmt)
+            end_time = datetime.strptime(end_time, fmt)
+            conditions['receive_time__range'] = (start_time, end_time)
 
         # all_projects = SampleRecord.objects.filter(**conditions)
         all_projects = projects_get_perm.filter(**conditions)
@@ -397,6 +404,8 @@ def pretreat_stage_table(request):
         sample_sender = request.GET.get('sample_sender')
         pro_type_id = int(request.GET.get('pro_type_id'))
         sample_type_id = request.GET.get('sample_type_id')
+        start_time = request.GET.get('start_time')
+        end_time = request.GET.get('end_time')
 
         conditions = {}  # 构造字典存储查询条件
         if project_num:
@@ -410,6 +419,11 @@ def pretreat_stage_table(request):
         if sample_type_id:
             sample_type = SampleType.objects.get(id=int(sample_type_id))
             conditions['sample_type'] = sample_type.type_name
+        if start_time and end_time:
+            fmt = '%Y-%m-%d'
+            start_time = datetime.strptime(start_time, fmt)
+            end_time = datetime.strptime(end_time, fmt)
+            conditions['receive_time__range'] = (start_time, end_time)
         # if conditions:
         #     # 查找全部数据 ()
         # else:
@@ -649,6 +663,8 @@ def test_stage_table(request):
         sample_sender = request.GET.get('sample_sender')
         pro_type_id = int(request.GET.get('pro_type_id'))
         sample_type_id = request.GET.get('sample_type_id')
+        start_time = request.GET.get('start_time')
+        end_time = request.GET.get('end_time')
 
         conditions = {}  # 构造字典存储查询条件
         if project_num:
@@ -662,6 +678,11 @@ def test_stage_table(request):
         if sample_type_id:
             sample_type = SampleType.objects.get(id=int(sample_type_id))
             conditions['sample_type'] = sample_type.type_name
+        if start_time and end_time:
+            fmt = '%Y-%m-%d'
+            start_time = datetime.strptime(start_time, fmt)
+            end_time = datetime.strptime(end_time, fmt)
+            conditions['receive_time__range'] = (start_time, end_time)
 
         # all_projects = SampleRecord.objects.filter(**conditions)
         all_projects = projects_get_perm.filter(**conditions)
@@ -811,6 +832,8 @@ def analysis_stage_table(request):
         sample_sender = request.GET.get('sample_sender')
         note = request.GET.get('note')
         pro_type_id = int(request.GET.get('pro_type_id'))
+        start_time = request.GET.get('start_time')
+        end_time = request.GET.get('end_time')
 
         conditions = {}  # 构造字典存储查询条件
         if project_num:
@@ -823,6 +846,11 @@ def analysis_stage_table(request):
             conditions['note__contains'] = note
         if pro_type_id:
             conditions['project_type__id'] = pro_type_id
+        if start_time and end_time:
+            fmt = '%Y-%m-%d'
+            start_time = datetime.strptime(start_time, fmt)
+            end_time = datetime.strptime(end_time, fmt)
+            conditions['receive_time__range'] = (start_time, end_time)
 
         # all_projects = SampleRecord.objects.filter(**conditions)
         all_projects = projects_get_perm.filter(**conditions)
