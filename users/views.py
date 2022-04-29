@@ -12,6 +12,7 @@ from project_stage.models import SampleRecord, ProjectType, SampleType
 from django.db.models import Count, Sum, F
 import json
 from django.http import HttpResponse
+from datetime import datetime
 
 # Create your views here.
 
@@ -135,8 +136,11 @@ def project_and_sample_statistics(request):
 
 def project_type_statistics(request):
     # 项目类型统计
-    last_today = get_today_last_year()
-    project_type_statistics = ProjectType.objects.filter(samplerecord__receive_time__gt=last_today).annotate(
+    fmt = '%Y-%m-%d'
+    start_time = datetime.strptime(request.POST.get('start_time'), fmt)
+    end_time = datetime.strptime(request.POST.get('end_time'), fmt)
+    # last_today = get_today_last_year()
+    project_type_statistics = ProjectType.objects.filter(samplerecord__receive_time__range=(start_time, end_time)).annotate(
         pro_num=Count('samplerecord')).annotate(sample_num=Sum('samplerecord__sample_amount'))
     # 项目数量进行TOP9和剩余部分计算
     project_type_order = project_type_statistics.order_by('-pro_num').values('project_name', 'pro_num')
@@ -172,8 +176,10 @@ def project_type_statistics(request):
 
 def sample_type_statistics(request):
     # 样本类型统计
-    last_today = get_today_last_year()
-    sample_type_statistics = SampleRecord.objects.filter(receive_time__gt=last_today).values('sample_type')\
+    fmt = '%Y-%m-%d'
+    start_time = datetime.strptime(request.POST.get('start_time'), fmt)
+    end_time = datetime.strptime(request.POST.get('end_time'), fmt)
+    sample_type_statistics = SampleRecord.objects.filter(receive_time__range=(start_time, end_time)).values('sample_type')\
         .order_by('sample_type').annotate(pro_num=Count('id')).annotate(sample_sum=Sum('sample_amount'))
     # 项目数量进行TOP9和剩余部分计算
     sample_type_order = sample_type_statistics.order_by('-pro_num')

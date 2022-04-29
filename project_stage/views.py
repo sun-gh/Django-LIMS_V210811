@@ -832,8 +832,10 @@ def analysis_stage_table(request):
         sample_sender = request.GET.get('sample_sender')
         note = request.GET.get('note')
         pro_type_id = int(request.GET.get('pro_type_id'))
-        start_time = request.GET.get('start_time')
-        end_time = request.GET.get('end_time')
+        start_time1 = request.GET.get('start_time1')
+        end_time1 = request.GET.get('end_time1')
+        start_time2 = request.GET.get('start_time2')
+        end_time2 = request.GET.get('end_time2')
 
         conditions = {}  # 构造字典存储查询条件
         if project_num:
@@ -846,11 +848,18 @@ def analysis_stage_table(request):
             conditions['note__contains'] = note
         if pro_type_id:
             conditions['project_type__id'] = pro_type_id
-        if start_time and end_time:
+        # 定义收样时间筛选
+        if start_time1 and end_time1:
             fmt = '%Y-%m-%d'
-            start_time = datetime.strptime(start_time, fmt)
-            end_time = datetime.strptime(end_time, fmt)
-            conditions['receive_time__range'] = (start_time, end_time)
+            start_time1 = datetime.strptime(start_time1, fmt)
+            end_time1 = datetime.strptime(end_time1, fmt)
+            conditions['receive_time__range'] = (start_time1, end_time1)
+        # 定义报告发送时间筛选
+        if start_time2 and end_time2:
+            fmt = '%Y-%m-%d'
+            start_time2 = datetime.strptime(start_time2, fmt)
+            end_time2 = datetime.strptime(end_time2, fmt)
+            conditions['date_send_report__range'] = (start_time2, end_time2)
 
         # all_projects = SampleRecord.objects.filter(**conditions)
         all_projects = projects_get_perm.filter(**conditions)

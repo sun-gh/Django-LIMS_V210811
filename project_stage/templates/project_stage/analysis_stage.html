@@ -96,17 +96,27 @@
                       </div>
                     </div>
                     <div class="col-md-5">
-                      <div class="input-daterange input-group" id="datepicker">
+                      <div class="input-daterange input-group" id="datepicker1">
                         <label class="col-md-3 col-form-label col-form-label-sm">收样时间：</label>
-                        <input type="text" class="form-control form-control-sm" name="start" id="start_time" placeholder="开始时间" readonly="readonly" />
+                        <input type="text" class="form-control form-control-sm" name="start" id="start_time1" placeholder="开始时间" readonly="readonly" />
                         &nbsp;<span class="input-group-addon">-</span>&nbsp;
-                        <input type="text" class="form-control form-control-sm" name="end" id="end_time" placeholder="结束时间" readonly="readonly" />
+                        <input type="text" class="form-control form-control-sm" name="end" id="end_time1" placeholder="结束时间" readonly="readonly" />
                       </div>
                     </div>
                   </div>
                 </form>
               </div>  <!-- /.col -->
             </div>  <!-- /.row -->
+            <div class="row mb-2">
+              <div class="col-md-5">
+                <div class="input-daterange input-group" id="datepicker2">
+                  <label class="col-md-4 col-form-label col-form-label-sm">报告发送时间：</label>
+                  <input type="text" class="form-control form-control-sm" name="start" id="start_time2" placeholder="开始时间" readonly="readonly" />
+                  &nbsp;<span class="input-group-addon">-</span>&nbsp;
+                  <input type="text" class="form-control form-control-sm" name="end" id="end_time2" placeholder="结束时间" readonly="readonly" />
+                </div>
+              </div>
+            </div>
           </div> <!-- /.card-body -->
         </div>  <!-- /.card -->
         <!-- 第二个card，表格部分 -->
@@ -440,7 +450,7 @@
   $("[for='id_project_type']").addClass("col-md-4 col-form-label col-form-label-sm");
 
   // 初始化datepicker
-  $('#datepicker').datepicker({
+  $('.input-daterange').datepicker({
     language: "zh-CN",
     autoclose: true, //选择后自动关闭
     todayHighlight: true, //设置当天日期高亮
@@ -461,9 +471,12 @@
       //定义项目类型获取选择结果
       var pro_type_id = sessionStorage.getItem("pro_type_id");
       var pro_type = document.getElementById("id_project_type");
-      //定义起止时间
-      var start_time = sessionStorage.getItem('start_time');
-      var end_time = sessionStorage.getItem('end_time');
+      //定义收样时间
+      var start_time1 = sessionStorage.getItem('start_time1');
+      var end_time1 = sessionStorage.getItem('end_time1');
+      //定义报告发送时间
+      var start_time2 = sessionStorage.getItem('start_time2');
+      var end_time2 = sessionStorage.getItem('end_time2');
 
       var temp = {      //这里的pageSize、pageNum等必须和Controller改成一样的
         pageSize: pageSize==null?params.limit:pageSize,                      //页面大小
@@ -474,8 +487,12 @@
         sample_sender: sample_sender==null?$("#sender_search").val():sample_sender,
         note: note==null?$("#note_search").val():note,
         pro_type_id: pro_type_id==null?pro_type.selectedIndex:pro_type_id,
-        start_time:start_time==null?$('#start_time').val():start_time,
-        end_time:end_time==null?$('#end_time').val():end_time,
+        //定义收样时间
+        start_time1:start_time1==null?$('#start_time1').val():start_time1,
+        end_time1:end_time1==null?$('#end_time1').val():end_time1,
+        //定义报告发送时间
+        start_time2:start_time2==null?$('#start_time2').val():start_time2,
+        end_time2:end_time2==null?$('#end_time2').val():end_time2,
       };
       //在sessionStorage中清除这几个数据
       sessionStorage.removeItem("pageSize");
@@ -485,8 +502,10 @@
       sessionStorage.removeItem("sample_sender");
       sessionStorage.removeItem("note");
       sessionStorage.removeItem("pro_type_id");
-      sessionStorage.removeItem("start_time");
-      sessionStorage.removeItem("end_time");
+      sessionStorage.removeItem("start_time1");
+      sessionStorage.removeItem("end_time1");
+      sessionStorage.removeItem("start_time2");
+      sessionStorage.removeItem("end_time2");
       return temp;
     }  //.getParams
 
@@ -705,7 +724,7 @@
     $("#id_project_type option").attr("selected",false);
     $("#id_project_type option").first().attr("selected",true);
     //清除起止时间
-    $('#datepicker').datepicker('clearDates');
+    $('.input-daterange').datepicker('clearDates');
 
     searchfun();
   }

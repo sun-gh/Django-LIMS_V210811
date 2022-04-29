@@ -6,6 +6,8 @@
 {% block css %}
   <!--chartjs css-->
   <link href="{% static 'chart.js-2.9.4/package/dist/Chart.min.css'  %}" rel="stylesheet" />
+  <!--datepicker-->
+  <link rel="stylesheet" href="{% static 'bootstrap-datepicker-1.9.0-dist/css/bootstrap-datepicker3.min.css' %}" />
   <!--<link href="{% static 'css/inv_detail.css'  %}" rel="stylesheet" />-->
 {% endblock  %}
 
@@ -50,15 +52,18 @@
               </div>
             </div>
           </div>
-          <!--项目类型按项目数统计饼图-->
+
+        </div>
+        <div class="col-md-6">
+          <!--样本数统计饼图-->
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">各项目类型项目数量统计</h3>
+              <h3 class="card-title">样本数量统计</h3>
             </div>
             <div class="card-body">
               <div class="row">
                 <div class="col">
-                  <p>倒序：<span>TOP9</span></p>
+                  <p>总计：<span id="sample_amount"></span></p>
                 </div>
                 <div class="col">
                   <p class="text-right">时间：<span>近一年</span></p>
@@ -66,32 +71,92 @@
               </div>
               <div class="row">
                 <div class="col">
-                  <canvas id="myChart3" ></canvas>
+                  <canvas id="myChart2" ></canvas>
                 </div>
               </div>
             </div>
           </div>
-          <!--样本类型按项目数统计饼图-->
+
+        </div>
+      </div> <!-- /.row -->
+      <div class="row">
+        <div class="col">
+          <!--项目类型统计饼图-->
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">各样本类型项目数量统计</h3>
+              <h3 class="card-title">项目类型统计</h3>
+              <div class="card-tools">
+                  {% csrf_token %}
+                  <div class="input-daterange input-group" id="datepicker">
+                    <label class="col-md-3 col-form-label col-form-label-sm">收样时间：</label>
+                    <input type="text" class="form-control form-control-sm" name="start" id="start_time" placeholder="开始时间" readonly="readonly" />
+                    &nbsp;<span class="input-group-addon">-</span>&nbsp;
+                    <input type="text" class="form-control form-control-sm" name="end" id="end_time" placeholder="结束时间" readonly="readonly" />&nbsp;
+                    <button type="button" class="btn btn-default btn-sm" id="pro_type_update">
+                      <i class="fas fa-sync-alt"></i>
+                    </button>
+                  </div>
+              </div>
             </div>
             <div class="card-body">
               <div class="row">
                 <div class="col">
-                  <p>倒序：<span>TOP9</span></p>
+                  <p class="text-left">按项目数量统计</p>
+                  <div class="chart">
+                    <canvas id="myChart3" ></canvas>
+                  </div>
                 </div>
                 <div class="col">
-                  <p class="text-right">时间：<span>近一年</span></p>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <canvas id="myChart5" ></canvas>
+                  <p class="text-left">按样本数量统计</p>
+                  <div class="chart">
+                    <canvas id="myChart4" ></canvas>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+      </div>  <!--/.row-->
+      <div class="row">
+        <div class="col">
+        <!--样本类型统计饼图-->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">样本类型统计</h3>
+              <div class="card-tools">
+                  <div class="input-daterange input-group" id="datepicker2">
+                    <label class="col-md-3 col-form-label col-form-label-sm">收样时间：</label>
+                    <input type="text" class="form-control form-control-sm" name="start" id="start_time2" placeholder="开始时间" readonly="readonly" />
+                    &nbsp;<span class="input-group-addon">-</span>&nbsp;
+                    <input type="text" class="form-control form-control-sm" name="end" id="end_time2" placeholder="结束时间" readonly="readonly" />&nbsp;
+                    <button type="button" class="btn btn-default btn-sm" id="sample_type_update">
+                      <i class="fas fa-sync-alt"></i>
+                    </button>
+                  </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <p class="text-left">按项目数量统计</p>
+                  <div class="chart">
+                    <canvas id="myChart5" ></canvas>
+                  </div>
+                </div>
+                <div class="col">
+                  <p class="text-left">按样本数量统计</p>
+                  <div class="chart">
+                    <canvas id="myChart6" ></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div> <!--/ row-->
+      <div class="row">
+        <div class="col-md-6">
           <!--项目总体延期率统计表-->
           <div class="card">
             <div class="card-header">
@@ -116,73 +181,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-6">
-          <!--样本数统计饼图-->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">样本数量统计</h3>
-            </div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col">
-                  <p>总计：<span id="sample_amount"></span></p>
-                </div>
-                <div class="col">
-                  <p class="text-right">时间：<span>近一年</span></p>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <canvas id="myChart2" ></canvas>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!--项目类型按样本数统计饼图-->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">各项目类型样本数量统计</h3>
-            </div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col">
-                  <p>倒序：<span >TOP9</span></p>
-                </div>
-                <div class="col">
-                  <p class="text-right">时间：<span>近一年</span></p>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <canvas id="myChart4" ></canvas>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!--样本类型按样本数统计饼图-->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">各样本类型样本数量统计</h3>
-            </div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col">
-                  <p>倒序：<span>TOP9</span></p>
-                </div>
-                <div class="col">
-                  <p class="text-right">时间：<span>近一年</span></p>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <canvas id="myChart6" ></canvas>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> <!-- /.row -->
-
+      </div>
     </div><!-- /.container-fluid -->
   </div>
   <!-- /.content -->
@@ -191,191 +190,306 @@
 {% block script %}
 <!-- chartjs js -->
 <script src="{% static 'chart.js-2.9.4/package/dist/Chart.min.js' %}"></script>
-<script type="text/javascript">
-  function ProjectSampleStatistics() {
-    $.ajax({
-      url:'/user/project_and_sample_statistics/',
-      success: function(data) {
-        var result_data = JSON.parse(data);
-        //console.log(result_data);
-        $('#project_amount').text(result_data.all_projects);
-        $('#sample_amount').text(result_data.all_samples);
-        // 定义项目数量统计
-        var ctx1 = document.getElementById('myChart1').getContext('2d');
-        var chart1 = new Chart(ctx1, {
-          // 要创建的图表类型
-          type: 'bar',
-          // 数据集
-          data: {
-            labels:  result_data.month_list ,  // X轴标签数据（一般为列表）
-            datasets: [{
-              label: "项目数量",
-              backgroundColor: 'rgb(144,238,144)',
-              borderColor: 'rgb(255, 99, 132)',
-              data:  result_data.project_amount ,  // 柱状图数据（一般为列表）
-            }]
-          },
-          // 配置选项
-          options: {
-            scales: {
-              yAxes: [{
-                ticks: {
-                  beginAtZero: true,
-                }
-              }]
-            }
-          }
-        });
-        // 定义样本数量统计
-        var ctx2 = document.getElementById('myChart2').getContext('2d');
-        var chart2 = new Chart(ctx2, {
-          // 要创建的图表类型
-          type: 'bar',
-          // 数据集
-          data: {
-            labels:  result_data.month_list ,  // X轴标签数据（一般为列表）
-            datasets: [{
-              label: "样本数量",
-              backgroundColor: '#007bff',
-              borderColor: '#007bff',
-              data:  result_data.sample_amount ,  // 柱状图数据（一般为列表）
-            }]
-          },
-          // 配置选项
-          options: {
-            scales: {
-              yAxes: [{
-                ticks: {
-                  beginAtZero: true,
-                }
-              }]
-            }
-          }
-        });
-      }  // end success
-    });  // end ajax
+<!-- datepicker -->
+<script src="{% static 'bootstrap-datepicker-1.9.0-dist/js/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'bootstrap-datepicker-1.9.0-dist/locales/bootstrap-datepicker.zh-CN.min.js' %}"></script>
 
+<script type="text/javascript">
+
+  function ProjectSampleStatistics() {
+    $.get(
+      "/user/project_and_sample_statistics/",
+      function(data,status) {
+        if (status=="success"){
+          var result_data = JSON.parse(data);
+          //console.log(result_data);
+          $('#project_amount').text(result_data.all_projects);
+          $('#sample_amount').text(result_data.all_samples);
+          // 定义项目数量统计
+          var ctx1 = document.getElementById('myChart1').getContext('2d');
+          var chart1 = new Chart(ctx1, {
+            // 要创建的图表类型
+            type: 'bar',
+            // 数据集
+            data: {
+              labels:  result_data.month_list ,  // X轴标签数据（一般为列表）
+              datasets: [{
+                label: "项目数量",
+                backgroundColor: 'rgb(144,238,144)',
+                borderColor: 'rgb(255, 99, 132)',
+                data:  result_data.project_amount ,  // 柱状图数据（一般为列表）
+              }]
+            },
+            // 配置选项
+            options: {
+              scales: {
+                yAxes: [{
+                  ticks: {
+                    beginAtZero: true,
+                  }
+                }]
+              }
+            }
+          });
+          // 定义样本数量统计
+          var ctx2 = document.getElementById('myChart2').getContext('2d');
+          var chart2 = new Chart(ctx2, {
+            // 要创建的图表类型
+            type: 'bar',
+            // 数据集
+            data: {
+              labels:  result_data.month_list ,  // X轴标签数据（一般为列表）
+              datasets: [{
+                label: "样本数量",
+                backgroundColor: '#007bff',
+                borderColor: '#007bff',
+                data:  result_data.sample_amount ,  // 柱状图数据（一般为列表）
+              }]
+            },
+            // 配置选项
+            options: {
+              scales: {
+                yAxes: [{
+                  ticks: {
+                    beginAtZero: true,
+                  }
+                }]
+              }
+            }
+          });
+        }
+      }  // end success
+    );  // end ajax
   }
   ProjectSampleStatistics();
-  function ProjectTypeStatistics() {
-    $.ajax({
-      url:'/user/project_type_statistics/',
-      success: function(data) {
-        var result_data = JSON.parse(data);
-        // 定义项目类型按项目数量统计饼图
-        var ctx3 = document.getElementById('myChart3').getContext('2d');
-        var chart3 = new Chart(ctx3, {
-          // 要创建的图表类型
-          type: 'pie',
-          // 数据集
-          data: {
-            labels: result_data.type_list_by_project,  // X轴标签数据（一般为列表）
-            datasets: [{
-              data: result_data.project_num ,  // 饼图数据（一般为列表）
-              backgroundColor : ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', '#FFFF00', '#800080','#808000','#FFC0CB'],
-            }]
-          },
-          // 配置选项
-          options: {
-            legend: {
-              position: 'right',
-            }
-          }
-        });  // chart3
-        // 定义项目类型按样本数量统计饼图
-        var ctx4 = document.getElementById('myChart4').getContext('2d');
-        var chart4 = new Chart(ctx4, {
-          // 要创建的图表类型
-          type: 'pie',
-          // 数据集
-          data: {
-            labels: result_data.type_list_by_sample,  // X轴标签数据（一般为列表）
-            datasets: [{
-              data: result_data.sample_num ,  // 饼图数据（一般为列表）
-              backgroundColor : ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', '#FFFF00', '#800080','#808000','#FFC0CB'],
-            }]
-          },
-          // 配置选项
-          options: {
-            legend: {
-              position: 'right',
-            }
-          }
-        });  // chart4
+
+  // 初始化datepicker
+  $('.input-daterange').datepicker({
+    language: "zh-CN",
+    autoclose: true, //选择后自动关闭
+    todayHighlight: true, //设置当天日期高亮
+    format: "yyyy-mm-dd",
+    //clearBtn: true, //清除按钮
+  });
+
+  var options_config =   {
+      legend: {
+        position: 'right',
+      }
+    };
+  var backgroundColorConfig = ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', '#FFFF00', '#800080','#808000','#FFC0CB'];
+  var ctx3 = document.getElementById('myChart3').getContext('2d');
+  var chart3 = new Chart(ctx3, {
+    // 要创建的图表类型
+    type: 'pie',
+    // 数据集
+    data:{
+      labels: [] ,  // X轴标签数据（一般为列表）
+      datasets: [{
+        data: [],  // 饼图数据（一般为列表）
+        backgroundColor : backgroundColorConfig,
+      }]
+    },
+    // 配置选项
+    options: options_config,
+  });  // chart3
+  var ctx4 = document.getElementById('myChart4').getContext('2d');
+  var chart4 = new Chart(ctx4, {
+    // 要创建的图表类型
+    type: 'pie',
+    // 数据集
+    data:{
+      labels: [] ,  // X轴标签数据（一般为列表）
+      datasets: [{
+        data: [],  // 饼图数据（一般为列表）
+        backgroundColor : backgroundColorConfig,
+      }]
+    },
+    // 配置选项
+    options: options_config,
+  });  // chart4
+  var ctx5 = document.getElementById('myChart5').getContext('2d');
+  var chart5 = new Chart(ctx5, {
+    // 要创建的图表类型
+    type: 'pie',
+    // 数据集
+    data:{
+      labels: [] ,  // X轴标签数据（一般为列表）
+      datasets: [{
+        data: [],  // 饼图数据（一般为列表）
+        backgroundColor : backgroundColorConfig,
+      }]
+    },
+    // 配置选项
+    options: options_config,
+  });  // chart5
+  var ctx6 = document.getElementById('myChart6').getContext('2d');
+  var chart6 = new Chart(ctx6, {
+    // 要创建的图表类型
+    type: 'pie',
+    // 数据集
+    data:{
+      labels: [] ,  // X轴标签数据（一般为列表）
+      datasets: [{
+        data: [],  // 饼图数据（一般为列表）
+        backgroundColor : backgroundColorConfig,
+      }]
+    },
+    // 配置选项
+    options: options_config,
+  });  // chart6
+  //定义获取当前月的时间范围
+  function CurrentTimeRange(){
+    var current_date = new Date();
+    var year = current_date.getFullYear();
+    var mon = current_date.getMonth()+1<10?"0" + (current_date.getMonth()+1):current_date.getMonth()+1;
+    var day = current_date.getDate()<10?"0" + current_date.getDate():current_date.getDate();
+    var current_start = year+'-'+mon+'-'+'1';
+    var current_end = year+'-'+mon+'-'+day;
+    return {"start_time": current_start,"end_time": current_end};
+  };
+  //初始化项目类型统计饼图
+  function InitProjectTypeStatistics(){
+    var current_range = CurrentTimeRange();
+    //设置初始化时间
+    $('#start_time').datepicker('setDate',new Date(current_range.start_time));
+    $('#end_time').datepicker('setDate',new Date(current_range.end_time));
+    //初始化饼图
+    var start_time=$('#start_time').val();
+    var end_time=$('#end_time').val();
+    var csrfToken=document.querySelector('[name=csrfmiddlewaretoken]').value;
+    $.post(
+      '/user/project_type_statistics/',
+      {
+        "start_time": start_time,
+        "end_time": end_time,
+        "csrfmiddlewaretoken": csrfToken,
+      },
+      function(data,status) {
+        if (status=='success'){
+          var result_data = JSON.parse(data);
+          // 定义项目类型按项目数量统计饼图
+          chart3.data.labels = result_data.type_list_by_project;
+          chart3.data.datasets[0].data = result_data.project_num;
+          chart3.update();
+          // 定义项目类型按样本数量统计饼图
+          chart4.data.labels = result_data.type_list_by_sample;
+          chart4.data.datasets[0].data = result_data.sample_num;
+          chart4.update();
+
+        }
       }  // success
-    });  // ajax
+    );  // ajax
+  }
+  InitProjectTypeStatistics();
+  //定义项目类型统计更新按钮
+  $("#pro_type_update").click(function() {
+    var start_time=$('#start_time').val();
+    var end_time=$('#end_time').val();
+    var csrfToken=document.querySelector('[name=csrfmiddlewaretoken]').value;
+    $.post(
+      '/user/project_type_statistics/',
+      {
+        "start_time": start_time,
+        "end_time": end_time,
+        "csrfmiddlewaretoken": csrfToken,
+      },
+      function(data,status) {
+        if (status=='success'){
+          var result_data = JSON.parse(data);
+          // 定义项目类型按项目数量统计饼图
+          chart3.data.labels = result_data.type_list_by_project;
+          chart3.data.datasets[0].data = result_data.project_num;
+          chart3.update();
+          // 定义项目类型按样本数量统计饼图
+          chart4.data.labels = result_data.type_list_by_sample;
+          chart4.data.datasets[0].data = result_data.sample_num;
+          chart4.update();
+        }
+      }  // success
+    );  // ajax
+  })
+  //初始化样本类型统计
+  function InitSampleTypeStatistics() {
+    var current_range = CurrentTimeRange();
+    //设置初始化时间
+    $('#start_time2').datepicker('setDate',new Date(current_range.start_time));
+    $('#end_time2').datepicker('setDate',new Date(current_range.end_time));
+    //初始化饼图
+    var start_time=$('#start_time2').val();
+    var end_time=$('#end_time2').val();
+    var csrfToken=document.querySelector('[name=csrfmiddlewaretoken]').value;
+    $.post(
+      '/user/sample_type_statistics/',
+      {
+        "start_time": start_time,
+        "end_time": end_time,
+        "csrfmiddlewaretoken": csrfToken,
+      },
+      function(data,status) {
+        if (status=='success'){
+          var result_data = JSON.parse(data);
+          // 定义样本类型按项目数量统计饼图
+          chart5.data.labels = result_data.type_list_by_project;
+          chart5.data.datasets[0].data = result_data.project_num;
+          chart5.update();
+          // 定义样本类型按样本数量统计饼图
+          chart6.data.labels = result_data.type_list_by_sample;
+          chart6.data.datasets[0].data = result_data.sample_num;
+          chart6.update();
+        }
+      }  // success
+    );  // ajax
 
   }
-  ProjectTypeStatistics();
-  function SampleTypeStatistics() {
-    $.ajax({
-      url:'/user/sample_type_statistics/',
-      success: function(data) {
-        var result_data = JSON.parse(data);
-        // 定义样本类型按项目数量统计饼图
-        var ctx5 = document.getElementById('myChart5').getContext('2d');
-        var chart5 = new Chart(ctx5, {
-          // 要创建的图表类型
-          type: 'pie',
-          // 数据集
-          data: {
-            labels: result_data.type_list_by_project,  // X轴标签数据（一般为列表）
-            datasets: [{
-              data: result_data.project_num ,  // 饼图数据（一般为列表）
-              backgroundColor : ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', '#FFFF00', '#800080','#808000','#FFC0CB'],
-            }]
-          },
-          // 配置选项
-          options: {
-            legend: {
-              position: 'right',
-            }
-          }
-        });  // chart5
-        // 定义样本类型按样本数量统计饼图
-        var ctx6 = document.getElementById('myChart6').getContext('2d');
-        var chart6 = new Chart(ctx6, {
-          // 要创建的图表类型
-          type: 'pie',
-          // 数据集
-          data: {
-            labels: result_data.type_list_by_sample,  // X轴标签数据（一般为列表）
-            datasets: [{
-              data: result_data.sample_num ,  // 饼图数据（一般为列表）
-              backgroundColor : ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', '#FFFF00', '#800080','#808000','#FFC0CB'],
-            }]
-          },
-          // 配置选项
-          options: {
-            legend: {
-              position: 'right',
-            }
-          }
-        });  // chart6
-
+  InitSampleTypeStatistics();
+  //定义样本类型统计更新按钮
+  $("#sample_type_update").click(function() {
+    var start_time=$('#start_time2').val();
+    var end_time=$('#end_time2').val();
+    var csrfToken=document.querySelector('[name=csrfmiddlewaretoken]').value;
+    $.post(
+      '/user/sample_type_statistics/',
+      {
+        "start_time": start_time,
+        "end_time": end_time,
+        "csrfmiddlewaretoken": csrfToken,
+      },
+      function(data,status) {
+        if (status=='success'){
+          var result_data = JSON.parse(data);
+          // 定义样本类型按项目数量统计饼图
+          chart5.data.labels = result_data.type_list_by_project;
+          chart5.data.datasets[0].data = result_data.project_num;
+          chart5.update();
+          // 定义样本类型按样本数量统计饼图
+          chart6.data.labels = result_data.type_list_by_sample;
+          chart6.data.datasets[0].data = result_data.sample_num;
+          chart6.update();
+        }
       }  // success
-    });  // ajax
+    );  // ajax
+  })
 
-  }
-  SampleTypeStatistics();
   // 总体延期率统计函数
   function TotalDelayRate() {
-    $.ajax({
-      url:'/user/total_delay_rate/',
-      success: function(data) {
-        var result_data = JSON.parse(data);
-        for (const row of result_data){
-          var trSrc = "<tr><td>" + row.stage
-            + "</td><td>" + row.projects
-            + "</td><td>" + row.delay
-            + "</td><td>" + row.delay_rate
-            + "</td></tr>";
-          $('#myTable1').append(trSrc);
-          //console.log(trSrc);
-        };
-
+    $.get(
+      '/user/total_delay_rate/',
+      function(data,status) {
+        if (status=='success'){
+          var result_data = JSON.parse(data);
+          for (const row of result_data){
+            var trSrc = "<tr><td>" + row.stage
+              + "</td><td>" + row.projects
+              + "</td><td>" + row.delay
+              + "</td><td>" + row.delay_rate
+              + "</td></tr>";
+            $('#myTable1').append(trSrc);
+            //console.log(trSrc);
+          };
+        }
       }    // success
-    });    // ajax
+    );    // ajax
   }
   TotalDelayRate();
 </script>
