@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import ProjectContract, CutPayment
 from .forms import AddProjectContractForm, EditProjectContractForm, AdvancepayContractForm, CutPaymentForm
@@ -14,10 +14,10 @@ from django.db.models import Q
 
 
 @login_required()
-def project_contract_page(request):
+def project_contract_page(request, msg="normal_show"):
     # 定义项目合同列表页
 
-    return render(request, 'contract_manage/project_contract.html')
+    return render(request, 'contract_manage/project_contract.html', {'msg': msg})
 
 
 def project_contract_table(request):
@@ -194,7 +194,8 @@ def project_contract_add(request):
                 # 发送一个信号
                 contract_add_success.send(project_contract_add, msg=msg, project_order=project_order)
 
-                return render(request, "contract_manage/project_contract.html", {'msg': msg})
+                # return render(request, "contract_manage/project_contract.html", {'msg': msg})
+                return redirect('contract_manage:project_contract_page', msg)
         else:
             form = AddProjectContractForm(request.POST, request.FILES or None)
             msg = "info_error"
@@ -241,7 +242,8 @@ def project_contract_edit(request, contract_id):
             contract_form.save_m2m()  # 使用commit后要手动保存manytomany
 
             msg = "edit_success"
-            return render(request, 'contract_manage/project_contract.html', {'msg': msg})
+            # return render(request, 'contract_manage/project_contract.html', {'msg': msg})
+            return redirect('contract_manage:project_contract_page', msg)
         else:
             contract_form = EditProjectContractForm(request.POST, request.FILES or None)
 
@@ -269,10 +271,10 @@ def project_contract_detail(request, contract_id):
 
 
 @login_required()
-def advancepay_contract_page(request):
+def advancepay_contract_page(request, msg="normal_show"):
     # 定义预付款合同列表页
 
-    return render(request, 'contract_manage/advancepay_contract.html')
+    return render(request, 'contract_manage/advancepay_contract.html', {'msg': msg})
 
 
 def advancepay_contract_table(request):
@@ -389,7 +391,8 @@ def advancepay_contract_add(request):
             # 发送一个信号
             # contract_add_success.send(project_contract_add, msg=msg, project_order=project_order)
 
-            return render(request, "contract_manage/advancepay_contract.html", {'msg': msg})
+            # return render(request, "contract_manage/advancepay_contract.html", {'msg': msg})
+            return redirect('contract_manage:advancepay_contract_page', msg)
         else:
             form = AdvancepayContractForm(request.POST, request.FILES or None)
             msg = "info_error"
@@ -427,7 +430,8 @@ def advancepay_contract_edit(request, contract_id):
             contract_form.save_m2m()  # 使用commit后要手动保存manytomany
             msg = "edit_success"
 
-            return render(request, 'contract_manage/advancepay_contract.html', {'msg': msg})
+            # return render(request, 'contract_manage/advancepay_contract.html', {'msg': msg})
+            return redirect('contract_manage:advancepay_contract_page', msg)
         else:
             contract_form = AdvancepayContractForm(request.POST, request.FILES or None)
             msg = 'failed'
@@ -450,10 +454,10 @@ def advancepay_contract_detail(request, contract_id):
 
 
 @login_required()
-def cut_payment_info(request):
+def cut_payment_info(request, msg="normal_show"):
     # 定义预付款扣款信息页
 
-    return render(request, 'contract_manage/cut_payment_info.html')
+    return render(request, 'contract_manage/cut_payment_info.html', {'msg': msg})
 
 
 @login_required()
@@ -554,7 +558,8 @@ def apply_cut_payment(request):
             # 发送一个信号
             # add_success.send(sample_record_add, msg=msg, sample_rec_id=sample_rec.id)
 
-            return render(request, "contract_manage/cut_payment_info.html", {'msg': msg})
+            # return render(request, "contract_manage/cut_payment_info.html", {'msg': msg})
+            return redirect('contract_manage:cut_payment_info', msg)
         else:
             form = CutPaymentForm(request.POST)
             msg = "info_error"
@@ -581,7 +586,8 @@ def cut_payment_edit(request, apply_id):
             apply_form.save_m2m()  # 使用commit后要手动保存manytomany
 
             msg = "edit_success"
-            return render(request, 'contract_manage/cut_payment_info.html', {'msg': msg})
+            # return render(request, 'contract_manage/cut_payment_info.html', {'msg': msg})
+            return redirect('contract_manage:cut_payment_info', msg)
         else:
             apply_form = CutPaymentForm(request.POST)
             msg = 'failed'
@@ -634,7 +640,8 @@ def approve_cut_payment(request, apply_id):
     apply_detail.cut_date = date_today
     apply_detail.save()
     msg = "approve_success"
-    return render(request, 'contract_manage/cut_payment_info.html', {'msg': msg})
+    # return render(request, 'contract_manage/cut_payment_info.html', {'msg': msg})
+    return redirect('contract_manage:cut_payment_info', msg)
 
 
 @login_required()
@@ -659,5 +666,6 @@ def untread_cut_payment(request, apply_id):
         apply_obj.save()
 
     msg = "untread_success"
-    return render(request, 'contract_manage/cut_payment_info.html', {'msg': msg})
+    # return render(request, 'contract_manage/cut_payment_info.html', {'msg': msg})
+    return redirect('contract_manage:cut_payment_info', msg)
 

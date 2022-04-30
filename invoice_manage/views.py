@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from . import forms
 from .models import ApplyInvoice, ReimburseFile, InvoiceInfo, VoidRedInfo
@@ -53,7 +53,8 @@ def apply_invoice(request):
             # 发送一个信号
             # add_success.send(sample_record_add, msg=msg, sample_rec_id=sample_rec.id)
 
-            return render(request, "invoice_manage/apply_invoice_record.html", {'msg': msg})
+            # return render(request, "invoice_manage/apply_invoice_record.html", {'msg': msg})
+            return redirect("invoice_manage:apply_invoice_record", msg)
         else:
             form = forms.ApplyInvoiceForm(request.POST, request.FILES or None)
             msg = "info_error"
@@ -61,10 +62,10 @@ def apply_invoice(request):
 
 
 @login_required()
-def apply_invoice_record(request):
+def apply_invoice_record(request, msg="normal_show"):
     # 定义开票申请记录页
 
-    return render(request, 'invoice_manage/apply_invoice_record.html')
+    return render(request, 'invoice_manage/apply_invoice_record.html', {'msg': msg})
 
 
 def apply_invoice_table(request):
@@ -221,7 +222,8 @@ def apply_invoice_edit(request, apply_id):
             for file in file_obj:
                 apply_info.reimburse_file.add(file)
             msg = "edit_success"
-            return render(request, 'invoice_manage/apply_invoice_record.html', {'msg': msg})
+            # return render(request, 'invoice_manage/apply_invoice_record.html', {'msg': msg})
+            return redirect("invoice_manage:apply_invoice_record", msg)
         else:
             apply_form = forms.ApplyInvoiceForm(request.POST, request.FILES or None)
             msg = 'failed'
@@ -269,7 +271,8 @@ def approve_apply_invoice(request, apply_id):
     apply_detail.status = 1
     apply_detail.save()
     msg = "approve_success"
-    return render(request, 'invoice_manage/apply_invoice_record.html', {'msg': msg})
+    # return render(request, 'invoice_manage/apply_invoice_record.html', {'msg': msg})
+    return redirect("invoice_manage:apply_invoice_record", msg)
 
 
 @login_required()
@@ -281,7 +284,6 @@ def untread_apply_invoice(request, apply_id):
         # 若已开票，无法退回
         invoice_info = InvoiceInfo.objects.filter(link_apply_id=apply_id)
         invoice_num = invoice_info.filter(invoice_num__isnull=False).count()
-        print(invoice_num)
         if invoice_num:
             msg = "untread_forbid"
             return render(request, 'invoice_manage/apply_invoice_detail.html', {'apply': apply_obj, 'msg': msg})
@@ -293,7 +295,8 @@ def untread_apply_invoice(request, apply_id):
             apply_obj.save()
 
             msg = "untread_success"
-            return render(request, 'invoice_manage/apply_invoice_record.html', {'msg': msg})
+            # return render(request, 'invoice_manage/apply_invoice_record.html', {'msg': msg})
+            return redirect("invoice_manage:apply_invoice_record", msg)
     else:
         msg = "untread_failed"
         return render(request, 'invoice_manage/apply_invoice_detail.html', {'apply': apply_obj, 'msg': msg})
@@ -315,7 +318,8 @@ def file_apply_invoice(request, apply_id):
             file_form.save_m2m()  # 使用commit后要手动保存manytomany
 
             msg = "file_success"
-            return render(request, 'invoice_manage/apply_invoice_record.html', {'msg': msg})
+            # return render(request, 'invoice_manage/apply_invoice_record.html', {'msg': msg})
+            return redirect("invoice_manage:apply_invoice_record", msg)
         else:
             file_form = forms.FileApplyInvoiceForm(request.POST)
             msg = 'failed'
@@ -327,10 +331,10 @@ def file_apply_invoice(request, apply_id):
 
 
 @login_required()
-def invoice_info(request):
+def invoice_info(request, msg="normal_show"):
     # 定义已开发票信息页
 
-    return render(request, 'invoice_manage/invoice_info.html')
+    return render(request, 'invoice_manage/invoice_info.html', {'msg': msg})
 
 
 @login_required()
@@ -477,7 +481,8 @@ def edit_invoice_info(request, invoice_id):
             invoice_form.save_m2m()
 
             msg = "edit_invoice_success"
-            return render(request, 'invoice_manage/invoice_info.html', {'msg': msg})
+            # return render(request, 'invoice_manage/invoice_info.html', {'msg': msg})
+            return redirect('invoice_manage:invoice_info', msg)
         else:
             invoice_form = forms.EditInvoiceInfoForm(request.POST)
             msg = 'failed'
@@ -512,7 +517,8 @@ def edit_pay_info(request, invoice_id):
             link_contract.save()
             invoice_form.save()
             msg = "edit_payment_success"
-            return render(request, 'invoice_manage/invoice_info.html', {'msg': msg})
+            # return render(request, 'invoice_manage/invoice_info.html', {'msg': msg})
+            return redirect('invoice_manage:invoice_info', msg)
         else:
             invoice_form = forms.EditPayInfoForm(request.POST)
             msg = 'failed'
@@ -563,7 +569,8 @@ def apply_void_red(request):
             # 发送一个信号
             # add_success.send(sample_record_add, msg=msg, sample_rec_id=sample_rec.id)
 
-            return render(request, "invoice_manage/void_red_info.html", {'msg': msg})
+            # return render(request, "invoice_manage/void_red_info.html", {'msg': msg})
+            return redirect("invoice_manage:void_red_info", msg)
         else:
             form = forms.ApplyVoidRedForm(request.POST)
             msg = "info_error"
@@ -571,10 +578,10 @@ def apply_void_red(request):
 
 
 @login_required()
-def void_red_info(request):
+def void_red_info(request, msg="normal_show"):
     # 定义发票作废/冲红信息页
 
-    return render(request, 'invoice_manage/void_red_info.html')
+    return render(request, 'invoice_manage/void_red_info.html', {'msg': msg})
 
 
 @login_required()
@@ -649,7 +656,8 @@ def edit_void_red(request, apply_id):
             apply_form.save_m2m()  # 使用commit后要手动保存manytomany
 
             msg = "edit_success"
-            return render(request, 'invoice_manage/void_red_info.html', {'msg': msg})
+            # return render(request, 'invoice_manage/void_red_info.html', {'msg': msg})
+            return redirect('invoice_manage:void_red_info', msg)
         else:
             apply_form = forms.ApplyVoidRedForm(request.POST)
             msg = 'failed'
@@ -716,7 +724,8 @@ def approve_apply_void(request, apply_id):
     apply_detail.status = 2
     apply_detail.save()
     msg = "approve_success"
-    return render(request, 'invoice_manage/void_red_info.html', {'msg': msg})
+    # return render(request, 'invoice_manage/void_red_info.html', {'msg': msg})
+    return redirect('invoice_manage:void_red_info', msg)
 
 
 @login_required()
@@ -730,7 +739,8 @@ def untread_apply_void(request, apply_id):
         apply_obj.save()
 
         msg = "untread_success"
-        return render(request, 'invoice_manage/void_red_info.html', {'msg': msg})
+        # return render(request, 'invoice_manage/void_red_info.html', {'msg': msg})
+        return redirect('invoice_manage:void_red_info', msg)
     else:
         msg = "untread_failed"
         return render(request, 'invoice_manage/void_red_detail.html', {'apply': apply_obj, 'msg': msg})

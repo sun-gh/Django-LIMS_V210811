@@ -94,7 +94,7 @@
           <div class="card-footer">
             <div class="row">
               <div class="col-md-6">
-                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'invoice_manage:void_red_info'%}" style="color:green;"><strong>返回发票作废冲红信息</strong></a>
+                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'invoice_manage:void_red_info' 'detail_back'%}" style="color:green;"><strong>返回发票作废冲红信息</strong></a>
               </div>  <!--/.col-->
               <div class="col-md-6">
                 {% if perms.invoice_manage.approve_apply_void %}

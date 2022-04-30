@@ -89,7 +89,7 @@
           <div class="card-footer">
             <div class="row">
               <div class="col-md-6">
-                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'contract_manage:cut_payment_info'%}" style="color:green;"><strong>返回预付款扣款信息</strong></a>
+                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'contract_manage:cut_payment_info' 'detail_back' %}" style="color:green;"><strong>返回预付款扣款信息</strong></a>
               </div>  <!--/.col-->
               <div class="col-md-6">
                 {% if perms.contract_manage.approve_cut_payment %}

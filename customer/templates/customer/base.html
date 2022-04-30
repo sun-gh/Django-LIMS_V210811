@@ -212,7 +212,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
           </li>
           {% endif %}
           <li class="nav-item has-treeview ">
-<!--            <a href="#" class="nav-link active">-->
             <a href="#" class="nav-link ">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
@@ -222,19 +221,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="{% url 'contract_manage:project_contract_page' %}" class="nav-link">
+                <a href="{% url 'contract_manage:project_contract_page' 'normal_show' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>项目合同</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{% url 'contract_manage:advancepay_contract_page' %}" class="nav-link">
+                <a href="{% url 'contract_manage:advancepay_contract_page' 'normal_show' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>预付款合同</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{% url 'contract_manage:cut_payment_info' %}" class="nav-link">
+                <a href="{% url 'contract_manage:cut_payment_info' 'normal_show' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>预付款扣款信息</p>
                 </a>
@@ -243,7 +242,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
           </li>
 
           <li class="nav-item has-treeview ">
-<!--            <a href="#" class="nav-link active">-->
               <a href="#" class="nav-link ">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
@@ -253,19 +251,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="{% url 'invoice_manage:apply_invoice_record' %}" class="nav-link">
+                <a href="{% url 'invoice_manage:apply_invoice_record' 'normal_show' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>开票申请记录</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{% url 'invoice_manage:invoice_info' %}" class="nav-link">
+                <a href="{% url 'invoice_manage:invoice_info' 'normal_show' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>已开发票信息</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{% url 'invoice_manage:void_red_info' %}" class="nav-link">
+                <a href="{% url 'invoice_manage:void_red_info' 'normal_show' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>发票作废冲红信息</p>
                 </a>

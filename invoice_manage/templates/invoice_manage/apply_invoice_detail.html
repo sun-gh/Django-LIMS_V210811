@@ -168,7 +168,7 @@
           <div class="card-footer">
             <div class="row">
               <div class="col-md-6">
-                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'invoice_manage:apply_invoice_record'%}" style="color:green;"><strong>返回开票申请列表</strong></a>
+                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'invoice_manage:apply_invoice_record' 'detail_back' %}" style="color:green;"><strong>返回开票申请列表</strong></a>
               </div>  <!--/.col-->
               <div class="col-md-3">
                 {% if perms.invoice_manage.approve_apply_invoice %}
