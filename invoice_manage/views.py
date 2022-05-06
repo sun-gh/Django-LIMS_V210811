@@ -36,6 +36,9 @@ def apply_invoice(request):
             # 处理单位内容
             unit = apply_form.cleaned_data.get("unit_name")
             apply_instance.unit = unit.unit_name
+            # 处理开票类型
+            related_contract = apply_form.cleaned_data.get("related_contract")
+            apply_instance.invoice_type = related_contract.contract_type
 
             apply_instance.save()
             apply_form.save_m2m()
@@ -45,7 +48,6 @@ def apply_invoice(request):
             for file in file_list:
                 file_instance = ReimburseFile.objects.create(file=file)
                 file_obj.append(file_instance)
-            # print(sample_rec.sample_num)
             for file in file_obj:
                 apply_instance.reimburse_file.add(file)
 
@@ -53,7 +55,6 @@ def apply_invoice(request):
             # 发送一个信号
             # add_success.send(sample_record_add, msg=msg, sample_rec_id=sample_rec.id)
 
-            # return render(request, "invoice_manage/apply_invoice_record.html", {'msg': msg})
             return redirect("invoice_manage:apply_invoice_record", msg)
         else:
             form = forms.ApplyInvoiceForm(request.POST, request.FILES or None)
@@ -203,11 +204,16 @@ def apply_invoice_edit(request, apply_id):
     if request.method == 'POST':
         apply_form = forms.ApplyInvoiceForm(request.POST, request.FILES or None, instance=apply_info)
         if apply_form.is_valid():
-            # change_list = project_info_form.changed_data
+            change_list = apply_form.changed_data
             apply_form.save(commit=False)
-            # 保存单位名称
-            unit = apply_form.cleaned_data.get('unit_name')
-            apply_info.unit = unit.unit_name
+            if "unit_name" in change_list:
+                # 保存单位名称
+                unit = apply_form.cleaned_data.get('unit_name')
+                apply_info.unit = unit.unit_name
+            if "related_contract" in change_list:
+                # 处理开票类型
+                related_contract = apply_form.cleaned_data.get("related_contract")
+                apply_info.invoice_type = related_contract.contract_type
             apply_info.status = 0
 
             apply_info.save()
@@ -222,7 +228,7 @@ def apply_invoice_edit(request, apply_id):
             for file in file_obj:
                 apply_info.reimburse_file.add(file)
             msg = "edit_success"
-            # return render(request, 'invoice_manage/apply_invoice_record.html', {'msg': msg})
+
             return redirect("invoice_manage:apply_invoice_record", msg)
         else:
             apply_form = forms.ApplyInvoiceForm(request.POST, request.FILES or None)

@@ -19,8 +19,8 @@ class ApplyInvoiceForm(forms.ModelForm):
                                                      widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
     file_input = forms.FileField(label="报账文件", required=False, widget=forms.ClearableFileInput(
         attrs={'multiple': True, 'class': 'form-control-file'}))
-    invoice_type = forms.IntegerField(label="开票类型", widget=forms.Select(
-        choices=ApplyInvoice.invoice_type_choice, attrs={'class': 'form-control'}))
+    # invoice_type = forms.IntegerField(label="开票类型", widget=forms.Select(
+    #     choices=ApplyInvoice.invoice_type_choice, attrs={'class': 'form-control'}))
     note = forms.CharField(label="备注", required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     linkman = forms.CharField(label="联系人", required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     phone = forms.IntegerField(label="电话", required=False, widget=forms.NumberInput(attrs={'class': 'form-control'}))
@@ -38,7 +38,7 @@ class ApplyInvoiceForm(forms.ModelForm):
             'invoice_require',
             # 文件要单独处理
             'reimburse_file',
-            'invoice_type',
+            # 'invoice_type',
             'note',
             'linkman',
             'phone',
