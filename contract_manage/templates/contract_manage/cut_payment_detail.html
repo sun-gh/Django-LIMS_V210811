@@ -57,7 +57,13 @@
                       <td>{{ apply_detail.surplus_sum }}</td>
                       <td>
                         {% for order in apply_detail.link_order.all %}
-                          <span>{{ order.project_order.project_num }}</span>
+                          {% if forloop.last %}
+                            <span>{{order.project_order.project_num}}</span>
+                          {% else %}
+                            <span>{{order.project_order.project_num}}、</span>
+                          {% endif %}
+                        {% empty %}
+                          -
                         {% endfor  %}
                       </td>
                       <td>{{ apply_detail.cut_sum }}</td>

@@ -612,10 +612,16 @@ def void_red_info_table(request):
             # 下面这些key，都是我们在前端定义好了的，前后端必须一致，前端才能接受到数据并且请求.
             # 发票号处理
             invoices = apply.link_invoice.all()
-            # invoice_list = invoices.values_list('invoice_num', flat=True)
-            invoice_str = ""
-            for invoice in invoices:
-                invoice_str += str(invoice.invoice_num)+" "
+            invoice_count = invoices.count()
+            if invoice_count == 1:
+                invoice_str = invoices[0].invoice_num
+            elif invoice_count > 1:
+                invoice_str = ""
+                for i in range(invoice_count-1):
+                    invoice_str += invoices[i].invoice_num+"、"
+                invoice_str += invoices[invoice_count-1].invoice_num
+            else:
+                invoice_str = "-"
             # 定义冲红原因
             reason_content = apply.reason
             if reason_content:

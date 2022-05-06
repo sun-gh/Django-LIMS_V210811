@@ -47,7 +47,11 @@
 
               <p><span> 关联项目 </span>：
                 {% for item in contract.project_order.all %}
-                    <span class="related_order">{{ item.project_order.project_num }} &nbsp;</span>
+                  {% if forloop.last %}
+                    <span class="related_order">{{ item.project_order.project_num }}</span>
+                  {% else %}
+                    <span class="related_order">{{ item.project_order.project_num }}、</span>
+                  {% endif %}
                 {% empty %}
                     -
                 {% endfor %}

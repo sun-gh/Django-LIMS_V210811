@@ -188,7 +188,6 @@ class SampleRecord(models.Model):
     addition_item = models.ManyToManyField(AdditionalItem, verbose_name="附加项目", blank=True)
     receive_time = models.DateTimeField(verbose_name="收样时间", null=True)
     pro_start_date = models.DateTimeField(verbose_name="项目启动时间", null=True, blank=True)
-    # pro_start_time = models.DateField(verbose_name="项目启动日期", null=True)  # 添加字段用于备份
     person_record = models.CharField(max_length=32, verbose_name="登记人")
     c_time = models.DateTimeField(verbose_name="登记时间", auto_now_add=True)
     note = models.CharField(max_length=256, verbose_name="备注", blank=True, null=True)
@@ -196,11 +195,8 @@ class SampleRecord(models.Model):
     # 以下为前处理阶段
     priority = models.SmallIntegerField(choices=priority_level, verbose_name="优先级", default=0)
     start_date = models.DateTimeField(verbose_name="实验开始日期", null=True, blank=True)
-    # start_time = models.DateField(verbose_name="实验开始日期", null=True)  # 添加字段用于备份
     preexperiment_finish_date = models.DateTimeField(verbose_name="预实验完成时间", null=True, blank=True)
-    # preexperiment_finish_time = models.DateField(verbose_name="预实验完成时间", null=True)  # 添加字段用于备份
     pretreat_finish_date = models.DateTimeField(verbose_name="前处理完成时间", null=True, blank=True)
-    # pretreat_finish_time = models.DateField(verbose_name="前处理完成时间", null=True)  # 添加字段用于备份
     first_operate_person = models.ManyToManyField(OperatePerson, verbose_name="步骤一", related_name='exp_first_person',
                                                   blank=True)
     second_operate_person = models.ManyToManyField(OperatePerson, verbose_name="步骤二", related_name='exp_second_person',
@@ -216,29 +212,19 @@ class SampleRecord(models.Model):
     project_interrupt = models.ForeignKey(ProjectInterrupt, verbose_name="项目中断类型", on_delete=models.SET_NULL,
                                           blank=True, null=True)
     start_deadline = models.DateTimeField(verbose_name="实验开始截止日期", null=True, blank=True)
-    # start_deadline_date = models.DateField(verbose_name="实验开始截止日期", null=True)  # 添加字段用于备份
     preexperiment_deadline = models.DateTimeField(verbose_name="预实验截止日期", null=True, blank=True)
-    # preexperiment_deadline_date = models.DateField(verbose_name="预实验截止日期", null=True)  # 添加字段用于备份
     pretreat_deadline = models.DateTimeField(verbose_name="制备截止日期", null=True, blank=True)
-    # pretreat_deadline_date = models.DateField(verbose_name="制备截止日期", null=True)  # 添加字段用于备份
     # 以下为检测-数据分析阶段
     instrument_type = models.ForeignKey(Machine, verbose_name="上机仪器", on_delete=models.SET_NULL, blank=True, null=True)
     date_test = models.DateTimeField(verbose_name="上机日期", blank=True, null=True)
-    # date_test_time = models.DateField(verbose_name="上机日期", null=True)  # 添加字段用于备份
     test_finish_date = models.DateTimeField(verbose_name="下机日期", blank=True, null=True)
-    # test_finish_time = models.DateField(verbose_name="下机日期", null=True)  # 添加字段用于备份
     responsible_person = models.ForeignKey(ResponsiblePerson, verbose_name="项目负责人", on_delete=models.SET_NULL,
                                            blank=True, null=True)
     date_searchlib = models.DateTimeField(verbose_name="搜库日期", blank=True, null=True)
-    # date_searchlib_time = models.DateField(verbose_name="搜库日期", null=True)  # 添加字段用于备份
     date_send_report = models.DateTimeField(verbose_name="报告发送日期", blank=True, null=True)
-    # date_send_report_time = models.DateField(verbose_name="报告发送日期", null=True)  # 添加字段用于备份
     date_send_rawdata = models.DateTimeField(verbose_name="原始数据发送日期", blank=True, null=True)
-    # date_send_rawdata_time = models.DateField(verbose_name="原始数据发送日期", null=True)  # 添加字段用于备份
     test_deadline = models.DateTimeField(verbose_name="下机截止日期", blank=True, null=True)
-    # test_deadline_date = models.DateField(verbose_name="下机截止日期", null=True)  # 添加字段用于备份
     pro_deadline = models.DateTimeField(verbose_name="项目截止日期", blank=True, null=True)
-    # pro_deadline_date = models.DateField(verbose_name="项目截止日期", null=True)  # 添加字段用于备份
 
     def __str__(self):
         return self.project_num

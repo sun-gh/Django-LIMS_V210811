@@ -337,15 +337,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="{% static 'AdminLTE-3.0.2/dist/js/adminlte.min.js' %}"></script>
 {% block script %}{% endblock %}
 <script>
-  $('ul.nav-sidebar li a').each(function(i){
-    if($(this).attr('href')==='{{ request.path }}'){
-      //console.log('{{request.path}}');
-
-      $(this).addClass('active');
-      $(this).parents("li.has-treeview").first().addClass('menu-open');
-    }else{
-    }
-  });
+var path_string = String('{{request.path}}');
+var path_array = path_string.split('/');
+var path_treat = '/' + path_array[1] + '/' + path_array[2] + '/';
+//console.log(path_treat);
+$('ul.nav-sidebar li a').each(function(i){
+  var href_string = $(this).attr('href');
+  var href_array = href_string.split('/');
+  var href_treat = '/' + href_array[1] + '/' + href_array[2] + '/';
+  if (href_treat===path_treat){
+    $(this).addClass('active');
+    $(this).parents("li.has-treeview").first().addClass('menu-open');
+    return false;
+  }
+});
 </script>
 </body>
 </html>

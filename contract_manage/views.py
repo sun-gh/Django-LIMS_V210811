@@ -71,9 +71,9 @@ def project_contract_table(request):
                 project_numbers += all_order[order_count-1].project_order.project_num
                 # project_order = str(order_count) + "个项目"
                 project_type = "见详细信息"
-
             else:
-                project_order = "-"
+                project_numbers = "-"
+                project_type = "-"
             # 定义文件显示
             file = contract.contract_file
             if file:
@@ -499,9 +499,16 @@ def cut_payment_table(request):
             apply_date = apply.c_time.strftime('%Y-%m-%d')
             # 定义关联项目
             orders = apply.link_order.all()
-            order_str = ""
-            for order in orders:
-                order_str += str(order.project_order.project_num) + " "
+            order_count = orders.count()
+            if order_count == 1:
+                order_str = orders[0].project_order.project_num
+            elif order_count > 1:
+                order_str = ""
+                for i in range(order_count-1):
+                    order_str += orders[i].project_order.project_num + "、"
+                order_str += orders[order_count-1].project_order.project_num
+            else:
+                order_str = "-"
             # 定义备注
             note_content = apply.note
             if note_content:

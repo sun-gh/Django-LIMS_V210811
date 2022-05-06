@@ -155,9 +155,11 @@
                 <p>
                   <span>共{{ apply.get_invoice.count }}张：</span>
                   {% for invoice in apply.get_invoice %}
-     
-                      <span>{{ invoice.invoice_num|default:"" }}</span>
-
+                    {% if forloop.last %}
+                      <span>{{invoice.invoice_num|default:"" }}</span>
+                    {% else %}
+                      <span>{{invoice.invoice_num|default:"" }}、</span>
+                    {% endif %}
                   {% empty %}
                     待开票
                   {% endfor %}
