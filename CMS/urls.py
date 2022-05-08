@@ -39,6 +39,8 @@ urlpatterns = [
     path('clinic_intention/', include('clinic_intention.urls')),
     # 需求管理
     path('demand_manage/', include('demand_manage.urls')),
+    # 数据可视化
+    path('data_visual/', include('data_visual.urls')),
     # 文件下载链接
     url('media/(?P<path>.*)', serve, {'document_root': settings.MEDIA_ROOT}),
 ]

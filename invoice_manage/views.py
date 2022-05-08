@@ -8,8 +8,17 @@ from django.http import HttpResponse
 import json
 from customer.models import UnitInvoice
 from django.db.models import Q
+from django.dispatch import receiver
+from contract_manage.views import advancepay_edit_success, advancepay_contract_edit
 
 # Create your views here.
+
+
+@receiver(advancepay_edit_success, sender=advancepay_contract_edit)
+def edit_invoice_type(sender, **kwargs):
+    apply_query = kwargs['apply_query']
+    contract = kwargs['contract']
+    apply_query.update(invoice_type=contract.contract_type)
 
 
 @login_required()
@@ -277,7 +286,7 @@ def approve_apply_invoice(request, apply_id):
     apply_detail.status = 1
     apply_detail.save()
     msg = "approve_success"
-    # return render(request, 'invoice_manage/apply_invoice_record.html', {'msg': msg})
+
     return redirect("invoice_manage:apply_invoice_record", msg)
 
 
@@ -523,7 +532,7 @@ def edit_pay_info(request, invoice_id):
             link_contract.save()
             invoice_form.save()
             msg = "edit_payment_success"
-            # return render(request, 'invoice_manage/invoice_info.html', {'msg': msg})
+
             return redirect('invoice_manage:invoice_info', msg)
         else:
             invoice_form = forms.EditPayInfoForm(request.POST)
@@ -540,7 +549,6 @@ def edit_pay_info(request, invoice_id):
 @login_required()
 def invoice_info_detail(request, invoice_id):
     # 定义发票信息详情
-
     invoice_detail = InvoiceInfo.objects.get(id=invoice_id)
 
     return render(request, 'invoice_manage/invoice_info_detail.html', {'invoice': invoice_detail})
@@ -575,7 +583,6 @@ def apply_void_red(request):
             # 发送一个信号
             # add_success.send(sample_record_add, msg=msg, sample_rec_id=sample_rec.id)
 
-            # return render(request, "invoice_manage/void_red_info.html", {'msg': msg})
             return redirect("invoice_manage:void_red_info", msg)
         else:
             form = forms.ApplyVoidRedForm(request.POST)
@@ -668,7 +675,7 @@ def edit_void_red(request, apply_id):
             apply_form.save_m2m()  # 使用commit后要手动保存manytomany
 
             msg = "edit_success"
-            # return render(request, 'invoice_manage/void_red_info.html', {'msg': msg})
+
             return redirect('invoice_manage:void_red_info', msg)
         else:
             apply_form = forms.ApplyVoidRedForm(request.POST)
@@ -736,7 +743,7 @@ def approve_apply_void(request, apply_id):
     apply_detail.status = 2
     apply_detail.save()
     msg = "approve_success"
-    # return render(request, 'invoice_manage/void_red_info.html', {'msg': msg})
+
     return redirect('invoice_manage:void_red_info', msg)
 
 
@@ -751,7 +758,7 @@ def untread_apply_void(request, apply_id):
         apply_obj.save()
 
         msg = "untread_success"
-        # return render(request, 'invoice_manage/void_red_info.html', {'msg': msg})
+
         return redirect('invoice_manage:void_red_info', msg)
     else:
         msg = "untread_failed"

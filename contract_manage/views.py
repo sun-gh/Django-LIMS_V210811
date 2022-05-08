@@ -100,7 +100,6 @@ def project_contract_table(request):
                 "project_type": project_type,
                 "unit": contract.unit_name,
                 "sample_sender": contract.linkman,
-
                 "contract_sum": str(contract.contract_sum),
                 "file_display": file_display,
                 "call_date": call_date,
@@ -194,7 +193,6 @@ def project_contract_add(request):
                 # 发送一个信号
                 contract_add_success.send(project_contract_add, msg=msg, project_order=project_order)
 
-                # return render(request, "contract_manage/project_contract.html", {'msg': msg})
                 return redirect('contract_manage:project_contract_page', msg)
         else:
             form = AddProjectContractForm(request.POST, request.FILES or None)
@@ -212,12 +210,12 @@ def project_contract_del(request):
             contract = ProjectContract.objects.get(id=contract_id)
             project_orders = contract.project_order.all()
             # 归还项目结算中合同记录
-            for order in project_orders:
-                order.contract_record = False
-                order.save()
+            project_orders.update(contract_record=False)
+            # for order in project_orders:
+            #     order.contract_record = False
+            #     order.save()
 
             contract.delete()
-
         return HttpResponse("del_success")
 
     return HttpResponse("非POST请求！")
@@ -242,7 +240,7 @@ def project_contract_edit(request, contract_id):
             contract_form.save_m2m()  # 使用commit后要手动保存manytomany
 
             msg = "edit_success"
-            # return render(request, 'contract_manage/project_contract.html', {'msg': msg})
+
             return redirect('contract_manage:project_contract_page', msg)
         else:
             contract_form = EditProjectContractForm(request.POST, request.FILES or None)
@@ -253,7 +251,6 @@ def project_contract_edit(request, contract_id):
     elif request.method == 'GET':
         unit = UnitInvoice.objects.get(unit_name=contract.unit_name)
         # project_orders = ProjectOrder.objects.filter(Q(projectcontract__id=contract_id) | Q(contract_record=False))
-        # # print(project_orders.count())
         # contract_form = ProjectContractForm(initial={'unit': unit}, instance=contract)
         # contract_form.fields['project_order'].queryset = project_orders
         contract_form = EditProjectContractForm(initial={'unit': unit}, instance=contract)
@@ -289,11 +286,7 @@ def advancepay_contract_table(request):
         linkman = request.GET.get('linkman')
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
-        # if search:  # 判断是否有搜索字
-        #     all_contracts = ProjectContract.objects.filter(Q(contract_type__gt=0), Q(contract_num__contains=search) |
-        #                                                    Q(linkman__contains=search) | Q(unit_name__contains=search))
-        # else:
-        #     all_contracts = ProjectContract.objects.filter(contract_type__gt=0)
+
         conditions = {"contract_type__gt": 0, }  # 构造字典存储查询条件
 
         if contract_number:
@@ -311,7 +304,6 @@ def advancepay_contract_table(request):
             limit = 50  # 默认是每页10行的内容，与前端默认行数一致
         paginator = Paginator(all_contracts, limit)  # 开始做分页
 
-        # page = int(int(offset) / int(limit) + 1)
         response_data = {'total': all_contract_count, 'rows': []}
         for contract in paginator.page(pageNum):
             # 下面这些key，都是我们在前端定义好了的，前后端必须一致，前端才能接受到数据并且请求.
@@ -391,7 +383,6 @@ def advancepay_contract_add(request):
             # 发送一个信号
             # contract_add_success.send(project_contract_add, msg=msg, project_order=project_order)
 
-            # return render(request, "contract_manage/advancepay_contract.html", {'msg': msg})
             return redirect('contract_manage:advancepay_contract_page', msg)
         else:
             form = AdvancepayContractForm(request.POST, request.FILES or None)
@@ -408,10 +399,13 @@ def advancepay_contract_del(request):
         for contract_id in json.loads(ids):
             contract = ProjectContract.objects.get(id=contract_id)
             contract.delete()
-
         return HttpResponse("del_success")
 
     return HttpResponse("非POST请求！")
+
+
+# 定义一个信号
+advancepay_edit_success = django.dispatch.Signal()
 
 
 @login_required()
@@ -422,15 +416,19 @@ def advancepay_contract_edit(request, contract_id):
     if request.method == 'POST':
         contract_form = AdvancepayContractForm(request.POST, request.FILES or None, instance=contract)
         if contract_form.is_valid():
-
+            change_list = contract_form.changed_data
             contract_form.save(commit=False)
             unit = contract_form.cleaned_data.get('unit')
             contract.unit_name = unit.unit_name
             contract.save()
             contract_form.save_m2m()  # 使用commit后要手动保存manytomany
             msg = "edit_success"
-
-            # return render(request, 'contract_manage/advancepay_contract.html', {'msg': msg})
+            if "contract_type" in change_list:
+                related_apply_invoice = contract.applyinvoice_set.all()
+                if related_apply_invoice:  # 此时要修改对应开票申请的开票类型
+                    # print(related_apply_invoice)
+                    advancepay_edit_success.send(advancepay_contract_edit, msg=msg,
+                                                 contract=contract, apply_query=related_apply_invoice)
             return redirect('contract_manage:advancepay_contract_page', msg)
         else:
             contract_form = AdvancepayContractForm(request.POST, request.FILES or None)
@@ -483,7 +481,6 @@ def cut_payment_table(request):
             limit = 50  # 默认是每页10行的内容，与前端默认行数一致
         paginator = Paginator(all_apply, limit)  # 开始做分页
 
-        # page = int(int(offset) / int(limit) + 1)
         response_data = {'total': all_apply_count, 'rows': []}
         for apply in paginator.page(pageNum):
             # 下面这些key，都是我们在前端定义好了的，前后端必须一致，前端才能接受到数据并且请求.
@@ -565,7 +562,6 @@ def apply_cut_payment(request):
             # 发送一个信号
             # add_success.send(sample_record_add, msg=msg, sample_rec_id=sample_rec.id)
 
-            # return render(request, "contract_manage/cut_payment_info.html", {'msg': msg})
             return redirect('contract_manage:cut_payment_info', msg)
         else:
             form = CutPaymentForm(request.POST)
@@ -593,7 +589,7 @@ def cut_payment_edit(request, apply_id):
             apply_form.save_m2m()  # 使用commit后要手动保存manytomany
 
             msg = "edit_success"
-            # return render(request, 'contract_manage/cut_payment_info.html', {'msg': msg})
+
             return redirect('contract_manage:cut_payment_info', msg)
         else:
             apply_form = CutPaymentForm(request.POST)
@@ -631,14 +627,10 @@ def cut_payment_del(request):
 def approve_cut_payment(request, apply_id):
     # 审批扣款申请
     apply_detail = CutPayment.objects.get(id=apply_id)
-
     link_contract = apply_detail.link_contract
-
     # 修改发票对应合同的使用
-    contract_sum = link_contract.contract_sum
     old_used_sum = link_contract.used_sum
     link_contract.used_sum = old_used_sum + apply_detail.cut_sum
-    # link_contract.unused_sum = contract_sum - old_used_sum - apply_detail.cut_sum
     link_contract.save()
 
     # 修改作废申请状态及扣款日期
@@ -647,7 +639,7 @@ def approve_cut_payment(request, apply_id):
     apply_detail.cut_date = date_today
     apply_detail.save()
     msg = "approve_success"
-    # return render(request, 'contract_manage/cut_payment_info.html', {'msg': msg})
+
     return redirect('contract_manage:cut_payment_info', msg)
 
 
@@ -659,9 +651,8 @@ def untread_cut_payment(request, apply_id):
     if status_val == 2:
         # 修改合同使用金额、剩余金额及申请状态
         link_contract = apply_obj.link_contract
-
         link_contract.used_sum -= apply_obj.cut_sum
-        # link_contract.unused_sum += apply_obj.cut_sum
+
         link_contract.save()
 
         apply_obj.status = 1
@@ -673,6 +664,6 @@ def untread_cut_payment(request, apply_id):
         apply_obj.save()
 
     msg = "untread_success"
-    # return render(request, 'contract_manage/cut_payment_info.html', {'msg': msg})
+
     return redirect('contract_manage:cut_payment_info', msg)
 

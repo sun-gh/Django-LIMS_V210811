@@ -1,7 +1,7 @@
 {% extends "customer/base.html"  %}
 {% load static %}
 
-{% block title %} 谱度众合&nbsp;|&nbsp;数据展示 {% endblock %}
+{% block title %} 谱度众合&nbsp;|&nbsp;整体数据展示 {% endblock %}
 
 {% block css %}
   <!--chartjs css-->
@@ -17,7 +17,7 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1 class="m-0 text-dark">数据可视化</h1>
+          <h1 class="m-0 text-dark">整体数据统计</h1>
         </div><!-- /.col -->
         <div class="col-sm-6">
 
@@ -155,33 +155,7 @@
         </div>
 
       </div> <!--/ row-->
-      <div class="row">
-        <div class="col-md-6">
-          <!--项目总体延期率统计表-->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">项目实施各阶段延期率统计</h3>
-            </div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col">
-                  <table class="table table-bordered text-center" id="myTable1" >
-                    <thead>
-                      <tr>
-                        <th>阶段</th>
-                        <th>参与统计项目数</th>
-                        <th>延期项目数</th>
-                        <th>延期率</th>
-                      </tr>
-                    </thead>
 
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div><!-- /.container-fluid -->
   </div>
   <!-- /.content -->
@@ -195,10 +169,10 @@
 <script src="{% static 'bootstrap-datepicker-1.9.0-dist/locales/bootstrap-datepicker.zh-CN.min.js' %}"></script>
 
 <script type="text/javascript">
-
+  //项目数量和样本数量统计
   function ProjectSampleStatistics() {
     $.get(
-      "/user/project_and_sample_statistics/",
+      "/data_visual/project_and_sample_statistics/",
       function(data,status) {
         if (status=="success"){
           var result_data = JSON.parse(data);
@@ -359,7 +333,7 @@
     var end_time=$('#end_time').val();
     var csrfToken=document.querySelector('[name=csrfmiddlewaretoken]').value;
     $.post(
-      '/user/project_type_statistics/',
+      '/data_visual/project_type_statistics/',
       {
         "start_time": start_time,
         "end_time": end_time,
@@ -388,7 +362,7 @@
     var end_time=$('#end_time').val();
     var csrfToken=document.querySelector('[name=csrfmiddlewaretoken]').value;
     $.post(
-      '/user/project_type_statistics/',
+      '/data_visual/project_type_statistics/',
       {
         "start_time": start_time,
         "end_time": end_time,
@@ -420,7 +394,7 @@
     var end_time=$('#end_time2').val();
     var csrfToken=document.querySelector('[name=csrfmiddlewaretoken]').value;
     $.post(
-      '/user/sample_type_statistics/',
+      '/data_visual/sample_type_statistics/',
       {
         "start_time": start_time,
         "end_time": end_time,
@@ -449,7 +423,7 @@
     var end_time=$('#end_time2').val();
     var csrfToken=document.querySelector('[name=csrfmiddlewaretoken]').value;
     $.post(
-      '/user/sample_type_statistics/',
+      '/data_visual/sample_type_statistics/',
       {
         "start_time": start_time,
         "end_time": end_time,
@@ -471,26 +445,5 @@
     );  // ajax
   })
 
-  // 总体延期率统计函数
-  function TotalDelayRate() {
-    $.get(
-      '/user/total_delay_rate/',
-      function(data,status) {
-        if (status=='success'){
-          var result_data = JSON.parse(data);
-          for (const row of result_data){
-            var trSrc = "<tr><td>" + row.stage
-              + "</td><td>" + row.projects
-              + "</td><td>" + row.delay
-              + "</td><td>" + row.delay_rate
-              + "</td></tr>";
-            $('#myTable1').append(trSrc);
-            //console.log(trSrc);
-          };
-        }
-      }    // success
-    );    // ajax
-  }
-  TotalDelayRate();
 </script>
 {% endblock %}

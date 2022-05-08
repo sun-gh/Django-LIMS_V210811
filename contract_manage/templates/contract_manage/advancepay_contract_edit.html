@@ -41,25 +41,24 @@
                 <i class="fas fa-minus"></i></button>
             </div>
           </div>
-          <div class="card-body">
+          <div class="card-body pb-0">
             <div class="row">
               <div class="col">
                 <p><span class="link_info"> 已开票金额 </span> ：{{ contract.makeout_invoice_sum }} </p>
                 <p><span class="link_info"> 未开票金额 </span> ：{{ contract.not_makeout_invoice_sum }} </p>
-                <p><span> 合同类型 </span>：{{ contract.get_contract_type_display }} </p>
+                <p><span class="link_info"> 创建人 </span> ：{{ contract.creator }} </p>
+
               </div>
               <div class="col">
                 <p><span class="link_info"> 回款金额 </span> ：{{ contract.payment_sum }} </p>
                 <p><span class="link_info"> 已使用金额 </span> ：{{ contract.used_sum }} </p>
-                <p><span class="link_info"> 创建人 </span> ：{{ contract.creator }} </p>
+
               </div>
             </div>
 
           </div> <!-- /.card-body -->
         </div>  <!-- /.card-secondary  -->
-
         <div class="card card-info ">
-
               <form class="form-horizontal" method="post" action="{% url 'contract_manage:advancepay_contract_edit' contract.id %}" enctype="multipart/form-data">
               <!-- card-body -->
               <div class="row">
@@ -89,12 +88,10 @@
                               {{ form.contract_sum }}
                             </div>
                           </div>
-                          <!--回收日期-->
+                          <!--合同类型-->
                           <div class="form-group row">
-                            {{ form.callback_date.label_tag }}
-                            <div class="col-md-7">
-                              {{ form.callback_date }}
-                            </div>
+                            {{ form.contract_type.label_tag }}
+                            <div class="col-md-7">{{  form.contract_type }}</div>
                           </div>
                       </div>  <!--/.col-->
 
@@ -106,6 +103,13 @@
                               {{ form.note }}
                             </div>
                           </div>
+                          <!--回收日期-->
+                          <div class="form-group row">
+                            {{ form.callback_date.label_tag }}
+                            <div class="col-md-7">
+                              {{ form.callback_date }}
+                            </div>
+                          </div>
                           <!--合同附件-->
                           <div class="form-group row">
                             {{ form.contract_file.label_tag }}
@@ -113,8 +117,7 @@
                               {{ form.contract_file }}
                             </div>
                           </div>
-                          <!--合同类型-->
-                            <div style="display:none;">{{  form.contract_type }}</div>
+
                           <!--创建人-->
                             <div style="display:none;">{{  form.creator }}</div>
                       </div>    <!-- /.col-->
@@ -155,6 +158,13 @@
 
   // 给label加上class属性;input加上class;
   $("form label").addClass("col-md-4 col-form-label");
+
+  // 给必填项添加*
+  var txt1 = '<span style="color:red"> *</span>';
+  $("[for='id_unit']").append(txt1);
+  $("[for='id_linkman']").append(txt1);
+  $("[for='id_contract_sum']").append(txt1);
+  $("[for='id_contract_type']").append(txt1);
 
   // 给select添加样式,<!-- Select2 -->
   $("#id_unit").addClass("select2");
