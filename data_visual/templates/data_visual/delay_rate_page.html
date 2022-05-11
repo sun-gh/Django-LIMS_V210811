@@ -35,22 +35,12 @@
           <!--项目总体延期率统计表-->
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">项目实施各阶段延期率统计</h3>
+              <h3 class="card-title">前处理阶段延期率统计</h3>
             </div>
             <div class="card-body">
               <div class="row">
                 <div class="col">
-                  <table class="table table-bordered text-center" id="myTable1" >
-                    <thead>
-                      <tr>
-                        <th>阶段</th>
-                        <th>参与统计项目数</th>
-                        <th>延期项目数</th>
-                        <th>延期率</th>
-                      </tr>
-                    </thead>
-
-                  </table>
+                  <canvas id="myChart1" ></canvas>
                 </div>
               </div>
             </div>
@@ -68,25 +58,54 @@
 
 <script type="text/javascript">
 // 总体延期率统计函数
-  function TotalDelayRate() {
+  function PretreatDelayRate() {
     $.get(
       '/data_visual/total_delay_rate/',
       function(data,status) {
         if (status=='success'){
           var result_data = JSON.parse(data);
-          for (const row of result_data){
-            var trSrc = "<tr><td>" + row.stage
-              + "</td><td>" + row.projects
-              + "</td><td>" + row.delay
-              + "</td><td>" + row.delay_rate
-              + "</td></tr>";
-            $('#myTable1').append(trSrc);
-            //console.log(trSrc);
-          };
+          // 定义前处理阶段延期率
+          var ctx1 = document.getElementById('myChart1').getContext('2d');
+          var chart1 = new Chart(ctx1, {
+            // 要创建的图表类型
+            type: 'bar',
+            // 数据集
+            data: {
+              labels:  result_data.pretreat_month ,  // X轴标签数据（一般为列表）
+              datasets: [{
+                label: "延期率",
+                backgroundColor: 'rgb(144,238,144)',
+                borderColor: 'rgb(255, 99, 132)',
+                data:  result_data.pretreat_delay_rate ,  // 柱状图数据（一般为列表）
+              }]
+            },
+            // 配置选项
+            options: {
+              scales: {
+                yAxes: [{
+                  ticks: {
+                    beginAtZero: true,
+                    callback:function(label,index,labels){
+                      return String(label)+'%';
+                    }
+                  }
+                }]
+              },
+              tooltips: {
+                callbacks: {
+                  label: function(tooltipItem, data){
+                    //console.log(tooltipItem.datasetIndex);
+                    var label =  "延期项目数：" + result_data.pretreat_delay_count[tooltipItem.index];
+                    return label;
+                  }
+                }
+              }
+            }
+          });
         }
       }    // success
     );    // ajax
   }
-  TotalDelayRate();
+  PretreatDelayRate();
 </script>
 {% endblock %}
