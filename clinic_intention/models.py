@@ -34,7 +34,7 @@ class FollowUpRecord(models.Model):
     # 定义跟进记录
     communicate_time = models.DateField(verbose_name="沟通时间")
     linkman = models.CharField(max_length=32, verbose_name="对接人")
-    communicate_content = models.CharField(max_length=256, verbose_name="沟通内容")
+    communicate_content = models.CharField(max_length=800, verbose_name="沟通内容")
     c_time = models.DateTimeField(verbose_name="记录时间", auto_now_add=True)
     recorder = models.CharField(max_length=32, verbose_name="记录人")
 

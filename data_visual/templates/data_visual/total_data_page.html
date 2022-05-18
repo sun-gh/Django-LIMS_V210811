@@ -15,9 +15,9 @@
   <!-- Content Header (Page header) -->
   <div class="content-header pb-1">
     <div class="container-fluid">
-      <div class="row mb-2">
+      <div class="row mb-1">
         <div class="col-sm-6">
-          <h1 class="m-0 text-dark">整体数据统计</h1>
+          <h4 class="m-0 text-dark">整体数据统计</h4>
         </div><!-- /.col -->
         <div class="col-sm-6">
 
@@ -189,7 +189,7 @@
               labels:  result_data.month_list ,  // X轴标签数据（一般为列表）
               datasets: [{
                 label: "项目数量",
-                backgroundColor: 'rgb(144,238,144)',
+                backgroundColor: '#2ECC40',
                 borderColor: 'rgb(255, 99, 132)',
                 data:  result_data.project_amount ,  // 柱状图数据（一般为列表）
               }]
@@ -215,7 +215,7 @@
               labels:  result_data.month_list ,  // X轴标签数据（一般为列表）
               datasets: [{
                 label: "样本数量",
-                backgroundColor: '#007bff',
+                backgroundColor: '#0074D9',
                 borderColor: '#007bff',
                 data:  result_data.sample_amount ,  // 柱状图数据（一般为列表）
               }]

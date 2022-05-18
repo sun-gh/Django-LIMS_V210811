@@ -6,6 +6,7 @@ from django.db.models import Count, Sum, F, Q
 import json
 from django.http import HttpResponse
 from datetime import date, datetime
+from chinese_calendar import get_workdays
 
 
 @login_required()
@@ -138,33 +139,114 @@ def delay_rate_page(request):
         return render(request, 'data_visual/delay_rate_page.html')
 
 
-def total_delay_rate(request):
-    # 总体延期率统计(超期判断标准：1、当前阶段已完成项目；2、实际日期大于截止日期；)
+def analyse_by_finish_time(request):
+    # 按完成时间统计延期率(延期判断标准：1、当前阶段已完成项目；2、实际日期大于截止日期；)
     current_time = datetime.now()
-    data = {}
     date_now = current_time.date()
     last_year = date_now.replace(year=date_now.year-1)
+    data = {}
     project_received = SampleRecord.objects.filter(receive_time__gt=last_year)
     # 前处理阶段计算
-    pretreat_data = project_received.filter(project_type__pre_process_cycle__isnull=False,
-                                            pretreat_finish_date__isnull=False).annotate(
+    pretreat_finish_pros = project_received.filter(project_type__pre_process_cycle__isnull=False,
+                                                   pretreat_finish_date__isnull=False)
+    pretreat_data = pretreat_finish_pros.annotate(
         year=ExtractYear('pretreat_finish_date'), month=ExtractMonth('pretreat_finish_date')).\
         values('year', 'month').order_by('year', 'month').annotate(
         finish_count=Count('id'), delay_count=Count('id', filter=Q(pretreat_finish_date__gt=F('pretreat_deadline'))))
     pretreat_month = []
-    pretreat_delay_rate = []
-    pretreat_delay_count = []
+    pretreat_rate_by_finish = []
+    pretreat_count_by_finish = []
+    pretreat_rate_by_use = []
+    pretreat_count_by_use = []
     for data_per_month in pretreat_data:
         pretreat_month.append(str(data_per_month['year'])+"年"+str(data_per_month['month'])+"月")
-        delay_rate = round(data_per_month['delay_count'] * 100 / data_per_month['finish_count'], 1)
-        pretreat_delay_rate.append(delay_rate)
-        pretreat_delay_count.append(data_per_month['delay_count'])
-    # print(pretreat_month, pretreat_delay_rate)
+        delay_rate_per_month = round(data_per_month['delay_count'] * 100 / data_per_month['finish_count'], 1)
+        pretreat_rate_by_finish.append(delay_rate_per_month)
+        pretreat_count_by_finish.append(data_per_month['delay_count'])
+        pros_current_month = pretreat_finish_pros.filter(pretreat_finish_date__year=data_per_month['year'],
+                                                         pretreat_finish_date__month=data_per_month['month'])
+        delay_count_current_month = 0
+        for pro in pros_current_month:
+            pro_workday = get_workdays(pro.pro_start_date, pro.pretreat_finish_date)
+            if len(pro_workday) > pro.project_type.pre_process_cycle:
+                delay_count_current_month += 1
+        pretreat_count_by_use.append(delay_count_current_month)
+        delay_rate_current_month = round(delay_count_current_month * 100 / data_per_month['finish_count'], 1)
+        pretreat_rate_by_use.append(delay_rate_current_month)
     data['pretreat_month'] = pretreat_month
-    data['pretreat_delay_rate'] = pretreat_delay_rate
-    data['pretreat_delay_count'] = pretreat_delay_count
+    data['pretreat_rate_by_finish'] = pretreat_rate_by_finish
+    data['pretreat_count_by_finish'] = pretreat_count_by_finish
+    data['pretreat_rate_by_use'] = pretreat_rate_by_use
+    data['pretreat_count_by_use'] = pretreat_count_by_use
     # 质谱检测阶段计算
-
-    # 数据分析阶段
+    test_finish_pros = project_received.filter(project_type__test_cycle__isnull=False,
+                                               test_finish_date__isnull=False)
+    test_data = test_finish_pros.annotate(
+        year=ExtractYear('test_finish_date'), month=ExtractMonth('test_finish_date')). \
+        values('year', 'month').order_by('year', 'month').annotate(
+        finish_count=Count('id'), delay_count=Count('id', filter=Q(test_finish_date__gt=F('test_deadline'))))
+    test_month = []
+    test_rate_by_finish = []
+    test_count_by_finish = []
+    test_rate_by_use = []
+    test_count_by_use = []
+    for data_per_month in test_data:
+        test_month.append(str(data_per_month['year']) + "年" + str(data_per_month['month']) + "月")
+        delay_rate = round(data_per_month['delay_count'] * 100 / data_per_month['finish_count'], 1)
+        test_rate_by_finish.append(delay_rate)
+        test_count_by_finish.append(data_per_month['delay_count'])
+        pros_current_month = test_finish_pros.filter(test_finish_date__year=data_per_month['year'],
+                                                     test_finish_date__month=data_per_month['month'])
+        delay_count_current_month = 0
+        for pro in pros_current_month:
+            pro_workday = get_workdays(pro.pretreat_finish_date, pro.test_finish_date)
+            if len(pro_workday) > pro.project_type.test_cycle:
+                delay_count_current_month += 1
+        test_count_by_use.append(delay_count_current_month)
+        delay_rate_current_month = round(delay_count_current_month * 100 / data_per_month['finish_count'], 1)
+        test_rate_by_use.append(delay_rate_current_month)
+    data['test_month'] = test_month
+    data['test_rate_by_finish'] = test_rate_by_finish
+    data['test_count_by_finish'] = test_count_by_finish
+    data['test_rate_by_use'] = test_rate_by_use
+    data['test_count_by_use'] = test_count_by_use
+    # 数据分析阶段（目前设计为除“质谱上机”以外的项目延期率统计）
+    analysis_finish_pros = project_received.filter(project_type__analysis_cycle__isnull=False,
+                                                   date_send_report__isnull=False)
+    analysis_data = analysis_finish_pros.annotate(
+        year=ExtractYear('date_send_report'), month=ExtractMonth('date_send_report')). \
+        values('year', 'month').order_by('year', 'month').annotate(
+        finish_count=Count('id'), delay_count=Count('id', filter=Q(date_send_report__gt=F('pro_deadline'))))
+    analysis_month_by_finish = []
+    analysis_rate_by_finish = []
+    analysis_count_by_finish = []
+    analysis_month_by_use = []
+    analysis_rate_by_use = []
+    analysis_count_by_use = []
+    for data_per_month in analysis_data:
+        analysis_month_by_finish.append(str(data_per_month['year']) + "年" + str(data_per_month['month']) + "月")
+        delay_rate = round(data_per_month['delay_count'] * 100 / data_per_month['finish_count'], 1)
+        analysis_rate_by_finish.append(delay_rate)
+        analysis_count_by_finish.append(data_per_month['delay_count'])
+        pros_current_month = analysis_finish_pros.filter(date_send_report__year=data_per_month['year'],
+                                                         date_send_report__month=data_per_month['month'],
+                                                         test_finish_date__isnull=False)
+        if pros_current_month:
+            analysis_month_by_use.append(str(data_per_month['year']) + "年" + str(data_per_month['month']) + "月")
+            delay_count_current_month = 0
+            for pro in pros_current_month:
+                pro_workday = get_workdays(pro.test_finish_date, pro.date_send_report)
+                if len(pro_workday) > pro.project_type.analysis_cycle:
+                    delay_count_current_month += 1
+            analysis_count_by_use.append(delay_count_current_month)
+            delay_rate_current_month = round(delay_count_current_month * 100 / pros_current_month.count(), 1)
+            analysis_rate_by_use.append(delay_rate_current_month)
+    data['analysis_month_by_finish'] = analysis_month_by_finish
+    data['analysis_rate_by_finish'] = analysis_rate_by_finish
+    data['analysis_count_by_finish'] = analysis_count_by_finish
+    data['analysis_month_by_use'] = analysis_month_by_use
+    data['analysis_rate_by_use'] = analysis_rate_by_use
+    data['analysis_count_by_use'] = analysis_count_by_use
 
     return HttpResponse(json.dumps(data))
+

@@ -12,6 +12,5 @@ urlpatterns = [
     path('project_type_statistics/', views.project_type_statistics, name='project_type_statistics'),
     path('sample_type_statistics/', views.sample_type_statistics, name='sample_type_statistics'),
     path('delay_rate_page/', views.delay_rate_page, name='delay_rate_page'),
-    path('total_delay_rate/', views.total_delay_rate, name='total_delay_rate'),
-
+    path('analyse_by_finish_time/', views.analyse_by_finish_time, name='analyse_by_finish_time'),
     ]
