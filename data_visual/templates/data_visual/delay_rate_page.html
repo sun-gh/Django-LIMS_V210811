@@ -6,7 +6,6 @@
 {% block css %}
   <!--chartjs css-->
   <link href="{% static 'chart.js-2.9.4/package/dist/Chart.min.css'  %}" rel="stylesheet" />
-
   <!--<link href="{% static 'css/inv_detail.css'  %}" rel="stylesheet" />-->
 {% endblock  %}
 
@@ -39,11 +38,15 @@
               <div class="row">
                 <div class="col-md-6">
                   <p class="text-left">按完成时间统计</p>
-                  <canvas id="myChart1" ></canvas>
+                  <div class="chart_div">
+                    <canvas id="myChart1" ></canvas>
+                  </div>
                 </div>
                 <div class="col-md-6">
                   <p class="text-left">按使用时间统计</p>
-                  <canvas id="myChart4" ></canvas>
+                  <div class="chart_div">
+                    <canvas id="myChart2" ></canvas>
+                  </div>
                 </div>
               </div>
             </div>
@@ -61,11 +64,15 @@
               <div class="row">
                 <div class="col-md-6">
                   <p class="text-left">按完成时间统计</p>
-                  <canvas id="myChart2" ></canvas>
+                  <div class="chart_div">
+                    <canvas id="myChart3" ></canvas>
+                  </div>
                 </div>
                 <div class="col-md-6">
                   <p class="text-left">按使用时间统计</p>
-                  <canvas id="myChart5" ></canvas>
+                  <div class="chart_div">
+                    <canvas id="myChart4" ></canvas>
+                  </div>
                 </div>
               </div>
             </div>
@@ -83,11 +90,15 @@
               <div class="row">
                 <div class="col-md-6">
                   <p class="text-left">按完成时间统计</p>
-                  <canvas id="myChart3" ></canvas>
+                  <div class="chart_div">
+                    <canvas id="myChart5" ></canvas>
+                  </div>
                 </div>
                 <div class="col-md-6">
                   <p class="text-left">按使用时间统计</p>
-                  <canvas id="myChart6" ></canvas>
+                  <div class="chart_div">
+                    <canvas id="myChart6" ></canvas>
+                  </div>
                 </div>
               </div>
             </div>
@@ -102,248 +113,232 @@
 {% block script %}
 <!-- chartjs js -->
 <script src="{% static 'chart.js-2.9.4/package/dist/Chart.min.js' %}"></script>
-
 <script type="text/javascript">
-// 按完成时间统计延期率
-  function AnalyseByFinishTime() {
-    $.get(
-      '/data_visual/analyse_by_finish_time/',
-      function(data,status) {
-        if (status=='success'){
-          var result_data = JSON.parse(data);
-          // 定义前处理阶段延期率
-          var ctx1 = document.getElementById('myChart1').getContext('2d');
-          var chart1 = new Chart(ctx1, {
-            // 要创建的图表类型
-            type: 'bar',
-            // 数据集
-            data: {
-              labels:  result_data.pretreat_month ,  // X轴标签数据（一般为列表）
-              datasets: [{
-                label: "延期率",
-                backgroundColor: '#3D9970',
-                borderColor: 'rgb(255, 99, 132)',
-                data:  result_data.pretreat_rate_by_finish ,  // 柱状图数据（一般为列表）
-              }]
-            },
-            // 配置选项
-            options: {
-              scales: {
-                yAxes: [{
-                  ticks: {
-                    beginAtZero: true,
-                    callback:function(label,index,labels){
-                      return String(label)+'%';
-                    }
-                  }
-                }]
-              },
-              tooltips: {
-                callbacks: {
-                  label: function(tooltipItem, data){
-                    //console.log(tooltipItem.datasetIndex);
-                    var label =  "延期项目数：" + result_data.pretreat_count_by_finish[tooltipItem.index];
-                    return label;
-                  }
-                }
-              }
-            }
-          });
-          // 定义质谱检测阶段延期率
-          var ctx2 = document.getElementById('myChart2').getContext('2d');
-          var chart2 = new Chart(ctx2, {
-            // 要创建的图表类型
-            type: 'bar',
-            // 数据集
-            data: {
-              labels:  result_data.test_month ,  // X轴标签数据（一般为列表）
-              datasets: [{
-                label: "延期率",
-                backgroundColor: '#0074D9',
-                borderColor: 'rgb(255, 99, 132)',
-                data:  result_data.test_rate_by_finish ,  // 柱状图数据（一般为列表）
-              }]
-            },
-            // 配置选项
-            options: {
-              scales: {
-                yAxes: [{
-                  ticks: {
-                    beginAtZero: true,
-                    callback:function(label,index,labels){
-                      return String(label)+'%';
-                    }
-                  }
-                }]
-              },
-              tooltips: {
-                callbacks: {
-                  label: function(tooltipItem, data){
-                    //console.log(tooltipItem.datasetIndex);
-                    var label =  "延期项目数：" + result_data.test_count_by_finish[tooltipItem.index];
-                    return label;
-                  }
-                }
-              }
-            }
-          });
-          // 定义数据分析阶段延期率
-          var ctx3 = document.getElementById('myChart3').getContext('2d');
-          var chart3 = new Chart(ctx3, {
-            // 要创建的图表类型
-            type: 'bar',
-            // 数据集
-            data: {
-              labels:  result_data.analysis_month_by_finish ,  // X轴标签数据（一般为列表）
-              datasets: [{
-                label: "延期率",
-                backgroundColor: '#DAA520',
-                borderColor: 'rgb(255, 99, 132)',
-                data:  result_data.analysis_rate_by_finish ,  // 柱状图数据（一般为列表）
-              }]
-            },
-            // 配置选项
-            options: {
-              scales: {
-                yAxes: [{
-                  ticks: {
-                    beginAtZero: true,
-                    callback:function(label,index,labels){
-                      return String(label)+'%';
-                    }
-                  }
-                }]
-              },
-              tooltips: {
-                callbacks: {
-                  label: function(tooltipItem, data){
-                    //console.log(tooltipItem.datasetIndex);
-                    var label =  "延期项目数：" + result_data.analysis_count_by_finish[tooltipItem.index];
-                    return label;
-                  }
-                }
-              }
-            }
-          });
-          // 定义前处理阶段按使用时间延期率
-          var ctx4 = document.getElementById('myChart4').getContext('2d');
-          var chart4 = new Chart(ctx4, {
-            // 要创建的图表类型
-            type: 'bar',
-            // 数据集
-            data: {
-              labels:  result_data.pretreat_month ,  // X轴标签数据（一般为列表）
-              datasets: [{
-                label: "延期率",
-                backgroundColor: '#2ECC40',
-                borderColor: 'rgb(255, 99, 132)',
-                data:  result_data.pretreat_rate_by_use ,  // 柱状图数据（一般为列表）
-              }]
-            },
-            // 配置选项
-            options: {
-              scales: {
-                yAxes: [{
-                  ticks: {
-                    beginAtZero: true,
-                    callback:function(label,index,labels){
-                      return String(label)+'%';
-                    }
-                  }
-                }]
-              },
-              tooltips: {
-                callbacks: {
-                  label: function(tooltipItem, data){
-                    //console.log(tooltipItem.datasetIndex);
-                    var label =  "延期项目数：" + result_data.pretreat_count_by_use[tooltipItem.index];
-                    return label;
-                  }
-                }
-              }
-            }
-          });
-          // 定义质谱检测阶段按使用时间延期率
-          var ctx5 = document.getElementById('myChart5').getContext('2d');
-          var chart5 = new Chart(ctx5, {
-            // 要创建的图表类型
-            type: 'bar',
-            // 数据集
-            data: {
-              labels:  result_data.test_month ,  // X轴标签数据（一般为列表）
-              datasets: [{
-                label: "延期率",
-                backgroundColor: '#7FDBFF',
-                borderColor: 'rgb(255, 99, 132)',
-                data:  result_data.test_rate_by_use ,  // 柱状图数据（一般为列表）
-              }]
-            },
-            // 配置选项
-            options: {
-              scales: {
-                yAxes: [{
-                  ticks: {
-                    beginAtZero: true,
-                    callback:function(label,index,labels){
-                      return String(label)+'%';
-                    }
-                  }
-                }]
-              },
-              tooltips: {
-                callbacks: {
-                  label: function(tooltipItem, data){
-                    //console.log(tooltipItem.datasetIndex);
-                    var label =  "延期项目数：" + result_data.test_count_by_use[tooltipItem.index];
-                    return label;
-                  }
-                }
-              }
-            }
-          });
-          // 定义数据分析阶段按使用时间延期率
-          var ctx6 = document.getElementById('myChart6').getContext('2d');
-          var chart6 = new Chart(ctx6, {
-            // 要创建的图表类型
-            type: 'bar',
-            // 数据集
-            data: {
-              labels:  result_data.analysis_month_by_use ,  // X轴标签数据（一般为列表）
-              datasets: [{
-                label: "延期率",
-                backgroundColor: '#FFDC00',
-                borderColor: 'rgb(255, 99, 132)',
-                data:  result_data.analysis_rate_by_use ,  // 柱状图数据（一般为列表）
-              }]
-            },
-            // 配置选项
-            options: {
-              scales: {
-                yAxes: [{
-                  ticks: {
-                    beginAtZero: true,
-                    callback:function(label,index,labels){
-                      return String(label)+'%';
-                    }
-                  }
-                }]
-              },
-              tooltips: {
-                callbacks: {
-                  label: function(tooltipItem, data){
-                    //console.log(tooltipItem.datasetIndex);
-                    var label =  "延期项目数：" + result_data.analysis_count_by_use[tooltipItem.index];
-                    return label;
-                  }
-                }
-              }
-            }
-          });
-        }   // if
-      }    // function
-    );    // ajax
+var option_scales = {
+    yAxes: [{
+      ticks: {
+        beginAtZero: true,
+        callback:function(label,index,labels){
+          return String(label)+'%';
+        }
+      }
+    }]
+  };
+var ctx1 = document.getElementById('myChart1').getContext('2d');
+var chart1 = new Chart(ctx1, {
+  // 要创建的图表类型
+  type: 'bar',
+  // 数据集
+  data: {
+    labels:  [] ,  // X轴标签数据（一般为列表）
+    datasets: [{
+      label: "延期率",
+      backgroundColor: '#3D9970',
+      borderColor: 'rgb(255, 99, 132)',
+      data:  [] ,  // 柱状图数据（一般为列表）
+    }]
+  },
+  // 配置选项
+  options: {
+    scales: option_scales,
+    tooltips: {
+      callbacks: {
+        label: function(tooltipItem, data){
+        }
+      }
+    },
+
   }
-  AnalyseByFinishTime();
+});
+var ctx2 = document.getElementById('myChart2').getContext('2d');
+var chart2 = new Chart(ctx2, {
+  // 要创建的图表类型
+  type: 'bar',
+  // 数据集
+  data: {
+    labels:  [] ,  // X轴标签数据（一般为列表）
+    datasets: [{
+      label: "延期率",
+      backgroundColor: '#2ECC40',
+      borderColor: 'rgb(255, 99, 132)',
+      data:  [] ,  // 柱状图数据（一般为列表）
+    }]
+  },
+  // 配置选项
+  options: {
+    scales: option_scales,
+    tooltips: {
+      callbacks: {
+        label: function(tooltipItem, data){
+        }
+      }
+    }
+  }
+});
+var ctx3 = document.getElementById('myChart3').getContext('2d');
+var chart3 = new Chart(ctx3, {
+  // 要创建的图表类型
+  type: 'bar',
+  // 数据集
+  data: {
+    labels:  [] ,  // X轴标签数据（一般为列表）
+    datasets: [{
+      label: "延期率",
+      backgroundColor: '#0074D9',
+      borderColor: 'rgb(255, 99, 132)',
+      data:  [] ,  // 柱状图数据（一般为列表）
+    }]
+  },
+  // 配置选项
+  options: {
+    scales: option_scales,
+    tooltips: {
+      callbacks: {
+        label: function(tooltipItem, data){
+        }
+      }
+    }
+  }
+});
+var ctx4 = document.getElementById('myChart4').getContext('2d');
+var chart4 = new Chart(ctx4, {
+  // 要创建的图表类型
+  type: 'bar',
+  // 数据集
+  data: {
+    labels:  [] ,  // X轴标签数据（一般为列表）
+    datasets: [{
+      label: "延期率",
+      backgroundColor: '#7FDBFF',
+      borderColor: 'rgb(255, 99, 132)',
+      data: [] ,  // 柱状图数据（一般为列表）
+    }]
+  },
+  // 配置选项
+  options: {
+    scales: option_scales,
+    tooltips: {
+      callbacks: {
+        label: function(tooltipItem, data){
+        }
+      }
+    }
+  }
+});
+var ctx5 = document.getElementById('myChart5').getContext('2d');
+var chart5 = new Chart(ctx5, {
+  // 要创建的图表类型
+  type: 'bar',
+  // 数据集
+  data: {
+    labels:  [] ,  // X轴标签数据（一般为列表）
+    datasets: [{
+      label: "延期率",
+      backgroundColor: '#DAA520',
+      borderColor: 'rgb(255, 99, 132)',
+      data:  [] ,  // 柱状图数据（一般为列表）
+    }]
+  },
+  // 配置选项
+  options: {
+    scales: option_scales,
+    tooltips: {
+      callbacks: {
+        label: function(tooltipItem, data){
+        }
+      }
+    }
+  }
+});
+var ctx6 = document.getElementById('myChart6').getContext('2d');
+var chart6 = new Chart(ctx6, {
+  // 要创建的图表类型
+  type: 'bar',
+  // 数据集
+  data: {
+    labels:  [],  // X轴标签数据（一般为列表）
+    datasets: [{
+      label: "延期率",
+      backgroundColor: '#FFDC00',
+      borderColor: 'rgb(255, 99, 132)',
+      data:  [] ,  // 柱状图数据（一般为列表）
+    }]
+  },
+  // 配置选项
+  options: {
+    scales: option_scales,
+    tooltips: {
+      callbacks: {
+        label: function(tooltipItem, data){
+        }
+      }
+    }
+  }
+});
+
+// 通过ajax获取数据
+  $.ajax({
+    url:'/data_visual/analyse_by_finish_time/',
+    beforeSend:function(){
+      $('.chart_div').hide().after('<img class="load_img" src="{% static 'image/loading.gif' %}" />');
+    },
+    complete:function(){
+      $('.load_img').remove();
+      $('.chart_div').show();
+    },
+    success:function(data) {
+      //if (data.status){
+        var result_data = JSON.parse(data);
+        // 定义前处理阶段延期率
+        chart1.data.labels = result_data.pretreat_month;
+        chart1.data.datasets[0].data = result_data.pretreat_rate_by_finish;
+        chart1.options.tooltips.callbacks.label = function(tooltipItem, data){
+          var label =  "延期项目数：" + result_data.pretreat_count_by_finish[tooltipItem.index];
+          return label;
+        };
+        chart1.update();
+        chart2.data.labels = result_data.pretreat_month;
+        chart2.data.datasets[0].data = result_data.pretreat_rate_by_use;
+        chart2.options.tooltips.callbacks.label = function(tooltipItem, data){
+          var label =  "延期项目数：" + result_data.pretreat_count_by_use[tooltipItem.index];
+          return label;
+        };
+        chart2.update();
+        // 定义质谱检测阶段延期率
+        chart3.data.labels = result_data.test_month;
+        chart3.data.datasets[0].data = result_data.test_rate_by_finish;
+        chart3.options.tooltips.callbacks.label = function(tooltipItem, data){
+          var label =  "延期项目数：" + result_data.test_count_by_finish[tooltipItem.index];
+          return label;
+        };
+        chart3.update();
+        chart4.data.labels = result_data.test_month;
+        chart4.data.datasets[0].data = result_data.test_rate_by_use;
+        chart4.options.tooltips.callbacks.label = function(tooltipItem, data){
+          var label =  "延期项目数：" + result_data.test_count_by_use[tooltipItem.index];
+          return label;
+        };
+        chart4.update();
+        // 定义数据分析阶段延期率
+        chart5.data.labels = result_data.analysis_month_by_finish;
+        chart5.data.datasets[0].data = result_data.analysis_rate_by_finish;
+        chart5.options.tooltips.callbacks.label = function(tooltipItem, data){
+          var label =  "延期项目数：" + result_data.analysis_count_by_finish[tooltipItem.index];
+          return label;
+        };
+        chart5.update();
+        chart6.data.labels = result_data.analysis_month_by_use;
+        chart6.data.datasets[0].data = result_data.analysis_rate_by_use;
+        chart6.options.tooltips.callbacks.label = function(tooltipItem, data){
+          var label =  "延期项目数：" + result_data.analysis_count_by_use[tooltipItem.index];
+          return label;
+        };
+        chart6.update();
+
+    //  }   // if
+    },    // success
+
+  });    // ajax
 
 </script>
 {% endblock %}

@@ -153,6 +153,7 @@ def analyse_by_finish_time(request):
         year=ExtractYear('pretreat_finish_date'), month=ExtractMonth('pretreat_finish_date')).\
         values('year', 'month').order_by('year', 'month').annotate(
         finish_count=Count('id'), delay_count=Count('id', filter=Q(pretreat_finish_date__gt=F('pretreat_deadline'))))
+
     pretreat_month = []
     pretreat_rate_by_finish = []
     pretreat_count_by_finish = []
