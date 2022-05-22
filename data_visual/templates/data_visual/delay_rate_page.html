@@ -280,7 +280,7 @@ var chart6 = new Chart(ctx6, {
   $.ajax({
     url:'/data_visual/analyse_by_finish_time/',
     beforeSend:function(){
-      $('.chart_div').hide().after('<img class="load_img" src="{% static 'image/loading.gif' %}" />');
+      $('.chart_div').hide().after('<img class="load_img" src="{% static 'image/loading4.gif' %}" />');
     },
     complete:function(){
       $('.load_img').remove();

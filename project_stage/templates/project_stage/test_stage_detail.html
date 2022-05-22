@@ -44,6 +44,7 @@
                       <th>样本数量</th>
                       <th>检测仪器</th>
                       <th>项目负责人</th>
+                      <th>质谱工程师</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -68,7 +69,13 @@
                           <span>-</span>
                         {% endif %}
                       </td>
-
+                      <td>
+                        {% if record.ms_engineer %}
+                          <span>{{ record.ms_engineer }}</span>
+                        {% else %}
+                          <span>-</span>
+                        {% endif %}
+                      </td>
                     </tr>
                   </tbody>
                 </table>

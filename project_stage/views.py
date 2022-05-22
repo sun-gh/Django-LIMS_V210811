@@ -718,6 +718,11 @@ def test_stage_table(request):
             else:
                 leading_official = "-"
             # 以下为质谱检测阶段新添加字段
+            mass_spectra_engineer = project.ms_engineer
+            if mass_spectra_engineer:
+                ms_engineer = mass_spectra_engineer
+            else:
+                ms_engineer = "-"
             # 项目负责人
             technical_support = project.responsible_person
             if technical_support:
@@ -774,6 +779,7 @@ def test_stage_table(request):
                 "editable": editable,
                 # 以下为检测分析阶段新添加字段
                 "priority": project.priority,
+                "ms_engineer": ms_engineer,
                 "responsible_person": responsible_person,
                 "instrument_type": instrument_type,
                 "date_test": date_test,
@@ -790,9 +796,15 @@ def test_stage_edit(request, pro_id):
     # 定义检测阶段编辑功能
     pro_test = SampleRecord.objects.get(id=pro_id)
     if request.method == 'POST':
+        mass_spectra_engineer = pro_test.ms_engineer
         pro_test_form = TestStageForm(request.POST, instance=pro_test)
         if pro_test_form.is_valid():
-            pro_test_form.save()
+            change_list = pro_test_form.changed_data
+            pro_test_form.save(commit=False)
+            if "date_test" in change_list and not mass_spectra_engineer:
+                pro_test.ms_engineer = request.user.first_name
+            pro_test.save()
+            pro_test_form.save_m2m()
             msg = "edit_success"
             return redirect('project_stage:test_stage', msg)
         else:

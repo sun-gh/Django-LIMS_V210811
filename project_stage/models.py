@@ -218,6 +218,7 @@ class SampleRecord(models.Model):
     instrument_type = models.ForeignKey(Machine, verbose_name="上机仪器", on_delete=models.SET_NULL, blank=True, null=True)
     date_test = models.DateTimeField(verbose_name="上机日期", blank=True, null=True)
     test_finish_date = models.DateTimeField(verbose_name="下机日期", blank=True, null=True)
+    ms_engineer = models.CharField(max_length=32, verbose_name="质谱工程师", null=True, blank=True)
     responsible_person = models.ForeignKey(ResponsiblePerson, verbose_name="项目负责人", on_delete=models.SET_NULL,
                                            blank=True, null=True)
     date_searchlib = models.DateTimeField(verbose_name="搜库日期", blank=True, null=True)
