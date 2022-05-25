@@ -416,19 +416,18 @@ def advancepay_contract_edit(request, contract_id):
     if request.method == 'POST':
         contract_form = AdvancepayContractForm(request.POST, request.FILES or None, instance=contract)
         if contract_form.is_valid():
-            change_list = contract_form.changed_data
+            # change_list = contract_form.changed_data
             contract_form.save(commit=False)
             unit = contract_form.cleaned_data.get('unit')
             contract.unit_name = unit.unit_name
             contract.save()
             contract_form.save_m2m()  # 使用commit后要手动保存manytomany
             msg = "edit_success"
-            if "contract_type" in change_list:
-                related_apply_invoice = contract.applyinvoice_set.all()
-                if related_apply_invoice:  # 此时要修改对应开票申请的开票类型
-                    # print(related_apply_invoice)
-                    advancepay_edit_success.send(advancepay_contract_edit, msg=msg,
-                                                 contract=contract, apply_query=related_apply_invoice)
+            # if "contract_type" in change_list:
+            #     related_apply_invoice = contract.applyinvoice_set.all()
+            #     if related_apply_invoice:  # 此时要修改对应开票申请的开票类型
+            #         advancepay_edit_success.send(advancepay_contract_edit, msg=msg,
+            #                                      contract=contract, apply_query=related_apply_invoice)
             return redirect('contract_manage:advancepay_contract_page', msg)
         else:
             contract_form = AdvancepayContractForm(request.POST, request.FILES or None)

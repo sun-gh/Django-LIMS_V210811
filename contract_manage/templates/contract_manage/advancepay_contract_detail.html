@@ -41,6 +41,7 @@
                       <th>单位</th>
                       <th>联系人</th>
                       <th>合同金额</th>
+                      <th>合同类型</th>
                       <th>回收日期</th>
                       <th>创建人</th>
                     </tr>
@@ -50,6 +51,7 @@
                       <td>{{ contract.unit_name }}</td>
                       <td>{{ contract.linkman }}</td>
                       <td>{{ contract.contract_sum }}</td>
+                      <td>{{ contract.get_contract_type_display }}</td>
                       <td>
                         {% if contract.callback_date %}
                           {{ contract.callback_date|date:"Y-m-d" }}

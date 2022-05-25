@@ -8,17 +8,17 @@ from django.http import HttpResponse
 import json
 from customer.models import UnitInvoice
 from django.db.models import Q
-from django.dispatch import receiver
-from contract_manage.views import advancepay_edit_success, advancepay_contract_edit
+# from django.dispatch import receiver
+# from contract_manage.views import advancepay_edit_success, advancepay_contract_edit
 
 # Create your views here.
 
 
-@receiver(advancepay_edit_success, sender=advancepay_contract_edit)
-def edit_invoice_type(sender, **kwargs):
-    apply_query = kwargs['apply_query']
-    contract = kwargs['contract']
-    apply_query.update(invoice_type=contract.contract_type)
+# @receiver(advancepay_edit_success, sender=advancepay_contract_edit)
+# def edit_invoice_type(sender, **kwargs):
+#     apply_query = kwargs['apply_query']
+#     contract = kwargs['contract']
+#     apply_query.update(invoice_type=contract.contract_type)
 
 
 @login_required()
@@ -310,7 +310,7 @@ def untread_apply_invoice(request, apply_id):
             apply_obj.save()
 
             msg = "untread_success"
-            # return render(request, 'invoice_manage/apply_invoice_record.html', {'msg': msg})
+
             return redirect("invoice_manage:apply_invoice_record", msg)
     else:
         msg = "untread_failed"
@@ -333,7 +333,7 @@ def file_apply_invoice(request, apply_id):
             file_form.save_m2m()  # 使用commit后要手动保存manytomany
 
             msg = "file_success"
-            # return render(request, 'invoice_manage/apply_invoice_record.html', {'msg': msg})
+
             return redirect("invoice_manage:apply_invoice_record", msg)
         else:
             file_form = forms.FileApplyInvoiceForm(request.POST)
@@ -440,7 +440,6 @@ def invoice_info_table(request):
             response_data['rows'].append({
                 "invoice_id": invoice.id,
                 "invoice_number": invoice_num,
-                # "link_contract": invoice.link_apply.related_contract.contract_num,
                 "link_contract": contract,
                 "unit": invoice.unit_invoice,
                 "linkman": invoice.linkman,
@@ -496,7 +495,7 @@ def edit_invoice_info(request, invoice_id):
             invoice_form.save_m2m()
 
             msg = "edit_invoice_success"
-            # return render(request, 'invoice_manage/invoice_info.html', {'msg': msg})
+
             return redirect('invoice_manage:invoice_info', msg)
         else:
             invoice_form = forms.EditInvoiceInfoForm(request.POST)

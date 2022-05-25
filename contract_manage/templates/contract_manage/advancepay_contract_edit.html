@@ -88,13 +88,7 @@
                               {{ form.contract_sum }}
                             </div>
                           </div>
-                          <!--合同类型-->
-                          <div class="form-group row">
-                            {{ form.contract_type.label_tag }}
-                            <div class="col-md-7">{{  form.contract_type }}</div>
-                          </div>
                       </div>  <!--/.col-->
-
                       <div class="col">
                           <!--备注-->
                           <div class="form-group row">
@@ -117,7 +111,8 @@
                               {{ form.contract_file }}
                             </div>
                           </div>
-
+                          <!--合同类型-->
+                            <div style="display:none;">{{  form.contract_type }}</div>
                           <!--创建人-->
                             <div style="display:none;">{{  form.creator }}</div>
                       </div>    <!-- /.col-->
@@ -164,7 +159,6 @@
   $("[for='id_unit']").append(txt1);
   $("[for='id_linkman']").append(txt1);
   $("[for='id_contract_sum']").append(txt1);
-  $("[for='id_contract_type']").append(txt1);
 
   // 给select添加样式,<!-- Select2 -->
   $("#id_unit").addClass("select2");
