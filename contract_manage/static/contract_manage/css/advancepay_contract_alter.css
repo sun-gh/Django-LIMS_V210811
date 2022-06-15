@@ -1,0 +1,9 @@
+#alter_content {
+    height:auto !important;
+    height:165px;
+    min-height:165px;
+}
+
+form p {
+    color:red;
+}

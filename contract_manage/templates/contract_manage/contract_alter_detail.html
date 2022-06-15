@@ -1,0 +1,234 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;合同变更详情 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}" />
+  <link href="{% static 'contract_manage/css/contract_alter_detail.css'  %}" rel="stylesheet" />
+{% endblock  %}
+
+{% block content %}
+  <!-- Content Header (Page header) -->
+  <section class="content-header pb-1">
+    <div class="container-fluid">
+      <div class="row mb-0">
+        <div class="col-sm-6">
+          <h5>合同变更详情</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <!-- card-header -->
+          <div class="card-header ">
+            <h5 class="m-0"><strong class="btn btn-info">申请序号：{{ apply_detail.serial_number }}</strong></h5>
+          </div>
+          <!-- card-body -->
+          <div class="card-body  pb-1  ">
+            <div class="row">
+              <div class="col-md-12">
+                <h6><b>基本信息:</b></h6>
+                <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
+                  <thead>
+                    <tr>
+                      <th>变更类型</th>
+                      <th>变更原因</th>
+                      <th>申请人</th>
+                      <th>申请时间</th>
+                      <th>状态</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ apply_detail.get_alter_type_display }}</td>
+                      <td>{{ apply_detail.alter_reason }}</td>
+                      <td>{{ apply_detail.applicant }}</td>
+                      <td>{{ apply_detail.c_time|date:"Y-m-d" }}</td>
+                      <td>{{ apply_detail.get_status_display }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div><!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
+              <div class="col-md-8">
+              <h6><b>变更信息:</b></h6>
+              <table border="1" class="table " style="border-left:3px solid orangered;border-bottom:1px solid orangered" >
+                <thead>
+                  <tr>
+                    <th>单位</th>
+                    <th>
+                      {% if apply_detail.related_contract.contract_type == 0 %}
+                        关联项目
+                      {% else %}
+                        合同金额
+                      {% endif %}
+                    </th>
+                    <th>合同附件</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                        {% if apply_detail.alter_unit %}
+                          {{ apply_detail.alter_unit }}
+                        {% else %}
+                          -
+                        {% endif  %}
+                    </td>
+                    <td>
+                      {% if apply_detail.related_contract.contract_type == 0 %}
+                        {% for item in apply_detail.alter_projects.all %}
+                          {% if forloop.last %}
+                            <span class="related_order">{{ item.project_order.project_num }}</span>
+                          {% else %}
+                            <span class="related_order">{{ item.project_order.project_num }}、</span>
+                          {% endif %}
+                        {% empty %}
+                            -
+                        {% endfor %}
+                      {% else %}
+                        {{ apply_detail.alter_sum|default_if_none:"-" }}
+                      {% endif %}
+                    </td>
+                    <td>
+                        {% if apply_detail.alter_contract_file %}
+                            <span><a href="{{apply_detail.alter_contract_file.url}}">{{ apply_detail.alter_contract_file.name|slice:"15:" }}</a></span>
+                        {% else %}
+                            <span>-</span>
+                        {% endif %}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              </div>  <!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
+              <div class="col-md-10">
+              <h6><b>原合同信息:</b></h6>
+              <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
+                <thead>
+                  <tr>
+                    <th>合同编号</th>
+                    <th>合同类型</th>
+                    <th>单位</th>
+                    <th>联系人</th>
+                    <th>
+                      {% if apply_detail.related_contract.contract_type == 0 %}
+                        关联项目
+                      {% else %}
+                        合同金额
+                      {% endif %}
+                    </th>
+                    <th>创建人</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{ apply_detail.related_contract.contract_num }}</td>
+                    <td>{{ apply_detail.related_contract.get_contract_type_display }}</td>
+                    <td>{{ apply_detail.related_contract.unit_name }}</td>
+                    <td>{{ apply_detail.related_contract.linkman }}</td>
+                    <td>
+                      {% if apply_detail.related_contract.contract_type == 0 %}
+                        {% for item in apply_detail.related_contract.project_order.all %}
+                          {% if forloop.last %}
+                            <span class="related_order">{{ item.project_order.project_num }}</span>
+                          {% else %}
+                            <span class="related_order">{{ item.project_order.project_num }}、</span>
+                          {% endif %}
+                        {% empty %}
+                            -
+                        {% endfor %}
+                      {% else %}
+                        {{ apply_detail.related_contract.contract_sum }}
+                      {% endif %}
+                    </td>
+                    <td>{{ apply_detail.related_contract.creator }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              </div>  <!--/.col-->
+            </div>  <!--/.row-->
+
+          </div>  <!-- /.card-body-->
+          <div class="card-footer">
+            <div class="row">
+              <div class="col-md-6">
+                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'contract_manage:contract_alter_page' 'detail_back' %}" style="color:green;"><strong>返回合同变更信息页</strong></a>
+              </div>  <!--/.col-->
+              <div class="col-md-6">
+                {% if perms.contract_manage.approve_cut_payment %}
+                  {% if apply_detail.related_contract.contract_type == 0 %}
+                    <a class="btn btn-info btn-sm" href="{% url 'contract_manage:approve_project_contract_alter' apply_detail.id %}" name="approve_apply" role="button" >审批</a>
+                  {% else %}
+                    <a class="btn btn-info btn-sm" href="{% url 'contract_manage:approve_advancepay_contract_alter' apply_detail.id %}" name="approve_apply" role="button" >审批</a>
+                  {% endif %}
+                  &nbsp;
+                  <a class="btn btn-danger btn-sm" href="{% url 'contract_manage:untread_cut_payment' apply_detail.id %}" name="untread_apply" role="button" >退回</a>
+                {% endif %}
+              </div>
+            </div>
+          </div>  <!--/.row-->
+        </div>  <!-- /.card-->
+      </div> <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+{% block script %}
+
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+
+<script type="text/javascript">
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 定义message显示函数
+  function msgTip(){
+    var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+
+    if (msgs=='untread_failed') {
+      toastr.error('退回失败！');
+    }
+  }
+  msgTip();
+
+  // 根据status决定是否禁用“审批”；
+    var status_val=new Number;
+    status_val = {{ apply_detail.status }};
+    if (status_val == 2 ){
+      document.getElementsByName("approve_apply")[0].className += ' disabled';
+      };
+  // 根据status决定是否禁用“退回”；
+    if (status_val == 1 ){
+      document.getElementsByName("untread_apply")[0].className += ' disabled';
+      };
+
+</script>
+
+{% endblock %}

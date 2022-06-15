@@ -15,9 +15,9 @@
 {% block content %}
 
   <!-- Content Header (Page header) -->
-  <section class="content-header ">
+  <section class="content-header pb-1">
     <div class="container-fluid">
-      <div class="row mb-0">
+      <div class="row ">
         <div class="col-sm-6">
           <h5>预付款合同信息修改</h5>
         </div>
@@ -44,14 +44,14 @@
           <div class="card-body pb-0">
             <div class="row">
               <div class="col">
-                <p><span class="link_info"> 已开票金额 </span> ：{{ contract.makeout_invoice_sum }} </p>
-                <p><span class="link_info"> 未开票金额 </span> ：{{ contract.not_makeout_invoice_sum }} </p>
+                <p><span class="link_info"> 单位 </span> ：{{ contract.unit_name }} </p>
+                <p><span class="link_info"> 联系人 </span> ：{{ contract.linkman }} </p>
                 <p><span class="link_info"> 创建人 </span> ：{{ contract.creator }} </p>
 
               </div>
               <div class="col">
-                <p><span class="link_info"> 回款金额 </span> ：{{ contract.payment_sum }} </p>
-                <p><span class="link_info"> 已使用金额 </span> ：{{ contract.used_sum }} </p>
+                <p><span class="link_info"> 合同金额 </span> ：{{ contract.contract_sum }} </p>
+                <p><span class="link_info"> 状态 </span> ：{{ contract.get_status_display }} </p>
 
               </div>
             </div>

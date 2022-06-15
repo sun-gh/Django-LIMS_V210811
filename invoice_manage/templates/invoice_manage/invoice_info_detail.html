@@ -4,16 +4,15 @@
 {% block title %} 谱度众合&nbsp;|&nbsp;发票信息详情 {% endblock %}
 
 {% block css %}
-  <!--toastr提示框-->
-  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <!--custom css-->
   <link href="{% static 'invoice_manage/css/apply_invoice_detail.css'  %}" rel="stylesheet" />
 {% endblock  %}
 
 {% block content %}
   <!-- Content Header (Page header) -->
-  <section class="content-header ">
+  <section class="content-header pb-1">
     <div class="container-fluid">
-      <div class="row mb-0">
+      <div class="row ">
         <div class="col-sm-6">
           <h5>发票详细信息</h5>
         </div>
@@ -146,39 +145,7 @@
 
 {% endblock %}
 {% block script %}
-
-<!-- toastr提示框插件 -->
-<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
-
 <script type="text/javascript">
-  // 设置弹出提示框属性
-    toastr.options = {
-        closeButton: true,
-        debug: true,
-        progressBar: false,
-        positionClass: "toast-center-center",
-        onclick: null,
-        showDuration: "300",
-        hideDuration: "1000",
-        timeOut: "2000",
-        extendedTimeOut: "1000",
-        showEasing: "swing",
-        hideEasing: "linear",
-        showMethod: "fadeIn",
-        hideMethod: "fadeOut"
-    };
-
-  // 定义message显示函数
-  function msgTip(){
-    var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
-
-    if (msgs=='untread_failed') {
-      toastr.error('退回失败！');
-    }
-  }
-  msgTip();
-
 
 </script>
-
 {% endblock %}

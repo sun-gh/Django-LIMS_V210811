@@ -13,11 +13,10 @@
 {% endblock  %}
 
 {% block content %}
-
   <!-- Content Header (Page header) -->
-  <section class="content-header ">
+  <section class="content-header pb-1">
     <div class="container-fluid">
-      <div class="row mb-0">
+      <div class="row ">
         <div class="col-sm-6">
           <h5>项目合同信息修改</h5>
         </div>
@@ -27,7 +26,6 @@
       </div>
     </div><!-- /.container-fluid -->
   </section>
-
   <!-- card部分 -->
   <section class="content">
     <div class="row">
@@ -56,69 +54,73 @@
                     -
                 {% endfor %}
               </p>
-              <p><span> 合同金额 </span>：{{ contract.contract_sum }} </p>
+              <p><span> 单位 </span>：{{ contract.unit_name }} </p>
             </div>
             <div class="col">
-              <p><span class="link_info"> 已开票金额 </span> ：{{ contract.makeout_invoice_sum }} </p>
-              <p><span class="link_info"> 未开票金额 </span> ：{{ contract.not_makeout_invoice_sum }} </p>
+              <p><span class="link_info"> 联系人 </span> ：{{ contract.linkman }} </p>
+              <p><span class="link_info"> 状态 </span> ：{{ contract.get_status_display }} </p>
 
             </div>
           </div>
 
         </div> <!-- /.card-body -->
         </div>
-
         <div class="card card-info ">
-
               <form class="form-horizontal" method="post" action="{% url 'contract_manage:project_contract_edit' contract.id %}" enctype="multipart/form-data">
               <!-- card-body -->
               <div class="row">
                 <div class="col-md-10 offset-md-1">
                   <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
-
                     {% csrf_token %}
                     <div class="row ">
-                      <div class="col-md-8 offset-md-2">
-                          <!--单位-->
-                          <div class="form-group row">
-                            {{ form.unit.label_tag }}
-                            <div class="col-md-7">
-                              {{ form.unit }}
-                            </div>
+                      <div class="col">
+                        <!--关联项目-->
+                        <div class="form-group row">
+                          {{ form.project_order.label_tag }}
+                          <div class="col-md-7">
+                            {{  form.project_order }}
                           </div>
-                          <!--联系人-->
-                          <div class="form-group row">
-                            {{ form.linkman.label_tag }}
-                            <div class="col-md-7" id="unit">
-                              {{ form.linkman }}
-                            </div>
+                        </div>
+                        <!--单位-->
+                        <div class="form-group row">
+                          {{ form.unit.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.unit }}
                           </div>
-                          <!--回收日期-->
-                          <div class="form-group row">
-                            {{ form.callback_date.label_tag }}
-                            <div class="col-md-7">
-                              {{ form.callback_date }}
-                            </div>
+                        </div>
+                        <!--联系人-->
+                        <div class="form-group row">
+                          {{ form.linkman.label_tag }}
+                          <div class="col-md-7" id="unit">
+                            {{ form.linkman }}
                           </div>
-                          <!--备注-->
-                          <div class="form-group row">
-                            {{ form.note.label_tag }}
-                            <div class="col-md-7">
-                              {{ form.note }}
-                            </div>
-                          </div>
-                          <!--合同附件-->
-                          <div class="form-group row">
-                            {{ form.contract_file.label_tag }}
-                            <div class="col-md-7">
-                              {{ form.contract_file }}
-                            </div>
-                          </div>
-                          <!--创建人-->
-                          <div style="display:none;">{{  form.creator }}</div>
-                          <!--关联项目-->
-                          <div style="display:none;">{{  form.project_order }}</div>
+                        </div>
                       </div>    <!-- /.col-->
+                      <div class="col">
+                        <!--回收日期-->
+                        <div class="form-group row">
+                          {{ form.callback_date.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.callback_date }}
+                          </div>
+                        </div>
+                        <!--备注-->
+                        <div class="form-group row">
+                          {{ form.note.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.note }}
+                          </div>
+                        </div>
+                        <!--合同附件-->
+                        <div class="form-group row">
+                          {{ form.contract_file.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.contract_file }}
+                          </div>
+                        </div>
+                        <!--创建人-->
+                        <div style="display:none;">{{  form.creator }}</div>
+                      </div>
                       </div>   <!-- /.row-->
                   </div>  <!-- /.card-body-->
                 </div>   <!-- /.col-->
@@ -160,6 +162,8 @@
   // 给select添加样式,<!-- Select2 -->
     $("#id_unit").addClass("select2");
     $("#id_unit").attr("style","width:100%;");
+    $("#id_project_order").addClass("select2");
+    $("#id_project_order").attr("style","width:100%;");
   //Initialize Select2 Elements
     $('.select2').select2();
 

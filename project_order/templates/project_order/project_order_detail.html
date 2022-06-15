@@ -12,9 +12,9 @@
 
 {% block content %}
   <!-- Content Header (Page header) -->
-  <section class="content-header ">
+  <section class="content-header pb-1">
     <div class="container-fluid">
-      <div class="row mb-0">
+      <div class="row ">
         <div class="col-sm-6">
           <h5>项目结算详细信息</h5>
         </div>
@@ -187,9 +187,8 @@
       var contract_record='{{ order.contract_record }}';
       // console.log(contract_record);
       if (contract_record == 'True') {
-        toastr.error('已有关联合同，无法进行该操作！');
+        toastr.error('已有关联合同，无法归还项目！');
       }else {
-        toastr.info('无关联合同，可进行该操作！');
         var pro_id = '{{ order.id}}';
         window.location.href="/project_order/untread_project/" + pro_id + "/";
       }

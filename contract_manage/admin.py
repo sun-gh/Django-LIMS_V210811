@@ -5,3 +5,4 @@ from . import models
 
 admin.site.register(models.ProjectContract)
 admin.site.register(models.CutPayment)
+admin.site.register(models.ContractAlter)

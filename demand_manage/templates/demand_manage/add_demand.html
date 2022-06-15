@@ -15,9 +15,9 @@
 {% block content %}
 
   <!-- Content Header (Page header) -->
-  <section class="content-header ">
+  <section class="content-header pb-1">
     <div class="container-fluid">
-      <div class="row mb-0">
+      <div class="row ">
         <div class="col-sm-6">
           <h5>提出需求</h5>
         </div>
@@ -154,8 +154,6 @@
       var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
       if (msgs=='add_failed') {
         toastr.error('添加需求失败！')
-      }else if (msgs=='repeat') {
-        toastr.error('该客户已存在！')
       }
     }
     msgTip();

@@ -1,0 +1,280 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;合同变更 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/select2/css/select2.min.css' %}" />
+  <!--customer css-->
+  <link href="{% static 'contract_manage/css/advancepay_contract_alter.css'  %}" rel="stylesheet" />
+{% endblock  %}
+
+{% block content %}
+  <!-- Content Header (Page header) -->
+  <section class="content-header pb-1">
+    <div class="container-fluid">
+      <div class="row ">
+        <div class="col-sm-6">
+          <h5>项目合同变更</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-secondary">
+          <div class="card-header">
+            <h3 class="card-title">合同编号：&nbsp;{{ contract.contract_num }}</h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                <i class="fas fa-minus"></i></button>
+            </div>
+          </div>
+          <div class="card-body pb-0">
+            <div class="row">
+              <div class="col">
+                <p><span class="link_info"> 单位 </span> ：{{ contract.unit_name }} </p>
+                <p><span class="link_info"> 联系人 </span> ：{{ contract.linkman }} </p>
+              </div>
+              <div class="col">
+                <p><span class="link_info"> 关联项目 </span> ：
+                  {% for project_order in contract.project_order.all %}
+                    {% if forloop.last %}
+                      {{ project_order.project_order.project_num }}
+                    {% else %}
+                      {{ project_order.project_order.project_num }}、
+                    {% endif %}
+                  {% empty %}
+                  -
+                  {% endfor %}
+                </p>
+                <p><span class="link_info"> 状态 </span> ：{{ contract.get_status_display }} </p>
+              </div>
+            </div>
+          </div> <!-- /.card-body -->
+        </div>  <!-- /.card-secondary  -->
+        <div class="card card-info ">
+          <form class="form-horizontal" method="post"  enctype="multipart/form-data">
+            <!-- card-body -->
+            <div class="card-body ">
+              {% csrf_token %}
+              <div class="row" id="alter_content">
+                <div class="col">
+                  <div class="row ">
+                    <div class="col text-right">
+                      <span ><strong  >请选择变更类型：</strong></span>
+                    </div>
+                    <div class="col">
+                      {{ form.alter_type.0 }} &nbsp;&nbsp; {{ form.alter_type.1 }}
+                    </div>
+                  </div>
+                  <div class="row ">
+                    <div class="col text-center">
+                      <p>选择“终止合同”时请跳过下一项</p>
+                    </div>
+                  </div>
+                  <div class="row mb-2 mt-2" id="invoice_newly" >
+                    <div class="col text-right">
+                      <span ><strong  >是否重新开票：</strong></span>
+                    </div>
+                    <div class="col">
+                      {{ form.newly_invoice.0 }} &nbsp;&nbsp;{{ form.newly_invoice.1 }}
+                    </div>
+                  </div>
+                  <div class="row mt-3 "  id="alter_reason_div">
+                    <div class="col-md-6 text-right ">
+                      <span ><strong>{{ form.alter_reason.label }}：</strong></span>
+                    </div>
+                    <div class="col-md-6">
+                      {{ form.alter_reason }}
+                    </div>
+                  </div>
+                </div>
+                <div class="col" id="detail_alter_content" style="display:none;">
+                  <div class="row mb-2 mt-1">
+                    <div class="col-md-4 text-center m-auto">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="unit_check" id="unit_check" />
+                        <label class="form-check-label" for="unit_check">{{ form.alter_unit.label }}：</label>
+                      </div>
+                    </div>
+                    <div class="col-md-8">
+                      {{ form.alter_unit }}
+                    </div>
+                  </div>
+                  <div class="row mb-2 mt-4">
+                    <div class="col-md-4 text-center m-auto">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="project_check" id="project_check" />
+                        <label class="form-check-label" for="project_check">{{ form.alter_projects.label }}：</label>
+                      </div>
+                    </div>
+                    <div class="col-md-8">
+                      {{ form.alter_projects }}
+                    </div>
+                  </div>
+                  <div class="row mt-4">
+                    <div class="col-md-4 text-center m-auto">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="file_check" id="file_check" />
+                        <label class="form-check-label" for="file_check">{{ form.alter_contract_file.label }}：</label>
+                      </div>
+                    </div>
+                    <div class="col-md-8">
+                      {{ form.alter_contract_file }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row text-center">
+                <div class="col-md-11 offset-md-1 ">
+                  <p id="alter_warn" class="mb-0"></p>
+                </div>
+              </div>
+            </div>  <!-- /.card-body-->
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card-footer ">
+                    <div class="row">
+                      <div class="col-md-2 offset-md-5">
+                        <a href="{% url 'contract_manage:project_contract_page' 'edit_back' %}" class="btn btn-secondary btn-sm">取消</a>
+                        <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
+                      </div>
+                    </div>
+                  </div>  <!-- /.card-footer-->
+                </div>  <!-- /.col-->
+              </div>   <!-- /.row-->
+          </form>
+        </div>  <!-- /.card-->
+      </div>   <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+
+{% block script %}
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+<!-- Select2 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/select2/js/select2.full.min.js' %}"></script>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+
+  // 给select添加样式,<!-- Select2 -->
+  $("#id_alter_unit").addClass("select2");
+  $("#id_alter_unit").attr("style","width:100%;");
+  $("#id_alter_projects").addClass("select2");
+  $("#id_alter_projects").attr("style","width:100%;");
+  //Initialize Select2 Elements
+  $('.select2').select2();
+
+  function ControlEditArea(){
+    var alter_type_checked = $("input:radio[name='alter_type']:checked").val();
+    var newly_invoice_checked = $("input:radio[name='newly_invoice']:checked").val();
+    if (alter_type_checked=='edit' && newly_invoice_checked=='False'){
+      $("#alter_warn").text("在右侧要修改的选项前打勾，补充正确信息。");
+      $('#detail_alter_content').attr('style','display:compact;');
+    };
+  };
+  ControlEditArea();
+
+  $("input:radio[name='alter_type']").change(function(){
+    var select_value = $(this).val();
+    if(select_value == 'end'){
+      $('input:radio[name="newly_invoice"]').removeAttr("required");
+      $("input:radio[name='newly_invoice']").attr("disabled", "true");
+      $("#alter_warn").text(" ");
+    }else {
+      $('input:radio[name="newly_invoice"]').removeAttr("disabled");
+      $('input:radio[name="newly_invoice"]').attr("required","true");
+    };
+    return ;
+  });
+  $("input:radio[name='newly_invoice']").change(function(){
+    var select_value = $(this).val();
+    if(select_value == "False"){
+      $("#alter_warn").text("在右侧要修改的选项前打勾，补充正确信息。");
+      $('#detail_alter_content').attr('style','display:compact;');
+    }else {
+      $("#alter_warn").text('提交“粗体”内容申请作废合同，审批后需新建合同。');
+    };
+    return ;
+  });
+
+  $("input:checkbox[name='unit_check']").change(function(){
+    var check_result = $(this).is(':checked');
+    if (check_result){
+      //console.log("单位被选中");
+      $(this).val(1);
+      $('#id_alter_unit').attr("required","true");
+    }else {
+      $(this).val(0);
+      $('#id_alter_unit').removeAttr("required");
+    };
+    return ;
+  });
+  $("input:checkbox[name='project_check']").change(function(){
+    var check_result = $(this).is(':checked');
+    if (check_result){
+      $(this).val(1);
+      $('#id_alter_projects').attr("required","true");
+    }else {
+      $(this).val(0);
+      $('#id_alter_projects').removeAttr("required");
+    };
+    return ;
+  });
+  $("input:checkbox[name='file_check']").change(function(){
+    var check_result = $(this).is(':checked');
+    if (check_result){
+      $(this).val(1);
+      $('#id_alter_contract_file').attr("required","true");
+    }else {
+      $(this).val(0);
+      $('#id_alter_contract_file').removeAttr("required");
+    };
+    return ;
+  });
+
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='verify_fail') {
+        toastr.error('验证失败！')
+      }else if(msgs=='info_less'){
+        toastr.error('请补充要修改的内容！')
+      }
+    }
+    msgTip();
+
+});  // .ready
+
+</script>
+{% endblock %}

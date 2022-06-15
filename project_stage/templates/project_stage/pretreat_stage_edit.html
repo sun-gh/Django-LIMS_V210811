@@ -15,9 +15,9 @@
 {% block content %}
 
   <!-- Content Header (Page header) -->
-  <section class="content-header pb-1 pt-2">
+  <section class="content-header pb-1">
     <div class="container-fluid">
-      <div class="row mb-0">
+      <div class="row ">
         <div class="col-sm-6">
           <h5>前处理信息修改</h5>
         </div>
@@ -235,9 +235,7 @@
     function msgTip(){
       var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
       if (msgs=='failed') {
-        toastr.error('修改失败！')
-      }else if (msgs=='info_error') {
-        toastr.error('添加失败！')
+        toastr.error('信息有误，提交失败！')
       }
     }
     msgTip();

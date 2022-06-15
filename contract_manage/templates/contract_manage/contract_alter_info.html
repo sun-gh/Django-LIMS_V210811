@@ -1,16 +1,16 @@
 {% extends "customer/base.html"  %}
 {% load static %}
 
-{% block title %} 谱度众合&nbsp;|&nbsp;预付款扣款信息 {% endblock %}
+{% block title %} 谱度众合&nbsp;|&nbsp;合同变更信息 {% endblock %}
 
 {% block css %}
   <!--bootstrap-table-->
-  <link rel="stylesheet" href="{% static 'bootstrap-table-1.17.0/dist/bootstrap-table.min.css' %}">
+  <link rel="stylesheet" href="{% static 'bootstrap-table-1.17.0/dist/bootstrap-table.min.css' %}" />
   <!--bootstrap-table fixed columns-->
-  <link rel="stylesheet" href="{% static 'bootstrap-table-1.17.0/dist/extensions/fixed-columns/bootstrap-table-fixed-columns.min.css' %}">
+  <link rel="stylesheet" href="{% static 'bootstrap-table-1.17.0/dist/extensions/fixed-columns/bootstrap-table-fixed-columns.min.css' %}" />
   <!--toastr提示框-->
-  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
-  <link href="{% static 'contract_manage/css/cut_payment_info.css'  %}" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}" />
+  <link href="{% static 'contract_manage/css/contract_alter_info.css'  %}" rel="stylesheet" />
 
 {% endblock  %}
 
@@ -21,7 +21,7 @@
     <div class="container-fluid">
       <div class="row ">
         <div class="col-sm-6">
-          <h5>预付款扣款信息</h5>
+          <h5>合同变更信息</h5>
         </div>
         <div class="col-sm-6">
 
@@ -43,13 +43,6 @@
             </table>
 
             <div id="toolbar">
-
-              {% if perms.contract_manage.add_cutpayment %}
-                <a class="btn btn-primary btn-sm" href="#" role="button" onclick="add_apply()" >扣款申请</a>&nbsp;
-              {% endif %}
-              {% if perms.contract_manage.change_cutpayment %}
-                <a class="btn btn-info btn-sm" href="#" role="button" id="edit-apply" >修改</a>&nbsp;
-              {% endif %}
               {% if perms.contract_manage.delete_cutpayment %}
                 <a class="btn btn-secondary btn-sm" href="#" role="button" id="del-apply" >删除</a>
               {% endif %}
@@ -80,7 +73,6 @@
 <script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
 
 <script type="text/javascript">
-
     // 获取csrf
     function getCookie(name) {
         let cookieValue = null;
@@ -127,7 +119,7 @@
       $table.bootstrapTable({
       {#全部参数#}
 
-        url:"{% url 'contract_manage:cut_payment_table' %}",
+        url:"{% url 'contract_manage:contract_alter_table' %}",
         method: 'get',                      //请求方式（*）
         iconSize:"sm",                     // 设置图标大小  sm小图标 lg大图标
         cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
@@ -155,9 +147,9 @@
         exportTypes:['excel','csv'],  //导出文件类型
 
         exportOptions: {
-          fileName: '预付款扣款信息',  //文件名称设置
+          fileName: '合同变更信息',  //文件名称设置
           worksheetName: 'sheet1',  //表格工作区名称
-          tableName: '预付款扣款信息',
+          tableName: '合同变更信息',
           excelstyles: ['background-color', 'color', 'font-size', 'font-weight'],
 
         },
@@ -182,7 +174,7 @@
         },
         //定义Search placeholder
         formatSearch:function() {
-          return  "关联合同/关联项目";
+          return  "关联合同";
         },
 
         columns: [
@@ -233,28 +225,55 @@
             },
           },
           {
+            field: 'alter_type',
+            title: '变更类型',
+            width: 90,
+            align: 'center',
+          },
+          {
             field: 'link_contract',
             title: '关联合同',
             width: 90,
             align: 'center',
           },
+          //{
+          //  field: 'contract_type',
+          //  title: '合同类型',
+          //  width: 100,
+          //  align: 'center',
+          //},
           {
-            field: 'unused_sum',
-            title: '扣款前剩余金额',
-            width: 125,
+            field: 'unit',
+            title: '单位',
+            width: 290,
             align: 'center',
           },
           {
-            field: 'cut_sum',
-            title: '扣款金额',
+            field: 'project_numbers',
+            title: '关联项目',
+            width: 90,
+            align: 'center',
+            formatter: paramsMatter,
+          },
+          {
+            field: 'sum',
+            title: '合同金额',
             width: 90,
             align: 'center',
           },
           {
-            field: 'cut_date',
-            title: '扣款日期',
+            field: 'file_display',
+            title: '合同附件',
+            width: 90,
+            align: 'center',
+            formatter: linkMatter,
+          },
+          {
+            field: 'alter_reason',
+            title: '变更原因',
             width: 100,
             align: 'center',
+            formatter: paramsMatter,
           },
           {
             field: 'applicant',
@@ -267,20 +286,6 @@
             title: '申请日期',
             width: 100,
             align: 'center',
-          },
-          {
-            field: 'link_order',
-            title: '关联项目',
-            width: 100,
-            align: 'center',
-            formatter: paramsMatter,
-          },
-          {
-            field: 'note',
-            title: '备注',
-            width: 100,
-            align: 'center',
-            formatter: paramsMatter,
           },
 
         ],
@@ -329,7 +334,17 @@
     span.innerHTML = value;
     return span.outerHTML;
   }
-
+  // 定义文件为链接形式函数
+  function linkMatter(value,row,index) {
+    //var data = JSON.stringify(row);
+    var result = "";
+    if (!value) {
+      result = "-";
+    }else {
+      result += "<a href='/media/contract_files/" + value + "'>" + value + "</a>";
+    }
+    return result;
+  }
   // 设置弹出提示框属性
     toastr.options = {
         closeButton: true,
@@ -350,11 +365,7 @@
   function msgTip(){
     var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
 
-     if (msgs=='add_success') {
-      toastr.success('申请提交成功！');
-    }else if (msgs=='edit_success') {
-      toastr.success('修改申请信息成功！');
-    }else if (msgs=='approve_success') {
+    if (msgs=='approve_success') {
       toastr.success('审批成功！');
     }else if (msgs=='untread_success') {
       toastr.success('退回成功！');
@@ -362,56 +373,6 @@
   }
   msgTip();
 
-  //添加申请按钮函数
-  function add_apply() {
-    var param=$("input.search-input").val();
-    if(param!=null){
-        param=param;
-        sessionStorage.setItem("param", param);
-    }else {
-        param="";
-    }
-    sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
-    sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
-    window.location.href="/contract_manage/apply_cut_payment/";
-  }
-
-  //修改作废信息按钮函数
-  $("#edit-apply").on("click", function() {
-
-    var rows = $("#mytab").bootstrapTable('getSelections');// 获得要修改的数据
-    if (rows.length == 0) {  // 判断是否选中
-        //alert("请先选择要修改的记录!");
-        toastr.info('请先选择要修改的记录！');
-        return;
-    } else {
-      if (rows.length == 1) {
-        if (rows[0].status == 2){
-          toastr.info('已审批，无法修改！');
-          return;
-        }else{
-          var param=$("input.search-input").val();
-          if(param!=null){
-            param=param;
-            sessionStorage.setItem("param", param);
-          }else {
-            param="";
-          }
-          sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
-          sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
-
-          var apply_id = rows[0].apply_id;  // 获取客户id
-          var url="/contract_manage/cut_payment_edit/" + apply_id + "/"  ;
-
-          location.href=url;
-        }
-      } else {
-        //alert("一次只能修改一条记录!");
-        toastr.info('一次只能修改一条记录！');
-        return;
-      }
-    }
-  })  // btn.on
 
   // 删除按钮事件
     $("#del-apply").on("click", function() {
@@ -441,7 +402,7 @@
   //定义ajax请求函数
     function deleteMs(id) {
       $.post(
-        "/contract_manage/cut_payment_del/",
+        "/contract_manage/contract_alter_del/",
         {
         "ids": id ,
         "method":"post",
@@ -450,7 +411,7 @@
           if (data == 'del_success') {
             toastr.success('删除成功！');
             $('#mytab').bootstrapTable('refresh', {
-            url : "/contract_manage/cut_payment_table/"
+            url : "/contract_manage/contract_alter_table/"
           });
           }  //.if
         }  //. function
@@ -474,7 +435,7 @@
         var str_arry = btn_id.split('-');
         //var apply_id = parseInt(str_arry[1]);  // 将string转换为Int
         var apply_id = str_arry[1];
-        window.location.href="/contract_manage/cut_payment_detail/" + apply_id + "/";
+        window.location.href="/contract_manage/contract_alter_detail/" + apply_id + "/";
 
     } );  // .on
 

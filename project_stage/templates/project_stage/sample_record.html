@@ -632,25 +632,24 @@
         //alert("请先选择要删除的记录!");
         toastr.info('请先选择要删除的记录！');
         return;
-      } else {
+      } else if(rows.length == 1){
         if (confirm("是否确认删除？") == true) {
-          var ids = new Array();// 声明一个数组
-          $(rows).each(function() {  // 通过循环获得选中的记录
-            ids.push(this.project_id);
-            //alert(ids);
-          });
-          deleteMs(ids);
+          var project_id = new Number;  // 声明一个变量
+          project_id = rows[0].project_id;
+          deleteMs(project_id);
         } else {
           return false;
         }
+      }else {
+        toastr.info('一次只能删除一条记录！');
       }
     })  // btn.on
   //定义ajax请求函数
-    function deleteMs(ids) {
+    function deleteMs(project_id) {
       $.post(
         "/project_stage/sample_record_del/",
         {
-        "ids": JSON.stringify(ids) ,
+        "project_id": JSON.stringify(project_id) ,
         "method":"post",
         },
         function(data,status) {

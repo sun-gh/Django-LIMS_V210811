@@ -8,6 +8,7 @@ from django.http import HttpResponse
 import json
 from customer.models import UnitInvoice
 from django.db.models import Q
+import django.dispatch
 # from django.dispatch import receiver
 # from contract_manage.views import advancepay_edit_success, advancepay_contract_edit
 
@@ -19,6 +20,9 @@ from django.db.models import Q
 #     apply_query = kwargs['apply_query']
 #     contract = kwargs['contract']
 #     apply_query.update(invoice_type=contract.contract_type)
+
+
+apply_invoice_success = django.dispatch.Signal()
 
 
 @login_required()
@@ -61,8 +65,8 @@ def apply_invoice(request):
                 apply_instance.reimburse_file.add(file)
 
             msg = "add_success"
-            # 发送一个信号
-            # add_success.send(sample_record_add, msg=msg, sample_rec_id=sample_rec.id)
+            # 发送一个信号(修改对应合同状态)
+            apply_invoice_success.send(apply_invoice, msg=msg, related_contract=related_contract)
 
             return redirect("invoice_manage:apply_invoice_record", msg)
         else:
@@ -250,6 +254,9 @@ def apply_invoice_edit(request, apply_id):
         return render(request, 'invoice_manage/apply_invoice_edit.html', {'form': apply_form, 'apply_info': apply_info})
 
 
+apply_invoice_del_success = django.dispatch.Signal()
+
+
 @login_required()
 def apply_invoice_del(request):
     # 定义删除开票申请
@@ -257,11 +264,17 @@ def apply_invoice_del(request):
 
         apply_id = request.POST.get("ids")
         apply = ApplyInvoice.objects.get(id=apply_id)
+        related_contract = apply.related_contract
         apply.delete()
+
+        apply_invoice_del_success.send(apply_invoice_del, related_contract=related_contract)
 
         return HttpResponse("del_success")
 
     return HttpResponse("非POST请求！")
+
+
+approve_apply_invoice_success = django.dispatch.Signal()
 
 
 @login_required()
@@ -286,8 +299,13 @@ def approve_apply_invoice(request, apply_id):
     apply_detail.status = 1
     apply_detail.save()
     msg = "approve_success"
+    related_contract = apply_detail.related_contract
+    approve_apply_invoice_success.send(approve_apply_invoice, msg=msg, related_contract=related_contract)
 
     return redirect("invoice_manage:apply_invoice_record", msg)
+
+
+untread_apply_invoice_success = django.dispatch.Signal()
 
 
 @login_required()
@@ -310,6 +328,9 @@ def untread_apply_invoice(request, apply_id):
             apply_obj.save()
 
             msg = "untread_success"
+            # 此时可能要修改对应合同的状态（如该合同只有一个开票申请）
+            related_contract = apply_obj.related_contract
+            untread_apply_invoice_success.send(untread_apply_invoice, msg=msg, related_contract=related_contract)
 
             return redirect("invoice_manage:apply_invoice_record", msg)
     else:

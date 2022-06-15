@@ -443,18 +443,17 @@
 
   // 定义剩余周期函数
   function progressMatter(value,row,index) {
-    //var data = JSON.stringify(row);
     var result = "";
     if (value!="-") {
       if (value >= 50) {
         result +='<div class="progress"><div class="progress-bar bg-success" role="progressbar" style="width:'+
-        value+'%;" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100">'+value+'%</div></div>';
+        value+'%;" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100">'+row.days_left+'</div></div>';
       } else if (value >= 20) {
         result +='<div class="progress"><div class="progress-bar bg-warning" role="progressbar" style="width:'+
-        value+'%;" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100">'+value+'%</div></div>';
+        value+'%;" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100">'+row.days_left+'</div></div>';
       } else {
         result +='<div class="progress"><div class="progress-bar bg-danger" role="progressbar" style="width:'+
-        value+'%;" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100">'+value+'%</div></div>';
+        value+'%;" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100">'+row.days_left+'</div></div>';
       }
     }
     return result;

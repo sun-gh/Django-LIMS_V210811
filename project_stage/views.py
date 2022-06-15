@@ -367,10 +367,10 @@ def sample_record_edit(request, project_id):
 def sample_record_del(request):
     # 定义删除项目功能函数
     if request.method == 'POST':
-        ids = request.POST.get("ids")
-        for project_id in json.loads(ids):
-            project = SampleRecord.objects.get(id=project_id)
-            project.delete()
+        project_id = request.POST.get("project_id")
+        current_id = json.loads(project_id)
+        project = SampleRecord.objects.get(id=current_id)
+        project.delete()
         return HttpResponse("del_success")
 
     return HttpResponse("非POST请求！")
@@ -486,6 +486,7 @@ def pretreat_stage_table(request):
             if project.pretreat_finish_date:
                 pretreat_finish_date = project.pretreat_finish_date.strftime('%Y-%m-%d %H:%M')
                 time_percent = "-"
+                days_left = "-"
             else:
                 pretreat_finish_date = "-"
                 pro_start_date = project.pro_start_date
@@ -493,14 +494,18 @@ def pretreat_stage_table(request):
                     real_pretreat_cycle = chinese_calendar.get_workdays(pro_start_date, project.pretreat_deadline)
                     if date_now == project.pretreat_deadline:
                         time_percent = 0
+                        days_left = 0
                     elif date_now < project.pretreat_deadline:
                         remain_time = chinese_calendar.get_workdays(date_now, project.pretreat_deadline)
-                        time_percent = len(remain_time) * 100 // len(real_pretreat_cycle)
+                        days_left = len(remain_time)
+                        time_percent = days_left * 100 // len(real_pretreat_cycle)
                     else:
                         remain_time = chinese_calendar.get_workdays(project.pretreat_deadline, date_now)
-                        time_percent = -len(remain_time) * 100 // len(real_pretreat_cycle)
+                        days_left = -len(remain_time)
+                        time_percent = days_left * 100 // len(real_pretreat_cycle)
                 else:
                     time_percent = "-"
+                    days_left = "-"
             # 定义步骤一操作人
             first_all = project.first_operate_person.all()
             if first_all:
@@ -609,6 +614,7 @@ def pretreat_stage_table(request):
                 "preexperiment_deadline": preexperiment_deadline,
                 "pretreat_deadline": pretreat_deadline,
                 "time_percent": time_percent,
+                "days_left": days_left,
             })
 
     return HttpResponse(json.dumps(response_data))  # 需要json处理下数据格式
@@ -750,20 +756,25 @@ def test_stage_table(request):
                 test_deadline = project.test_deadline.strftime('%Y-%m-%d %H:%M')
                 if project.test_finish_date:  # 此时已下机
                     time_percent = "-"
+                    days_left = "-"
                 else:  # 此时未下机
                     pro_start_date = project.pro_start_date
                     real_test_cycle = chinese_calendar.get_workdays(pro_start_date, project.test_deadline)
                     if date_now == project.test_deadline:
                         time_percent = 0
+                        days_left = 0
                     elif date_now < project.test_deadline:
                         remain_time = chinese_calendar.get_workdays(date_now, project.test_deadline)
-                        time_percent = len(remain_time) * 100 // len(real_test_cycle)
+                        days_left = len(remain_time)
+                        time_percent = days_left * 100 // len(real_test_cycle)
                     else:
                         remain_time = chinese_calendar.get_workdays(project.test_deadline, date_now)
-                        time_percent = -len(remain_time) * 100 // len(real_test_cycle)
+                        days_left = -len(remain_time)
+                        time_percent = days_left * 100 // len(real_test_cycle)
             else:  # 此时有两种情况：1、该项目无检测阶段；2、项目未启动；此时无需计算剩余周期
                 test_deadline = "-"
                 time_percent = "-"
+                days_left = "-"
                 editable = False
 
             response_data['rows'].append({
@@ -786,6 +797,7 @@ def test_stage_table(request):
                 "test_finish_date": test_finish_date,   # 新添加字段
                 "test_deadline": test_deadline,
                 "time_percent": time_percent,
+                "days_left": days_left,
             })
 
     return HttpResponse(json.dumps(response_data))  # 需要json处理下数据格式
@@ -954,6 +966,7 @@ def analysis_stage_table(request):
             if project.date_send_report:
                 date_send_report = project.date_send_report.strftime('%Y-%m-%d %H:%M')
                 time_percent = "-"
+                days_left = "-"
             else:
                 date_send_report = "-"
                 pro_start_date = project.pro_start_date
@@ -961,15 +974,18 @@ def analysis_stage_table(request):
                     real_period = chinese_calendar.get_workdays(pro_start_date, project.pro_deadline)
                     if date_now == project.pro_deadline:
                         time_percent = 0
+                        days_left = 0
                     elif date_now < project.pro_deadline:
                         remain_time = chinese_calendar.get_workdays(date_now, project.pro_deadline)
-                        time_percent = len(remain_time) * 100 // len(real_period)
+                        days_left = len(remain_time)
+                        time_percent = days_left * 100 // len(real_period)
                     else:
                         remain_time = chinese_calendar.get_workdays(project.pro_deadline, date_now)
-                        time_percent = -len(remain_time) * 100 // len(real_period)
+                        days_left = -len(remain_time)
+                        time_percent = days_left * 100 // len(real_period)
                 else:
-                    # item_editable = False
                     time_percent = "-"
+                    days_left = "-"
             if project.date_send_rawdata:
                 date_send_rawdata = project.date_send_rawdata.strftime('%Y-%m-%d %H:%M')
             else:
@@ -999,6 +1015,7 @@ def analysis_stage_table(request):
                 "date_send_rawdata": date_send_rawdata,
                 "pro_deadline": pro_deadline,
                 "time_percent": time_percent,
+                "days_left": days_left,
             })
 
     return HttpResponse(json.dumps(response_data))  # 需要json处理下数据格式

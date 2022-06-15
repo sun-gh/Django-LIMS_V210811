@@ -15,9 +15,9 @@
 {% block content %}
 
   <!-- Content Header (Page header) -->
-  <section class="content-header ">
+  <section class="content-header pb-1">
     <div class="container-fluid">
-      <div class="row mb-0">
+      <div class="row ">
         <div class="col-sm-6">
           <h5>修改发票作废冲红申请</h5>
         </div>
@@ -155,10 +155,8 @@
   // 定义message显示
     function msgTip(){
       var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
-      if (msgs=='repeat') {
-        toastr.error('该客户已存在！')
-      }else if (msgs=='info_error') {
-        toastr.error('添加失败！')
+      if (msgs=='info_error') {
+        toastr.error('信息有误，提交失败！')
       }
     }
     msgTip();

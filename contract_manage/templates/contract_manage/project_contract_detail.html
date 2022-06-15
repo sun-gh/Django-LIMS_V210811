@@ -9,7 +9,7 @@
 
 {% block content %}
   <!-- Content Header (Page header) -->
-  <section class="content-header ">
+  <section class="content-header pb-1">
     <div class="container-fluid">
       <div class="row mb-0">
         <div class="col-sm-6">
@@ -111,9 +111,12 @@
             </div>  <!--/.row-->
           </div>  <!-- /.card-body-->
           <div class="card-footer">
-            <div class="row">
-              <div class="col-md-12">
+            <div class="row ">
+              <div class="col-md-6 ">
                 <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'contract_manage:project_contract_page' 'detail_back' %}" style="color:green;"><strong>返回项目合同列表</strong></a>
+              </div>  <!--/.col-->
+              <div class="col-md-6 text-center">
+                <a href="{% url 'contract_manage:project_contract_alter' contract.id %}" class="btn btn-info btn-sm">变更合同</a>
               </div>  <!--/.col-->
             </div>
           </div>  <!--/.row-->

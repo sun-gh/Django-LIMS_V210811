@@ -15,9 +15,9 @@
 {% block content %}
 
   <!-- Content Header (Page header) -->
-  <section class="content-header ">
+  <section class="content-header pb-1">
     <div class="container-fluid">
-      <div class="row mb-0">
+      <div class="row ">
         <div class="col-sm-6">
           <h5>样本登记</h5>
         </div>
@@ -219,7 +219,7 @@
     function msgTip(){
       var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
       if (msgs=='info_error') {
-        toastr.error('信息有误！')
+        toastr.error('信息有误，提交失败！')
       }
     }
     msgTip();

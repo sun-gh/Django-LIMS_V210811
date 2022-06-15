@@ -1,12 +1,14 @@
 from django import forms
-from .models import ProjectContract, CutPayment
+from .models import ProjectContract, CutPayment, ContractAlter
 from project_order.models import ProjectOrder
 from customer.models import UnitInvoice
 
 
 class EditProjectContractForm(forms.ModelForm):
     # 定义编辑项目合同表单
-
+    project_order = forms.ModelMultipleChoiceField(queryset=ProjectOrder.objects.filter(whether_distribute=True),
+                                                   label="关联项目",
+                                                   widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
     unit = forms.ModelChoiceField(queryset=UnitInvoice.objects.all(), label="单位",
                                   widget=forms.Select(attrs={'class': 'form-control'}))
     linkman = forms.CharField(label="联系人", widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -32,7 +34,8 @@ class EditProjectContractForm(forms.ModelForm):
 
 class AddProjectContractForm(EditProjectContractForm):
     # 定义添加项目合同表单
-    project_order = forms.ModelMultipleChoiceField(queryset=ProjectOrder.objects.filter(contract_record=False),
+    project_order = forms.ModelMultipleChoiceField(queryset=ProjectOrder.objects.filter(whether_distribute=True,
+                                                                                        contract_record=False),
                                                    label="关联项目",
                                                    widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
     unit = forms.ModelChoiceField(queryset=UnitInvoice.objects.all(), label="单位", required=False,
@@ -74,6 +77,57 @@ class AdvancepayContractForm(forms.ModelForm):
             'callback_date',
             'creator',
             'note',
+        ]
+
+
+class AdvancePayContractAlterForm(forms.ModelForm):
+    # 定义预付款合同变更表单
+    alter_type = forms.CharField(label="变更类型", widget=forms.RadioSelect(choices=ContractAlter.alter_type_choice))
+    newly_invoice = forms.BooleanField(label="重新开票", required=False,
+                                       widget=forms.RadioSelect(choices=([(True, "是"), (False, "否"), ])))
+    alter_unit = forms.ModelChoiceField(queryset=UnitInvoice.objects.all(), label="单位名称", required=False,
+                                        widget=forms.Select(attrs={'class': 'form-control'}))
+    alter_sum = forms.DecimalField(label="合同金额", max_digits=10, decimal_places=2, required=False,
+                                   widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    alter_contract_file = forms.FileField(label="合同附件", required=False, widget=forms.ClearableFileInput(
+        attrs={'class': 'form-control-file'}))
+    alter_reason = forms.CharField(label="变更原因", widget=forms.Textarea(attrs={'rows': '3', 'cols': '25', }))
+
+    class Meta:
+        model = ContractAlter
+        fields = [
+            'alter_type',
+            'newly_invoice',
+            'alter_unit',
+            'alter_sum',
+            'alter_contract_file',
+            'alter_reason',
+        ]
+
+
+class ProjectContractAlterForm(forms.ModelForm):
+    # 定义项目合同变更
+    alter_type = forms.CharField(label="变更类型", widget=forms.RadioSelect(choices=ContractAlter.alter_type_choice))
+    newly_invoice = forms.BooleanField(label="重新开票", required=False,
+                                       widget=forms.RadioSelect(choices=([(True, "是"), (False, "否"), ])))
+    alter_unit = forms.ModelChoiceField(queryset=UnitInvoice.objects.all(), label="单位名称", required=False,
+                                        widget=forms.Select(attrs={'class': 'form-control'}))
+    alter_projects = forms.ModelMultipleChoiceField(queryset=ProjectOrder.objects.filter(whether_distribute=True),
+                                                    label="关联项目", required=False,
+                                                    widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
+    alter_contract_file = forms.FileField(label="合同附件", required=False, widget=forms.ClearableFileInput(
+        attrs={'class': 'form-control-file'}))
+    alter_reason = forms.CharField(label="变更原因", widget=forms.Textarea(attrs={'rows': '3', 'cols': '25'}))
+
+    class Meta:
+        model = ContractAlter
+        fields = [
+            'alter_type',
+            'newly_invoice',
+            'alter_unit',
+            'alter_projects',
+            'alter_contract_file',
+            'alter_reason',
         ]
 
 

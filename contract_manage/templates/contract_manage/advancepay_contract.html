@@ -257,13 +257,37 @@
             return result;
           },
         },
-         {
+        {
+          field: 'status_code',
+          title: '状态',
+          width: 90,
+          align: 'center',
+          formatter: function (value,row,index) {
+            var result = "";
+            switch(value){
+              case 0:
+                result +='<span class="badge badge-warning">'+row.status+'</span>';
+                break;
+              case 1:
+                result +='<span class="badge badge-info">'+row.status+'</span>';
+                break;
+              case 2:
+                result +='<span class="badge badge-success">'+row.status+'</span>';
+                break;
+              case 3:
+                result +='<span class="badge badge-danger">'+row.status+'</span>';
+                break;
+            }
+            return result;
+          },
+        },
+        {
           field: 'unit',
           title: '单位',
           width: 290,
           align: 'center',
-         },
-         {
+        },
+        {
           field: 'sample_sender',
           title: '联系人',
           width: 90,
@@ -395,6 +419,20 @@
       showMethod: "fadeIn",
       hideMethod: "fadeOut"
     };
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='add_success'){
+        toastr.info('新建合同成功！')
+      }else if(msgs=='edit_success'){
+        toastr.success('修改合同成功！')
+      }else if(msgs=='end_submit_success') {
+        toastr.info('终止合同提交成功！')
+      }else if(msgs=='alter_submit_success'){
+        toastr.success('修改合同提交成功！')
+      }
+    }
+  msgTip();
 
   //添加按钮函数
   function add_contract() {
@@ -431,34 +469,37 @@
         return;
     } else {
       if (rows.length == 1) {
-        var contract_number=$("#contract_number").val();
-        if(contract_number!=null){
-          sessionStorage.setItem("contract_number", contract_number);
-        }else {
-          contract_number="";
-        }
-        var unit_name=$("#unit_search").val();
-        if(unit_name!=null){
-          sessionStorage.setItem("unit", unit_name);
-        }else {
-          unit_name="";
-        }
-        var linkman=$("#linkman_search").val();
-        if(linkman!=null){
-          sessionStorage.setItem("linkman", linkman);
-        }else {
-          linkman="";
-        }
-        sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
-        sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
+        if(rows[0].status_code == 0){
+          var contract_number=$("#contract_number").val();
+          if(contract_number!=null){
+            sessionStorage.setItem("contract_number", contract_number);
+          }else {
+            contract_number="";
+          }
+          var unit_name=$("#unit_search").val();
+          if(unit_name!=null){
+            sessionStorage.setItem("unit", unit_name);
+          }else {
+            unit_name="";
+          }
+          var linkman=$("#linkman_search").val();
+          if(linkman!=null){
+            sessionStorage.setItem("linkman", linkman);
+          }else {
+            linkman="";
+          }
+          sessionStorage.setItem("pageSize", $table.bootstrapTable('getOptions').pageSize);
+          sessionStorage.setItem("pageNum", $table.bootstrapTable('getOptions').pageNumber);
 
-        var contract_id = rows[0].contract_id;  // 获取客户id
-        var url="/contract_manage/advancepay_contract_edit/" + contract_id + "/"  ;
+          var contract_id = rows[0].contract_id;  // 获取客户id
+          var url="/contract_manage/advancepay_contract_edit/" + contract_id + "/"  ;
 
-        location.href=url;
-
+          location.href=url;
+        }else {
+          toastr.info('已申请开票，无法修改！');
+          return;
+        }
       } else {
-        //alert("一次只能修改一条记录!");
         toastr.info('一次只能修改一条记录！');
         return;
       }
@@ -473,24 +514,29 @@
           //alert("请先选择要删除的记录!");
           toastr.info('请先选择要删除的记录！');
           return;
-      } else {
-        if (confirm("是否确认删除？") == true) {
-          var ids = new Array();// 声明一个数组
-          $(rows).each(function() {  // 通过循环获得选中的记录
-              ids.push(this.contract_id);
-          });
-          deleteMs(ids);
-        } else {
-          return false;
+      } else if(rows.length == 1){
+        if(rows[0].status_code == 0){
+          if (confirm("是否确认删除？") == true) {
+            var str_id = new Number;// 声明一个变量
+            str_id = rows[0].contract_id;
+            deleteMs(str_id);
+          } else {
+            return false;
+          }
+        }else{
+          toastr.info('已申请开票，无法删除！');
+          return;
         }
+      }else {
+        toastr.info('一次只能删除一条记录！');
       }
     })  // btn.on
   //定义ajax请求函数
-    function deleteMs(ids) {
+    function deleteMs(str_id) {
       $.post(
         "/contract_manage/advancepay_contract_del/",
         {
-        "ids": JSON.stringify(ids) ,
+        "str_id": JSON.stringify(str_id) ,
         "method":"post",
         },
         function(data,status) {
