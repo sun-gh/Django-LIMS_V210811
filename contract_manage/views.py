@@ -701,7 +701,7 @@ def untread_cut_payment(request, apply_id):
         apply_obj.cut_date = None
         apply_obj.save()
     else:
-        # 修改作废申请状态
+        # 修改扣款申请状态
         apply_obj.status = 1
         apply_obj.save()
 
@@ -726,8 +726,7 @@ def contract_alter_table(request):
         search = request.GET.get('search')
 
         if search:  # 判断是否有搜索字
-            all_apply = ContractAlter.objects.filter(Q(link_order__project_order__project_num__contains=search) |
-                                                     Q(link_contract__contract_num__contains=search))
+            all_apply = ContractAlter.objects.filter(related_contract__contract_num__contains=search)
         else:
             all_apply = ContractAlter.objects.all()
 
@@ -1042,5 +1041,17 @@ def approve_project_contract_alter(request, apply_id):
         alter_apply.status = 2
         alter_apply.save()
         msg = "approve_success"
+
+        return redirect('contract_manage:contract_alter_page', msg)
+
+
+@login_required()
+def untread_contract_alter(request, apply_id):
+    # 定义合同变更退回功能
+    if request.method == 'GET':
+        alter_apply = ContractAlter.objects.get(id=apply_id)
+        alter_apply.status = 1
+        alter_apply.save()
+        msg = "untread_success"
 
         return redirect('contract_manage:contract_alter_page', msg)

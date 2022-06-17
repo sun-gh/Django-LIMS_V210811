@@ -174,7 +174,7 @@
                     <a class="btn btn-info btn-sm" href="{% url 'contract_manage:approve_advancepay_contract_alter' apply_detail.id %}" name="approve_apply" role="button" >审批</a>
                   {% endif %}
                   &nbsp;
-                  <a class="btn btn-danger btn-sm" href="{% url 'contract_manage:untread_cut_payment' apply_detail.id %}" name="untread_apply" role="button" >退回</a>
+                  <a class="btn btn-danger btn-sm" href="{% url 'contract_manage:untread_contract_alter' apply_detail.id %}" name="untread_apply" role="button" >退回</a>
                 {% endif %}
               </div>
             </div>
@@ -225,7 +225,7 @@
       document.getElementsByName("approve_apply")[0].className += ' disabled';
       };
   // 根据status决定是否禁用“退回”；
-    if (status_val == 1 ){
+    if (status_val > 0 ){
       document.getElementsByName("untread_apply")[0].className += ' disabled';
       };
 

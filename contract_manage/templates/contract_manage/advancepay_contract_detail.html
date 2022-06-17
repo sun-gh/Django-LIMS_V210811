@@ -117,7 +117,7 @@
                 <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'contract_manage:advancepay_contract_page' 'detail_back' %}" style="color:green;"><strong>返回预付款合同列表</strong></a>
               </div>  <!--/.col-->
               <div class="col-md-6 text-center">
-                <a href="{% url 'contract_manage:advancepay_contract_alter' contract.id %}" class="btn btn-info btn-sm">变更合同</a>
+                <a href="{% url 'contract_manage:advancepay_contract_alter' contract.id %}" name="alter_contract" class="btn btn-info btn-sm">变更合同</a>
               </div>  <!--/.col-->
             </div>
           </div>  <!--/.row-->
@@ -132,22 +132,12 @@
 <script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
 <script type="text/javascript">
 
-// 设置弹出提示框属性
-    toastr.options = {
-        closeButton: true,
-        debug: true,
-        progressBar: false,
-        positionClass: "toast-center-center",
-        onclick: null,
-        showDuration: "300",
-        hideDuration: "1000",
-        timeOut: "2000",
-        extendedTimeOut: "1000",
-        showEasing: "swing",
-        hideEasing: "linear",
-        showMethod: "fadeIn",
-        hideMethod: "fadeOut"
-    };
+// 根据status决定是否禁用“审批”；
+    var status_val=new Number;
+    status_val = {{ contract.status }};
+    if (status_val == 2 ){
+      document.getElementsByName("approve_apply")[0].className += ' disabled';
+      };
 
 </script>
 {% endblock %}
