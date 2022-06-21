@@ -88,7 +88,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col" id="detail_alter_content" style="display:none;">
+                <div class="col" id="detail_alter_content" >
                   <div class="row mb-2 mt-1">
                     <div class="col-md-4 text-right m-auto">
                       <div class="form-check">
@@ -172,6 +172,8 @@ $(document).ready(function() {
     if (alter_type_checked=='edit' && newly_invoice_checked=='False'){
       $("#alter_warn").text("在右侧要修改的选项前打勾，补充正确信息。");
       $('#detail_alter_content').attr('style','display:compact;');
+    }else{
+      $('#detail_alter_content').hide();
     };
   };
   ControlEditArea();
@@ -192,7 +194,9 @@ $(document).ready(function() {
     var select_value = $(this).val();
     if(select_value == "False"){
       $("#alter_warn").text("在右侧要修改的选项前打勾，补充正确信息。");
-      $('#detail_alter_content').attr('style','display:compact;');
+      //$('#detail_alter_content').attr('style','display:compact;');
+      $('#detail_alter_content').show(1000);
+      //$('#detail_alter_content').animate({width:'500px',opacity: 'show'}, '9000',function(){ $('#detail_alter_content').show();});
     }else {
       $("#alter_warn").text('提交“粗体”内容申请作废合同，审批后需新建合同。');
     };

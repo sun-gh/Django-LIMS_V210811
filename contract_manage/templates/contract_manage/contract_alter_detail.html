@@ -167,7 +167,7 @@
                 <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'contract_manage:contract_alter_page' 'detail_back' %}" style="color:green;"><strong>返回合同变更信息页</strong></a>
               </div>  <!--/.col-->
               <div class="col-md-6">
-                {% if perms.contract_manage.approve_cut_payment %}
+                {% if perms.contract_manage.approve_alter_contract %}
                   {% if apply_detail.related_contract.contract_type == 0 %}
                     <a class="btn btn-info btn-sm" href="{% url 'contract_manage:approve_project_contract_alter' apply_detail.id %}" name="approve_apply" role="button" >审批</a>
                   {% else %}

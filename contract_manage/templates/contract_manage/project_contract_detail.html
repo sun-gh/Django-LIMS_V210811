@@ -31,7 +31,7 @@
             <h5 class="m-0"><strong class="btn btn-info">合同编号：{{ contract.contract_num }}</strong></h5>
           </div>
           <!-- card-body -->
-          <div class="card-body  pb-1  "> <!--pt-0 pl-1 pr-1-->
+          <div class="card-body  pb-1  ">
             <div class="row">
               <div class="col-md-12">
                 <h6><b>基本信息:</b></h6>
@@ -116,7 +116,9 @@
                 <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'contract_manage:project_contract_page' 'detail_back' %}" style="color:green;"><strong>返回项目合同列表</strong></a>
               </div>  <!--/.col-->
               <div class="col-md-6 text-center">
-                <a href="{% url 'contract_manage:project_contract_alter' contract.id %}" class="btn btn-info btn-sm">变更合同</a>
+                {% if perms.contract_manage.apply_alter_contract %}
+                  <a href="{% url 'contract_manage:project_contract_alter' contract.id %}" name="alter_contract" class="btn btn-info btn-sm">变更合同</a>
+                {% endif %}
               </div>  <!--/.col-->
             </div>
           </div>  <!--/.row-->
@@ -125,4 +127,17 @@
     </div>  <!-- /.row-->
   </section>
 
+{% endblock %}
+{% block script %}
+
+<script type="text/javascript">
+
+// 根据status决定是否禁用“合同变更”按钮；
+    var status_val=new Number;
+    status_val = {{ contract.status }};
+    if (status_val == 0 ){
+      document.getElementsByName("alter_contract")[0].className += ' disabled';
+    };
+
+</script>
 {% endblock %}

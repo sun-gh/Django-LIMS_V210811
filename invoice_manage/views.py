@@ -215,6 +215,8 @@ def apply_invoice_edit(request, apply_id):
     apply_info = ApplyInvoice.objects.get(id=apply_id)
 
     if request.method == 'POST':
+        original_contract = apply_info.related_contract
+        original_apply_count = original_contract.applyinvoice_set.count()
         apply_form = forms.ApplyInvoiceForm(request.POST, request.FILES or None, instance=apply_info)
         if apply_form.is_valid():
             change_list = apply_form.changed_data
@@ -227,6 +229,14 @@ def apply_invoice_edit(request, apply_id):
                 # 处理开票类型
                 related_contract = apply_form.cleaned_data.get("related_contract")
                 apply_info.invoice_type = related_contract.contract_type
+                # 处理关联合同的状态
+                if original_apply_count == 1:
+                    original_contract.status = 0
+                    original_contract.save()
+                new_apply_count = related_contract.applyinvoice_set.count()
+                if new_apply_count == 0:
+                    related_contract.status = 1
+                    related_contract.save()
             apply_info.status = 0
 
             apply_info.save()
