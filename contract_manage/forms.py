@@ -68,8 +68,6 @@ class AdvancepayContractForm(forms.ModelForm):
     class Meta:
         model = ProjectContract
         fields = [
-
-            # 'unit_name',
             'linkman',
             'contract_sum',
             'contract_type',

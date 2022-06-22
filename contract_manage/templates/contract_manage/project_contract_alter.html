@@ -9,7 +9,7 @@
   <!-- Select2 -->
   <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/select2/css/select2.min.css' %}" />
   <!--customer css-->
-  <link href="{% static 'contract_manage/css/advancepay_contract_alter.css'  %}" rel="stylesheet" />
+  <link href="{% static 'contract_manage/css/project_contract_alter.css'  %}" rel="stylesheet" />
 {% endblock  %}
 
 {% block content %}
@@ -68,9 +68,9 @@
               {% csrf_token %}
               <div class="row" id="alter_content">
                 <div class="col">
-                  <div class="row ">
+                  <div class="row mb-0">
                     <div class="col text-right">
-                      <span ><strong  >请选择变更类型：</strong></span>
+                      <span id="alter_type_label"><strong  >请选择变更类型：</strong></span>
                     </div>
                     <div class="col">
                       {{ form.alter_type.0 }} &nbsp;&nbsp; {{ form.alter_type.1 }}
@@ -78,29 +78,29 @@
                   </div>
                   <div class="row ">
                     <div class="col text-center">
-                      <p>选择“终止合同”时请跳过下一项</p>
+                      <p id="skip_tip">选择“终止合同”时请跳过下一项</p>
                     </div>
                   </div>
-                  <div class="row mb-2 mt-2" id="invoice_newly" >
+                  <div class="row mb-3 mt-1" id="invoice_newly" >
                     <div class="col text-right">
-                      <span ><strong  >是否重新开票：</strong></span>
+                      <span ><strong  >是否重新开票：</strong></span>&nbsp;&nbsp;
                     </div>
                     <div class="col">
                       {{ form.newly_invoice.0 }} &nbsp;&nbsp;{{ form.newly_invoice.1 }}
                     </div>
                   </div>
-                  <div class="row mt-3 "  id="alter_reason_div">
-                    <div class="col-md-6 text-right ">
-                      <span ><strong>{{ form.alter_reason.label }}：</strong></span>
+                  <div class="row "  id="alter_reason_div">
+                    <div class="col text-right ">
+                      <span id="alter_reason_label"><strong>{{ form.alter_reason.label }}：</strong></span>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col">
                       {{ form.alter_reason }}
                     </div>
                   </div>
                 </div>
-                <div class="col" id="detail_alter_content" style="display:none;">
-                  <div class="row mb-2 mt-1">
-                    <div class="col-md-4 text-center m-auto">
+                <div class="col pl-0 pr-0" id="detail_alter_content" style="max-width:0;overflow:hidden;transition:max-width .75s;">
+                  <div class="row mb-3 " style="overflow:hidden;white-space:nowrap;">
+                    <div class="col-md-4 text-right m-auto">
                       <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="unit_check" id="unit_check" />
                         <label class="form-check-label" for="unit_check">{{ form.alter_unit.label }}：</label>
@@ -110,8 +110,8 @@
                       {{ form.alter_unit }}
                     </div>
                   </div>
-                  <div class="row mb-2 mt-4">
-                    <div class="col-md-4 text-center m-auto">
+                  <div class="row mb-3" style="overflow:hidden;white-space:nowrap;">
+                    <div class="col-md-4 text-right m-auto">
                       <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="project_check" id="project_check" />
                         <label class="form-check-label" for="project_check">{{ form.alter_projects.label }}：</label>
@@ -121,8 +121,8 @@
                       {{ form.alter_projects }}
                     </div>
                   </div>
-                  <div class="row mt-4">
-                    <div class="col-md-4 text-center m-auto">
+                  <div class="row " style="overflow:hidden;white-space:nowrap;">
+                    <div class="col-md-4 text-right m-auto">
                       <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="file_check" id="file_check" />
                         <label class="form-check-label" for="file_check">{{ form.alter_contract_file.label }}：</label>
@@ -135,23 +135,20 @@
                 </div>
               </div>
               <div class="row text-center">
-                <div class="col-md-11 offset-md-1 ">
+                <div class="col-md-10 offset-md-1 ">
                   <p id="alter_warn" class="mb-0"></p>
                 </div>
               </div>
             </div>  <!-- /.card-body-->
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="card-footer ">
-                    <div class="row">
-                      <div class="col-md-2 offset-md-5">
-                        <a href="{% url 'contract_manage:project_contract_page' 'edit_back' %}" class="btn btn-secondary btn-sm">取消</a>
-                        <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
-                      </div>
-                    </div>
-                  </div>  <!-- /.card-footer-->
-                </div>  <!-- /.col-->
-              </div>   <!-- /.row-->
+              <div class="card-footer ">
+                <div class="row">
+                  <div class="col-md-2 offset-md-5">
+                    <a href="{% url 'contract_manage:project_contract_page' 'edit_back' %}" class="btn btn-secondary btn-sm">取消</a>
+                    <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
+                  </div>
+                </div>
+              </div>  <!-- /.card-footer-->
+
           </form>
         </div>  <!-- /.card-->
       </div>   <!-- /.col-->
@@ -169,6 +166,10 @@
 <script type="text/javascript">
 
 $(document).ready(function() {
+  // 给必填项添加*
+  var txt1 = '<span style="color:red">*</span>';
+  $("#alter_type_label").append(txt1);
+  $("#alter_reason_label").append(txt1);
 
   // 给select添加样式,<!-- Select2 -->
   $("#id_alter_unit").addClass("select2");
@@ -182,8 +183,8 @@ $(document).ready(function() {
     var alter_type_checked = $("input:radio[name='alter_type']:checked").val();
     var newly_invoice_checked = $("input:radio[name='newly_invoice']:checked").val();
     if (alter_type_checked=='edit' && newly_invoice_checked=='False'){
-      $("#alter_warn").text("在右侧要修改的选项前打勾，补充正确信息。");
-      $('#detail_alter_content').attr('style','display:compact;');
+      $("#alter_warn").text("在右侧要修改的选项前打勾，补充正确信息后提交。");
+      $('#detail_alter_content').removeAttr("style");
     };
   };
   ControlEditArea();
@@ -193,18 +194,24 @@ $(document).ready(function() {
     if(select_value == 'end'){
       $('input:radio[name="newly_invoice"]').removeAttr("required");
       $("input:radio[name='newly_invoice']").attr("disabled", "true");
-      $("#alter_warn").text(" ");
+      $("#alter_warn").text("提交“粗体”内容申请作废合同");
     }else {
       $('input:radio[name="newly_invoice"]').removeAttr("disabled");
       $('input:radio[name="newly_invoice"]').attr("required","true");
+      var newly_invoice_checked = $("input:radio[name='newly_invoice']:checked").val();
+      if(newly_invoice_checked == 'True'){
+        $("#alter_warn").text('提交“粗体”内容申请作废合同，审批后需新建合同。');
+      }else if(newly_invoice_checked == 'False'){
+        $("#alter_warn").text("在右侧要修改的选项前打勾，补充正确信息后提交。");
+      }
     };
     return ;
   });
   $("input:radio[name='newly_invoice']").change(function(){
     var select_value = $(this).val();
     if(select_value == "False"){
-      $("#alter_warn").text("在右侧要修改的选项前打勾，补充正确信息。");
-      $('#detail_alter_content').attr('style','display:compact;');
+      $("#alter_warn").text("在右侧要修改的选项前打勾，补充正确信息后提交。");
+      $('#detail_alter_content').attr('style','max-width:500px;overflow:hidden;transition:max-width .75s;');
     }else {
       $("#alter_warn").text('提交“粗体”内容申请作废合同，审批后需新建合同。');
     };
