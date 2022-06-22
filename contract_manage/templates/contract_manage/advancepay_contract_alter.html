@@ -94,35 +94,35 @@
                 </div>
                 <div class="col pl-0 pr-0 " id="detail_alter_content" style="max-width:0;overflow:hidden;transition:max-width .75s;">
                   <div class="row mb-3" style="overflow:hidden;white-space:nowrap;">
-                    <div class="col-md-4 text-right m-auto">
+                    <div class="col-md-3 text-right m-auto">
                       <div class="form-check ">
                         <input class="form-check-input" type="checkbox" name="unit_check" id="unit_check" />
                         <label class="form-check-label" for="unit_check">{{ form.alter_unit.label }}：</label>
                       </div>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-8 mr-4">
                       {{ form.alter_unit }}
                     </div>
                   </div>
                   <div class="row mb-3" style="overflow:hidden;white-space:nowrap;">
-                    <div class="col-md-4 text-right m-auto">
+                    <div class="col-md-3 text-right m-auto">
                       <div class="form-check ">
                         <input class="form-check-input" type="checkbox" name="sum_check" id="sum_check" />
                         <label class="form-check-label" for="sum_check">{{ form.alter_sum.label }}：</label>
                       </div>
                     </div>
-                    <div class="col-md-8 ">
+                    <div class="col-md-8 mr-4">
                       {{ form.alter_sum }}
                     </div>
                   </div>
                   <div class="row " style="overflow:hidden;white-space:nowrap;">
-                    <div class="col-md-4 text-right m-auto">
+                    <div class="col-md-3 text-right m-auto">
                       <div class="form-check ">
                         <input class="form-check-input" type="checkbox" name="file_check" id="file_check" />
                         <label class="form-check-label" for="file_check">{{ form.alter_contract_file.label }}：</label>
                       </div>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-8 mr-4">
                       {{ form.alter_contract_file }}
                     </div>
                   </div>
@@ -202,7 +202,7 @@ $(document).ready(function() {
     var select_value = $(this).val();
     if(select_value == "False"){
       $("#alter_warn").text("在右侧要修改的选项前打勾，补充正确信息后提交。");
-      $('#detail_alter_content').attr('style','max-width:500px;overflow:hidden;transition:max-width .75s;');
+      $('#detail_alter_content').attr('style','max-width:700px;overflow:hidden;transition:max-width .75s;');
     }else {
       $("#alter_warn").text('提交“粗体”内容申请作废合同，审批后需新建合同。');
     };
