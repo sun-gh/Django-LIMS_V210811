@@ -74,6 +74,7 @@ def project_order_table(request):
         sample_sender = request.GET.get('sample_sender')
         start_time = request.GET.get('start_time')
         end_time = request.GET.get('end_time')
+        time_item = request.GET.get('time_item')
 
         conditions = {"projectorder__whether_distribute": True, }  # 构造字典存储查询条件
 
@@ -87,7 +88,10 @@ def project_order_table(request):
             fmt = '%Y-%m-%d'
             start_time = datetime.strptime(start_time, fmt)
             end_time = datetime.strptime(end_time, fmt)
-            conditions['receive_time__range'] = (start_time, end_time)
+            if time_item == 'receive_sample':
+                conditions['receive_time__range'] = (start_time, end_time)
+            elif time_item == 'report_send':
+                conditions['date_send_report__range'] = (start_time, end_time)
         all_projects = projects_get_perm.filter(**conditions)
         # all_projects = SampleRecord.objects.filter(**conditions)
 

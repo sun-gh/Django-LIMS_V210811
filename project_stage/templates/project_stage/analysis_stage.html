@@ -80,7 +80,7 @@
                   </div>  <!-- /.row -->
                   <div class="row">
                     <div class="col">
-                      <div class="form-group row">
+                      <div class="form-group row" style="margin-top:5px;">
                         <label for="note_search" class="col-md-4 col-form-label col-form-label-sm">备注：</label>
                         <div class="col-md-7">
                           <input type="text" class="form-control form-control-sm" id="note_search" name="note"  >
@@ -88,7 +88,7 @@
                       </div>
                     </div>
                     <div class="col">
-                      <div class="form-group row">
+                      <div class="form-group row" style="margin-top:5px;">
                         {{ form.project_type.label_tag }}
                         <div class="col-md-7">
                           {{ form.project_type }}
@@ -96,27 +96,26 @@
                       </div>
                     </div>
                     <div class="col-md-5">
-                      <div class="input-daterange input-group" id="datepicker1">
-                        <label class="col-md-3 col-form-label col-form-label-sm">收样时间：</label>
-                        <input type="text" class="form-control form-control-sm" name="start" id="start_time1" placeholder="开始时间" readonly="readonly" />
-                        &nbsp;<span class="input-group-addon">-</span>&nbsp;
-                        <input type="text" class="form-control form-control-sm" name="end" id="end_time1" placeholder="结束时间" readonly="readonly" />
+                      <div class="form-group row">
+                        <label for="start_time" class="col-md-4 col-form-label col-form-label-sm">
+                          <select class="custom-select custom-select-sm" id="time_items" name="time_options">
+                            <option value="receive_sample">收样时间</option>
+                            <option value="report_send">报告发送时间</option>
+                          </select>
+                        </label>
+                        <div class="col-md-7 input-daterange input-group m-auto" id="datepicker1">
+                          <input type="text" class="form-control form-control-sm" name="start" id="start_time" placeholder="开始时间" readonly="readonly" />
+                          &nbsp;<span class="input-group-addon">-</span>&nbsp;
+                          <input type="text" class="form-control form-control-sm" name="end" id="end_time" placeholder="结束时间" readonly="readonly" />
+                        </div>
                       </div>
+
                     </div>
                   </div>
                 </form>
               </div>  <!-- /.col -->
             </div>  <!-- /.row -->
-            <div class="row mb-2">
-              <div class="col-md-5">
-                <div class="input-daterange input-group" id="datepicker2">
-                  <label class="col-md-4 col-form-label col-form-label-sm">报告发送时间：</label>
-                  <input type="text" class="form-control form-control-sm" name="start" id="start_time2" placeholder="开始时间" readonly="readonly" />
-                  &nbsp;<span class="input-group-addon">-</span>&nbsp;
-                  <input type="text" class="form-control form-control-sm" name="end" id="end_time2" placeholder="结束时间" readonly="readonly" />
-                </div>
-              </div>
-            </div>
+
           </div> <!-- /.card-body -->
         </div>  <!-- /.card -->
         <!-- 第二个card，表格部分 -->
@@ -470,12 +469,10 @@
       //定义项目类型获取选择结果
       var pro_type_id = sessionStorage.getItem("pro_type_id");
       var pro_type = document.getElementById("id_project_type");
-      //定义收样时间
-      var start_time1 = sessionStorage.getItem('start_time1');
-      var end_time1 = sessionStorage.getItem('end_time1');
-      //定义报告发送时间
-      var start_time2 = sessionStorage.getItem('start_time2');
-      var end_time2 = sessionStorage.getItem('end_time2');
+      //定义收样时间或报告发送时间
+      var start_time = sessionStorage.getItem('start_time');
+      var end_time = sessionStorage.getItem('end_time');
+      var time_item = sessionStorage.getItem('time_item');
 
       var temp = {      //这里的pageSize、pageNum等必须和Controller改成一样的
         pageSize: pageSize==null?params.limit:pageSize,                      //页面大小
@@ -487,11 +484,10 @@
         note: note==null?$("#note_search").val():note,
         pro_type_id: pro_type_id==null?pro_type.selectedIndex:pro_type_id,
         //定义收样时间
-        start_time1:start_time1==null?$('#start_time1').val():start_time1,
-        end_time1:end_time1==null?$('#end_time1').val():end_time1,
-        //定义报告发送时间
-        start_time2:start_time2==null?$('#start_time2').val():start_time2,
-        end_time2:end_time2==null?$('#end_time2').val():end_time2,
+        start_time:start_time==null?$('#start_time').val():start_time,
+        end_time:end_time==null?$('#end_time').val():end_time,
+        time_item:time_item==null?$("#time_items").val():time_item,
+
       };
       //在sessionStorage中清除这几个数据
       sessionStorage.removeItem("pageSize");
@@ -501,10 +497,9 @@
       sessionStorage.removeItem("sample_sender");
       sessionStorage.removeItem("note");
       sessionStorage.removeItem("pro_type_id");
-      sessionStorage.removeItem("start_time1");
-      sessionStorage.removeItem("end_time1");
-      sessionStorage.removeItem("start_time2");
-      sessionStorage.removeItem("end_time2");
+      sessionStorage.removeItem("start_time");
+      sessionStorage.removeItem("end_time");
+      sessionStorage.removeItem("time_item");
       return temp;
     }  //.getParams
 

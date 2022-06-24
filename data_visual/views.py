@@ -197,7 +197,8 @@ def analyse_by_finish_time(request):
         test_rate_by_finish.append(delay_rate)
         test_count_by_finish.append(data_per_month['delay_count'])
         pros_current_month = test_finish_pros.filter(test_finish_date__year=data_per_month['year'],
-                                                     test_finish_date__month=data_per_month['month'])
+                                                     test_finish_date__month=data_per_month['month'],
+                                                     pretreat_finish_date__isnull=False)  # 增加该条件，避免前处理完成时间可能为空
         delay_count_current_month = 0
         for pro in pros_current_month:
             pro_workday = get_workdays(pro.pretreat_finish_date, pro.test_finish_date)

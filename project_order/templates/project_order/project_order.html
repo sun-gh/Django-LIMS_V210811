@@ -78,14 +78,21 @@
                     </div>
                   </div>  <!-- /.row -->
                   <div class="row mb-2">
-                    <div class="col-md-4">
-                      <div class="input-daterange input-group" id="datepicker">
-                        <label class="col-md-4 col-form-label col-form-label-sm">收样时间：</label>
-                        <input type="text" class="form-control form-control-sm" name="start" id="start_time" placeholder="开始时间" readonly="readonly" />
-                        &nbsp;<span class="input-group-addon">-</span>&nbsp;
-                        <input type="text" class="form-control form-control-sm" name="end" id="end_time" placeholder="结束时间" readonly="readonly" />
+                    <div class="col-md-5">
+                      <div class="form-group row" style="margin-bottom:6px;">
+                        <label for="start_time" class="col-md-4 col-form-label col-form-label-sm">
+                          <select class="custom-select custom-select-sm" id="time_items" name="time_options">
+                            <option value="receive_sample">收样时间</option>
+                            <option value="report_send">报告发送时间</option>
+                          </select>
+                        </label>
+                        <div class="col-md-7 input-daterange input-group m-auto" id="datepicker">
+                          <input type="text" class="form-control form-control-sm" name="start" id="start_time" placeholder="开始时间" readonly="readonly" />
+                          &nbsp;<span class="input-group-addon">-</span>&nbsp;
+                          <input type="text" class="form-control form-control-sm" name="end" id="end_time" placeholder="结束时间" readonly="readonly" />
+                        </div>
                       </div>
-                    </div>
+                    </div>  <!-- /.col-->
                   </div>
                 </form>
               </div>  <!-- /.col -->
@@ -403,6 +410,7 @@
       //定义起止时间
       var start_time = sessionStorage.getItem('start_time');
       var end_time = sessionStorage.getItem('end_time');
+      var time_item = sessionStorage.getItem('time_item');
 
       var temp = {      //这里的pageSize、pageNum等必须和Controller改成一样的
         pageSize: pageSize==null?params.limit:pageSize,                      //页面大小
@@ -415,6 +423,7 @@
         sample_sender: sample_sender==null?$("#sender_search").val():sample_sender,
         start_time:start_time==null?$('#start_time').val():start_time,
         end_time:end_time==null?$('#end_time').val():end_time,
+        time_item:time_item==null?$("#time_items").val():time_item,
 
       };
       //在sessionStorage中清除这几个数据
@@ -425,6 +434,7 @@
       sessionStorage.removeItem("sample_sender");
       sessionStorage.removeItem("start_time");
       sessionStorage.removeItem("end_time");
+      sessionStorage.removeItem("time_item");
       return temp;
     }  //.getParams
 
