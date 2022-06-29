@@ -369,11 +369,14 @@ def untread_project_order(request, pro_id):
     # 定义项目退回功能
     if request.method == 'GET':
         project_order = ProjectOrder.objects.get(id=pro_id)
-        project_order.project_sum = 0
-        project_order.sale_person = None
-        project_order.pay_type = None
         project_order.whether_distribute = False
-        project_order.note = None
+        project_order.sale_person = None
+        # 以下内容是否要根据“归还项目”还是“交接项目”，考虑是否清空？以合同建立为界限；
+        related_contract = project_order.projectcontract_set.all()
+        if related_contract.count() == 0:
+            project_order.project_sum = 0
+            project_order.pay_type = None
+            project_order.note = None
         project_order.save()
         # 给归还人解除对象级权限
         remove_perm('project_stage.view_samplerecord', request.user, project_order.project_order)

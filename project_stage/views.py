@@ -688,7 +688,7 @@ def test_stage_table(request):
             fmt = '%Y-%m-%d'
             start_time = datetime.strptime(start_time, fmt)
             end_time = datetime.strptime(end_time, fmt)
-            conditions['receive_time__range'] = (start_time, end_time)
+            conditions['test_finish_date__range'] = (start_time, end_time)
 
         # all_projects = SampleRecord.objects.filter(**conditions)
         all_projects = projects_get_perm.filter(**conditions)

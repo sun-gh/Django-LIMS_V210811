@@ -184,14 +184,11 @@
 
   // 退回功能
     $("#untread_project").on("click", function() {
-      var contract_record='{{ order.contract_record }}';
-      // console.log(contract_record);
-      if (contract_record == 'True') {
-        toastr.error('已有关联合同，无法归还项目！');
-      }else {
+      //var contract_record='{{ order.contract_record }}';
+      //if (contract_record == 'True') {
+      //  toastr.error('已有关联合同，无法归还项目！');
         var pro_id = '{{ order.id}}';
         window.location.href="/project_order/untread_project/" + pro_id + "/";
-      }
 
     });  //btn.on
 
