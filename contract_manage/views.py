@@ -15,6 +15,7 @@ from invoice_manage.views import (apply_invoice, apply_invoice_success, approve_
                                   approve_apply_invoice_success, apply_invoice_del, apply_invoice_del_success,
                                   untread_apply_invoice, untread_apply_invoice_success)
 from django.db.models import Q, Sum
+from guardian.shortcuts import assign_perm, get_objects_for_user
 
 # Create your views here.
 
@@ -77,7 +78,7 @@ def project_contract_page(request, msg="normal_show"):
 def project_contract_table(request):
     # 定义项目合同表格数据
     if request.method == 'GET':
-
+        contracts_get_perm = get_objects_for_user(request.user, 'contract_manage.view_projectcontract')
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
         contract_number = request.GET.get('contract_number')
@@ -95,8 +96,8 @@ def project_contract_table(request):
             conditions['linkman__contains'] = linkman
         if project_number:
             conditions['project_order__project_order__project_num__contains'] = project_number
-        all_contracts = ProjectContract.objects.filter(**conditions)
-
+        # all_contracts = ProjectContract.objects.filter(**conditions)
+        all_contracts = contracts_get_perm.filter(**conditions)
         all_contract_count = all_contracts.count()
         if not pageNum:
             pageNum = 1
@@ -227,6 +228,8 @@ def project_contract_add(request):
 
                 project_contract.save()
                 project_contract_form.save_m2m()  # 使用commit后要手动保存manytomany
+                # 分配对象级权限
+                assign_perm('contract_manage.view_projectcontract', request.user, project_contract)
 
                 msg = "add_success"
                 # 发送一个信号
@@ -320,7 +323,7 @@ def advancepay_contract_page(request, msg="normal_show"):
 def advancepay_contract_table(request):
     # 定义预付款合同表格数据
     if request.method == 'GET':
-
+        contracts_get_perm = get_objects_for_user(request.user, 'contract_manage.view_projectcontract')
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
         contract_number = request.GET.get('contract_number')
@@ -337,8 +340,8 @@ def advancepay_contract_table(request):
             conditions['unit_name__contains'] = unit
         if linkman:
             conditions['linkman__contains'] = linkman
-        all_contracts = ProjectContract.objects.filter(**conditions)
-
+        # all_contracts = ProjectContract.objects.filter(**conditions)
+        all_contracts = contracts_get_perm.filter(**conditions)
         all_contract_count = all_contracts.count()
         if not pageNum:
             pageNum = 1
@@ -422,7 +425,8 @@ def advancepay_contract_add(request):
 
             advancepay_contract.save()
             advancepay_contract_form.save_m2m()  # 使用commit后要手动保存manytomany
-
+            # 分配对象级权限
+            assign_perm('contract_manage.view_projectcontract', request.user, advancepay_contract)
             msg = "add_success"
             # 发送一个信号
             # contract_add_success.send(project_contract_add, msg=msg, project_order=project_order)
@@ -504,17 +508,20 @@ def cut_payment_info(request, msg="normal_show"):
 def cut_payment_table(request):
     # 定义预付款扣款表格数据
     if request.method == 'GET':
-
+        applys_get_perm = get_objects_for_user(request.user, 'contract_manage.view_cutpayment')
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
         search = request.GET.get('search')
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
         if search:  # 判断是否有搜索字
-            all_apply = CutPayment.objects.filter(Q(link_order__project_order__project_num__contains=search) |
-                                                  Q(link_contract__contract_num__contains=search))
+            # all_apply = CutPayment.objects.filter(Q(link_order__project_order__project_num__contains=search) |
+            #                                       Q(link_contract__contract_num__contains=search))
+            all_apply = applys_get_perm.filter(Q(link_order__project_order__project_num__contains=search) |
+                                               Q(link_contract__contract_num__contains=search))
         else:
-            all_apply = CutPayment.objects.all()
+            # all_apply = CutPayment.objects.all()
+            all_apply = applys_get_perm.all()
 
         all_apply_count = all_apply.count()
         if not pageNum:
@@ -599,7 +606,8 @@ def apply_cut_payment(request):
 
             apply_instance.save()
             apply_form.save_m2m()
-
+            # 分配对象级权限
+            assign_perm('contract_manage.view_cutpayment', request.user, apply_instance)
             msg = "add_success"
             # 发送一个信号
             # add_success.send(sample_record_add, msg=msg, sample_rec_id=sample_rec.id)
