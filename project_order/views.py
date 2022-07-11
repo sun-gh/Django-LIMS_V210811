@@ -359,6 +359,10 @@ def fetch_project_order(request, pro_id):
         project_order.save()
         # 给领取人分配项目对象权限
         assign_perm('project_stage.view_samplerecord', request.user, project_order.project_order)
+        # 给领取人分配客户对象权限
+        sample_sender = project_order.project_order.sample_sender
+        if not request.user.has_perm('customer.view_customerinfo', sample_sender):
+            assign_perm('customer.view_customerinfo', request.user, sample_sender)
         msg = "fetch_success"
 
         return redirect('project_order:order_not_distribute_page', msg)
@@ -373,8 +377,12 @@ def untread_project_order(request, pro_id):
         project_order.sale_person = None
         # 不清空其它信息，以兼容“交接项目”的情况；
         project_order.save()
-        # 给归还人解除对象级权限
+        # 给归还人解除项目对象级权限
         remove_perm('project_stage.view_samplerecord', request.user, project_order.project_order)
+        # 同时解除客户对象级权限
+        sample_sender = project_order.project_order.sample_sender
+        if request.user.has_perm('customer.view_customerinfo', sample_sender):
+            remove_perm('customer.view_customerinfo', request.user, sample_sender)
         msg = "untread_success"
 
         return redirect('project_order:project_order_page', msg)

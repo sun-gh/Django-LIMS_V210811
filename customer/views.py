@@ -8,6 +8,7 @@ from . import forms
 import json
 from django.db.models import Q
 import django.dispatch
+from guardian.shortcuts import get_objects_for_user
 
 # Create your views here.
 
@@ -200,16 +201,17 @@ def customer_list_table(request):
     # 定义ajax方式获取列表数据
 
     if request.method == 'GET':
-        # print(request.GET)
+        customers_get_perm = get_objects_for_user(request.user, 'customer.view_customerinfo')
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
         search = request.GET.get('search')
 
         if search:  # 判断是否有搜索字
-            all_customers = CustomerInfo.objects.filter(Q(customer_name__contains=search) |
+            all_customers = customers_get_perm.filter(Q(customer_name__contains=search) |
                                                         Q(unit__unit_name__contains=search))
         else:
-            all_customers = CustomerInfo.objects.all()
+            # all_customers = CustomerInfo.objects.all()
+            all_customers = customers_get_perm.all()
 
         all_customers_count = all_customers.count()
         if not pageNum:
