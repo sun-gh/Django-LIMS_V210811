@@ -11,6 +11,7 @@ from django.db.models import Q
 import django.dispatch
 # from django.dispatch import receiver
 # from contract_manage.views import advancepay_edit_success, advancepay_contract_edit
+from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
 
 # Create your views here.
 
@@ -67,6 +68,8 @@ def apply_invoice(request):
             msg = "add_success"
             # 发送一个信号(修改对应合同状态)
             apply_invoice_success.send(apply_invoice, msg=msg, related_contract=related_contract)
+            # 开票申请设置对象权限
+            assign_perm('invoice_manage.view_applyinvoice', request.user, apply_instance)
 
             return redirect("invoice_manage:apply_invoice_record", msg)
         else:
@@ -85,7 +88,7 @@ def apply_invoice_record(request, msg="normal_show"):
 def apply_invoice_table(request):
     # 定义开票申请表数据
     if request.method == 'GET':
-
+        applys_get_perm = get_objects_for_user(request.user, 'invoice_manage.view_applyinvoice')
         limit = request.GET.get('pageSize')  # how many items per page
         pageNum = request.GET.get('pageNum')  # how many items in total in the DB
         # search = request.GET.get('search')
@@ -101,7 +104,8 @@ def apply_invoice_table(request):
             conditions['unit__contains'] = unit
         if linkman:
             conditions['linkman__contains'] = linkman
-        all_apply = ApplyInvoice.objects.filter(**conditions)
+        # all_apply = ApplyInvoice.objects.filter(**conditions)
+        all_apply = applys_get_perm.filter(**conditions)
 
         all_apply_count = all_apply.count()
         if not pageNum:
@@ -110,7 +114,6 @@ def apply_invoice_table(request):
             limit = 50  # 默认是每页10行的内容，与前端默认行数一致
         paginator = Paginator(all_apply, limit)  # 开始做分页
 
-        # page = int(int(offset) / int(limit) + 1)
         response_data = {'total': all_apply_count, 'rows': []}
         for apply in paginator.page(pageNum):
             # 下面这些key，都是我们在前端定义好了的，前后端必须一致，前端才能接受到数据并且请求.
@@ -275,6 +278,8 @@ def apply_invoice_del(request):
         apply_id = request.POST.get("ids")
         apply = ApplyInvoice.objects.get(id=apply_id)
         related_contract = apply.related_contract
+        # 删除对应申请的对象级权限
+        remove_perm('invoice_manage.view_applyinvoice', request.user, apply)
         apply.delete()
 
         apply_invoice_del_success.send(apply_invoice_del, related_contract=related_contract)

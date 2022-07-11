@@ -15,7 +15,7 @@ from invoice_manage.views import (apply_invoice, apply_invoice_success, approve_
                                   approve_apply_invoice_success, apply_invoice_del, apply_invoice_del_success,
                                   untread_apply_invoice, untread_apply_invoice_success)
 from django.db.models import Q, Sum
-from guardian.shortcuts import assign_perm, get_objects_for_user
+from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
 
 # Create your views here.
 
@@ -253,7 +253,8 @@ def project_contract_del(request):
         project_orders = contract.project_order.all()
         # 归还项目结算中合同记录
         project_orders.update(contract_record=False)
-
+        # 同时删除对象权限
+        remove_perm('contract_manage.view_projectcontract', request.user, contract)
         contract.delete()
         return HttpResponse("del_success")
 
@@ -446,6 +447,8 @@ def advancepay_contract_del(request):
         str_id = request.POST.get("str_id")
         contract_id = json.loads(str_id)
         contract = ProjectContract.objects.get(id=contract_id)
+        # 同时删除对象权限
+        remove_perm('contract_manage.view_projectcontract', request.user, contract)
         contract.delete()
         return HttpResponse("del_success")
 
@@ -515,8 +518,6 @@ def cut_payment_table(request):
         # sort_column = request.GET.get('sort')  # which column need to sort
         # order = request.GET.get('order')  # ascending or descending
         if search:  # 判断是否有搜索字
-            # all_apply = CutPayment.objects.filter(Q(link_order__project_order__project_num__contains=search) |
-            #                                       Q(link_contract__contract_num__contains=search))
             all_apply = applys_get_perm.filter(Q(link_order__project_order__project_num__contains=search) |
                                                Q(link_contract__contract_num__contains=search))
         else:
@@ -667,6 +668,8 @@ def cut_payment_del(request):
 
         apply_id = request.POST.get("ids")
         apply = CutPayment.objects.get(id=apply_id)
+        # 同时删除对象权限
+        remove_perm('contract_manage.view_cutpayment', request.user, apply)
         apply.delete()
 
         return HttpResponse("del_success")

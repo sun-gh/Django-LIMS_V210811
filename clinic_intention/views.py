@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 import json
 from datetime import date
-from guardian.shortcuts import get_objects_for_user, assign_perm
+from guardian.shortcuts import get_objects_for_user, assign_perm, remove_perm
 import django.dispatch
 from django.dispatch import receiver
 # from django.core import serializers
@@ -226,6 +226,8 @@ def del_intention(request):
         intention_id = request.POST.get("intention_id")
         intention_id = json.loads(intention_id)
         intention = ClinicIntention.objects.filter(id=intention_id)
+        # 同时删除对象权限
+        remove_perm('clinic_intention.view_clinicintention', request.user, intention)
         intention.delete()
 
         return HttpResponse("del_success")
