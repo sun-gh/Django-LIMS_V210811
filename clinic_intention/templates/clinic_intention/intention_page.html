@@ -175,7 +175,10 @@
     var pageNum = sessionStorage.getItem("pageNum");
     var num=1;
     num = pageNum==null?1:parseInt(pageNum);
-    //console.log(pageNum);
+    // 根据权限判断导出按钮是否显示
+      var perm =  '{{perms.clinic_intention.export_clinicintention}}';
+      var perm_bool = Boolean;
+      perm_bool = perm==='True'?true:false;
 
     $table.bootstrapTable({
 
@@ -205,7 +208,7 @@
       toolbar: "#toolbar",                //一个jQuery 选择器，指明自定义的 toolbar
 
       showRefresh: false,                  //是否显示刷新按钮
-      showExport: true,                    //显示导出按钮
+      showExport: perm_bool,                    //显示导出按钮
       exportTypes:['excel','csv'],  //导出文件类型
       exportOptions: {
         fileName: '临床意向信息表',  //文件名称设置

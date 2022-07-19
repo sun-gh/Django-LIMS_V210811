@@ -65,7 +65,7 @@ class FileApplyInvoiceForm(forms.ModelForm):
 class EditInvoiceInfoForm(forms.ModelForm):
     # 定义修改发票信息表单
 
-    invoice_num = forms.IntegerField(label="发票号", widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    invoice_num = forms.CharField(label="发票号", widget=forms.NumberInput(attrs={'class': 'form-control'}))
     invoice_sum = forms.DecimalField(label="发票金额", max_digits=10, decimal_places=2,
                                      widget=forms.NumberInput(attrs={'class': 'form-control'}))
     invoice_date = forms.DateField(label="开票日期", widget=forms.DateInput(

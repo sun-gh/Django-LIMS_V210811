@@ -116,7 +116,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <nav class="mt-2"> <!--此处class原内容为："mt-2"-->
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
-          {% if perms.users.show_data_visual_page %}
+
           <li class="nav-item has-treeview ">
             <a href="#" class="nav-link ">
                 <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -144,7 +144,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
               </li>
             </ul>
           </li>
-          {% endif %}
+
           <li class="nav-item has-treeview ">
             <a href="#" class="nav-link ">
               <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -160,12 +160,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   <p>单位信息</p>
                 </a>
               </li>
+              {% if perms.customer.show_customer_info_page%}
               <li class="nav-item">
                 <a href="{% url 'customer:customer_list' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>客户信息</p>
                 </a>
               </li>
+              {% endif %}
             </ul>
           </li>
 
@@ -229,6 +231,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </ul>
           </li>
           {% endif %}
+          {% if perms.contract_manage.show_contract_manage_page %}
           <li class="nav-item has-treeview ">
             <a href="#" class="nav-link ">
               <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -264,7 +267,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
               </li>
             </ul>
           </li>
-
+          {% endif %}
+          {% if perms.invoice_manage.show_invoice_manage_page %}
           <li class="nav-item has-treeview ">
               <a href="#" class="nav-link ">
               <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -293,8 +297,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </a>
               </li>
             </ul>
-
           </li>
+          {% endif %}
           {% if perms.clinic_intention.show_clinic_intention_page %}
           <li class="nav-item">
             <a href="{% url 'clinic_intention:intention_page' 'normal_show' %}" class="nav-link">

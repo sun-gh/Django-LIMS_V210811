@@ -167,13 +167,6 @@
       var pageNum = sessionStorage.getItem("pageNum");
       var num=1;
       num = pageNum==null?1:parseInt(pageNum);
-      //console.log(pageNum);
-      // 根据权限判断导出按钮是否显示
-        var perm =  '{{perms.demand_manage.add_demandcollect}}';
-        //console.log(perm);
-        var perm_bool = Boolean;
-        perm_bool = perm==='True'?true:false;
-
 
       $table.bootstrapTable({
       {#全部参数#}
@@ -203,7 +196,7 @@
 
         showRefresh: false,                  //是否显示刷新按钮
         
-        showExport: perm_bool,             //显示导出按钮，实现权限判断
+        showExport: false,             //显示导出按钮，实现权限判断
         exportTypes:['excel','csv'],  //导出文件类型
         exportOptions: {
           fileName: '需求信息',  //文件名称设置
