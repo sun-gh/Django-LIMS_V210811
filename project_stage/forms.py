@@ -59,8 +59,6 @@ class SampleRecordForm(forms.ModelForm):
 
 class PretreatStageForm(forms.ModelForm):
     # 定义前处理修改表单
-    priority = forms.IntegerField(label="优先级", required=False, widget=forms.Select(choices=SampleRecord.priority_level,
-                                                                                   attrs={'class': 'form-control'}))
     start_date = forms.DateTimeField(label="实验开始时间",
                                      input_formats=['%Y-%m-%dT%H:%M'],
                                      required=False,
@@ -103,13 +101,10 @@ class PretreatStageForm(forms.ModelForm):
     sample_overplus_status = forms.ModelMultipleChoiceField(
         queryset=SampleStatus.objects.all(), label="剩余样本状态", required=False, widget=forms.SelectMultiple(
             attrs={'class': 'form-control'}))
-    project_interrupt = forms.ModelChoiceField(queryset=ProjectInterrupt.objects.all(), label="项目中断类型", required=False,
-                                               widget=forms.Select(attrs={'class': 'form-control'}))
 
     class Meta:
         model = SampleRecord
         fields = [
-            'priority',
             'start_date',
             'preexperiment_finish_date',
             'pretreat_finish_date',
@@ -121,7 +116,6 @@ class PretreatStageForm(forms.ModelForm):
             'page_person',
             'sample_overplus',
             'sample_overplus_status',
-            'project_interrupt',
         ]
 
 
@@ -155,6 +149,10 @@ class TestStageForm(forms.ModelForm):
 
 class AnalysisStageForm(forms.ModelForm):
     # 定义数据分析信息修改表单
+    priority = forms.IntegerField(label="优先级", required=False, widget=forms.Select(choices=SampleRecord.priority_level,
+                                  attrs={'class': 'form-control'}))
+    project_interrupt = forms.ModelChoiceField(queryset=ProjectInterrupt.objects.all(), label="项目中断类型", required=False,
+                                               widget=forms.Select(attrs={'class': 'form-control'}))
     responsible_person = forms.ModelChoiceField(queryset=ResponsiblePerson.objects.all(), label="项目负责人",
                                                 required=False, widget=forms.Select(attrs={'class': 'form-control'}))
     date_searchlib = forms.DateTimeField(label="搜库时间",
@@ -187,6 +185,8 @@ class AnalysisStageForm(forms.ModelForm):
     class Meta:
         model = SampleRecord
         fields = [
+            'priority',
+            'project_interrupt',
             'responsible_person',
             'date_searchlib',
             'date_send_report',

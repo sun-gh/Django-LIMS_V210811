@@ -112,6 +112,9 @@
                               {{ form.third_operate_person }}
                             </div>
                           </div>
+
+                      </div>
+                      <div class="col">
                           <!--步骤四-->
                           <div class="form-group row">
                             {{ form.fourth_operate_person.label_tag }}
@@ -119,9 +122,6 @@
                               {{ form.fourth_operate_person }}
                             </div>
                           </div>
-                      </div>
-
-                      <div class="col">
                           <!--跑胶-->
                           <div class="form-group row">
                             {{ form.page_person.label_tag }}
@@ -141,20 +141,6 @@
                             {{ form.sample_overplus_status.label_tag }}
                             <div class="col-md-7">
                               {{ form.sample_overplus_status }}
-                            </div>
-                          </div>
-                          <!--优先级-->
-                          <div class="form-group row">
-                            {{ form.priority.label_tag }}
-                            <div class="col-md-7">
-                              {{ form.priority }}
-                            </div>
-                          </div>
-                          <!--项目中断类型-->
-                          <div class="form-group row">
-                            {{ form.project_interrupt.label_tag }}
-                            <div class="col-md-7">
-                              {{ form.project_interrupt }}
                             </div>
                           </div>
 
@@ -261,14 +247,8 @@
     )
   //设置预实验完成时间函数
     $("#set_preexperiment_date").on("click",function (){
-      //var start_date = $("#id_start_date").val();
-      //if (start_date){
         var current_date = getdatetime();
-        //toastr.info(current_date);
         $("#id_preexperiment_finish_date").attr("value",current_date);
-      //} else {
-      //  toastr.info("请补充实验开始时间！");
-      //}
     })
   //设置前处理完成时间函数
     $("#set_pretreat_date").on("click",function (){

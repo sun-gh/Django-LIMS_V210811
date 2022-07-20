@@ -92,8 +92,6 @@
                           </div>
                           <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_report_date">现在</button></div>
                         </div>
-                      </div>
-                      <div class="col">
                         <!--原始数据发送日期-->
                         <div class="form-group row">
                           {{ form.date_send_rawdata.label_tag }}
@@ -102,11 +100,27 @@
                           </div>
                           <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_rawdata_date">现在</button></div>
                         </div>
+                      </div>
+                      <div class="col">
                         <!--项目截止日期-->
                         <div class="form-group row">
                           {{ form.pro_deadline.label_tag }}
                           <div class="col-md-7">
                             {{ form.pro_deadline }}
+                          </div>
+                        </div>
+                        <!--优先级-->
+                        <div class="form-group row">
+                          {{ form.priority.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.priority }}
+                          </div>
+                        </div>
+                        <!--项目中断类型-->
+                        <div class="form-group row">
+                          {{ form.project_interrupt.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.project_interrupt }}
                           </div>
                         </div>
                       </div>    <!-- /.col-->
