@@ -474,10 +474,12 @@ def pretreat_stage_table(request):
                 project_start_date = pro_start_date.strftime('%Y-%m-%d %H:%M')
             else:
                 project_start_date = "-"
+            # 定义实验开始时间
             if project.start_date:
                 start_date = project.start_date.strftime('%Y-%m-%d %H:%M')
             else:
                 start_date = "-"
+            # 定义预实验完成时间
             if project.preexperiment_finish_date:
                 preexperiment_finish_date = project.preexperiment_finish_date.strftime('%Y-%m-%d %H:%M')
             else:
@@ -567,19 +569,23 @@ def pretreat_stage_table(request):
                     sample_overplus_status = str(status_all.count()) + "种状态"
             else:
                 sample_overplus_status = "-"
+            # 定义中断类型
             interrupt_type = project.project_interrupt
             if interrupt_type:
                 project_interrupt = interrupt_type.interrupt_type
             else:
                 project_interrupt = "-"
+            # 定义实验开始截止时间
             if project.start_deadline:
                 start_deadline = project.start_deadline.strftime('%Y-%m-%d %H:%M')
             else:
                 start_deadline = "-"
+            # 定义预实验截止时间
             if project.preexperiment_deadline:
                 preexperiment_deadline = project.preexperiment_deadline.strftime('%Y-%m-%d %H:%M')
             else:
                 preexperiment_deadline = "-"
+            # 定义前处理截止时间
             if project.pretreat_deadline:
                 pretreat_deadline = project.pretreat_deadline.strftime('%Y-%m-%d %H:%M')
             else:

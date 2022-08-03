@@ -48,8 +48,8 @@ def contract_status_to_unused(sender, **kwargs):
 def contract_status_to_effect(sender, **kwargs):
     # 定义审批开票申请成功后对应合同状态更改
     related_contract = kwargs['related_contract']
-    apply_invoice_related = related_contract.applyinvoice_set.all()
-    if apply_invoice_related.count() == 1:
+    # apply_invoice_related = related_contract.applyinvoice_set.all()
+    if related_contract.status != 2:
         related_contract.status = 2
         related_contract.save()
 
@@ -58,12 +58,17 @@ def contract_status_to_effect(sender, **kwargs):
 
 @receiver(untread_apply_invoice_success, sender=untread_apply_invoice)
 def contract_status_as_untread_apply_invoice(sender, **kwargs):
-    # 定义开票申请退回引起的合同状态变更
+    # 定义开票申请退回引起的合同状态变更(若有多张开票申请，此时要看其它申请的状态；)
     related_contract = kwargs['related_contract']
     apply_invoice_related = related_contract.applyinvoice_set.all()
-    if apply_invoice_related.count() == 1:
+    status_list = list(apply_invoice_related.values_list('status', flat=True))
+    if len(status_list) == 1:
         related_contract.status = 1
         related_contract.save()
+    else:
+        if not (1 in status_list or 3 in status_list):
+            related_contract.status = 1
+            related_contract.save()
 
     return related_contract
 
