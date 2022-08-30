@@ -160,8 +160,9 @@ class SampleRecord(models.Model):
     )
     status_choices = (
         (11, "待启动"),
-        (21, "准备实验"),
-        (22, "前处理"),
+        (21, "待实验"),
+        (22, "质控中"),
+        (23, "制备中"),
         (31, "待上机"),
         (32, "检测中"),
         (41, "待分析"),
@@ -172,7 +173,7 @@ class SampleRecord(models.Model):
     )
     project_num = models.CharField(max_length=32, verbose_name="项目编号", unique=True)
     status = models.PositiveSmallIntegerField(verbose_name="状态", choices=status_choices, default=11)
-    original_status = models.CharField(max_length=32, verbose_name="原状态编号", null=True, blank=True)
+    original_status = models.PositiveSmallIntegerField(verbose_name="原状态编号", null=True, blank=True)
     project_type = models.ForeignKey(ProjectType, verbose_name="项目类型", on_delete=models.SET_NULL, null=True)
     sample_type = models.CharField(max_length=32, verbose_name="样本类型")
     machine_time = models.CharField(max_length=48, verbose_name="机时类型", null=True, blank=True)
@@ -183,7 +184,6 @@ class SampleRecord(models.Model):
     # 将以下两个字段直接保存到记录
     unit = models.CharField(max_length=128, verbose_name="单位", null=True, blank=True)
     terminal = models.CharField(max_length=32, verbose_name="送样终端", blank=True, null=True)
-    # sample_quality = models.ManyToManyField(SampleQuality, verbose_name="样本质量")
     sample_quality = models.ForeignKey(SampleQuality, verbose_name="样本运送条件和质量", on_delete=models.SET_NULL, null=True)
     addition_item = models.ManyToManyField(AdditionalItem, verbose_name="附加项目", blank=True)
     receive_time = models.DateTimeField(verbose_name="收样时间", null=True)
@@ -195,7 +195,7 @@ class SampleRecord(models.Model):
     # 以下为前处理阶段
     priority = models.SmallIntegerField(choices=priority_level, verbose_name="优先级", default=0)
     start_date = models.DateTimeField(verbose_name="实验开始日期", null=True, blank=True)
-    preexperiment_finish_date = models.DateTimeField(verbose_name="预实验完成时间", null=True, blank=True)
+    preexperiment_finish_date = models.DateTimeField(verbose_name="质控完成时间", null=True, blank=True)
     pretreat_finish_date = models.DateTimeField(verbose_name="前处理完成时间", null=True, blank=True)
     first_operate_person = models.ManyToManyField(OperatePerson, verbose_name="步骤一", related_name='exp_first_person',
                                                   blank=True)
@@ -226,6 +226,10 @@ class SampleRecord(models.Model):
     date_send_rawdata = models.DateTimeField(verbose_name="原始数据发送日期", blank=True, null=True)
     test_deadline = models.DateTimeField(verbose_name="下机截止日期", blank=True, null=True)
     pro_deadline = models.DateTimeField(verbose_name="项目截止日期", blank=True, null=True)
+    pro_cyc_remain_days = models.IntegerField(verbose_name="项目剩余天数", null=True, blank=True)
+    pro_cyc_remain_percent = models.IntegerField(verbose_name="项目剩余周期百分比", null=True, blank=True)
+    current_stage_remain_days = models.IntegerField(verbose_name="当前阶段剩余天数", null=True, blank=True)
+    current_stage_remain_percent = models.IntegerField(verbose_name="当前阶段剩余百分比", null=True, blank=True)
 
     def __str__(self):
         return self.project_num

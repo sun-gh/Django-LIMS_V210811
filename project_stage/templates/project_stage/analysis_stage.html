@@ -34,12 +34,13 @@
   <section class="content">
     <div class="row">
       <div class="col-12">
-        <div class="card card-lightblue mb-2">  <!--primary-->
+        <div class="card card-lightblue mb-1">  <!--primary-->
           <div class="card-header pb-1 pt-2">
             <h3 class="card-title">条件查询</h3>
             <div class="card-tools">
-              <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
-                <i class="fas fa-minus"></i></button>
+              <button type="button" class="btn btn-tool"  data-toggle="collapse" data-target="#collapseItem"
+                      aria-expanded="false" aria-controls="collapseItem">
+                <i class="fas fa-minus" style="display:none"></i><i class="fas fa-plus" ></i></button>
             </div>
           </div>
           <div class="card-body pt-2 pb-0">
@@ -47,7 +48,7 @@
               <div class="col">
                 <form class="form-horizontal">
                   <div class="row">
-                    <div class="col">
+                    <div class="col-md-4">
                       <div class="form-group row">
                         <label for="project_number" class="col-md-4 col-form-label col-form-label-sm">项目编号：</label>
                         <div class="col-md-7">
@@ -56,62 +57,73 @@
                       </div>
 
                     </div>
-                    <div class="col">
+                    <div class="col-md-3">
                       <div class="form-group row">
                         <label for="unit_search" class="col-md-4 col-form-label col-form-label-sm">单位：</label>
-                        <div class="col-md-7">
+                        <div class="col-md-8">
                           <input type="text" class="form-control form-control-sm" id="unit_search" name="unit_name" >
                         </div>
                       </div>
 
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3 ml-3">
                       <div class="form-group row">
-                        <label for="sender_search" class="col-md-5 col-form-label col-form-label-sm">送样人：</label>
-                        <div class="col-md-7">
+                        <label for="sender_search" class="col-md-4 col-form-label col-form-label-sm">送样人：</label>
+                        <div class="col-md-8">
                           <input type="text" class="form-control form-control-sm" id="sender_search" name="sample_sender" >
                         </div>
                       </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col text-center">
                       <a class="btn btn-success btn-sm  form-search" id="search-btn" onclick="searchfun()" >搜索</a>&nbsp;&nbsp;
                       <a class="btn btn-secondary btn-sm  form-search" onclick="clearfun()" >重置</a>
                     </div>
                   </div>  <!-- /.row -->
-                  <div class="row">
-                    <div class="col">
-                      <div class="form-group row" style="margin-top:5px;">
-                        <label for="note_search" class="col-md-4 col-form-label col-form-label-sm">备注：</label>
-                        <div class="col-md-7">
-                          <input type="text" class="form-control form-control-sm" id="note_search" name="note"  >
+                  <div class="collapse" id="collapseItem">
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="form-group row mb-2" >
+                          {{ form.project_type.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.project_type }}
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group row mb-2" >
+                          <label for="note_search" class="col-md-4 col-form-label col-form-label-sm">备注：</label>
+                          <div class="col-md-8">
+                            <input type="text" class="form-control form-control-sm" id="note_search" name="note"  >
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3 ml-3">
+                        <div class="form-group row mb-2">
+                          {{ form.status.label_tag }}
+                          <div class="col-md-8">
+                            {{ form.status }}
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div class="col">
-                      <div class="form-group row" style="margin-top:5px;">
-                        {{ form.project_type.label_tag }}
-                        <div class="col-md-7">
-                          {{ form.project_type }}
+                    <div class="row ">
+                      <div class="col-md-4">
+                        <div class="form-group row mb-1">
+                          <label for="start_time" class="col-md-4 col-form-label col-form-label-sm">
+                            <select class="custom-select custom-select-sm" id="time_items" name="time_options">
+                              <option value="receive_sample">收样时间</option>
+                              <option value="report_send">报告发送时间</option>
+                            </select>
+                          </label>
+                          <div class="col-md-7 input-daterange input-group m-auto" id="datepicker1">
+                            <input type="text" class="form-control form-control-sm" name="start" id="start_time" placeholder="开始时间" readonly="readonly" />
+                            &nbsp;<span class="input-group-addon">-</span>&nbsp;
+                            <input type="text" class="form-control form-control-sm" name="end" id="end_time" placeholder="结束时间" readonly="readonly" />
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div class="col-md-5">
-                      <div class="form-group row">
-                        <label for="start_time" class="col-md-4 col-form-label col-form-label-sm">
-                          <select class="custom-select custom-select-sm" id="time_items" name="time_options">
-                            <option value="receive_sample">收样时间</option>
-                            <option value="report_send">报告发送时间</option>
-                          </select>
-                        </label>
-                        <div class="col-md-7 input-daterange input-group m-auto" id="datepicker1">
-                          <input type="text" class="form-control form-control-sm" name="start" id="start_time" placeholder="开始时间" readonly="readonly" />
-                          &nbsp;<span class="input-group-addon">-</span>&nbsp;
-                          <input type="text" class="form-control form-control-sm" name="end" id="end_time" placeholder="结束时间" readonly="readonly" />
-                        </div>
-                      </div>
-
-                    </div>
-                  </div>
+                  </div>  <!-- /.collapse -->
                 </form>
               </div>  <!-- /.col -->
             </div>  <!-- /.row -->
@@ -305,14 +317,55 @@
           },
         },
         {
+          field: 'status_code',
+          title: '状态',
+          width: 90,
+          align: 'center',
+          formatter: function (value,row,index) {
+            var result = "";
+            switch(value){
+
+              case 21:
+                result +='<span style="color:#0000FF">'+row.status+'</span>';
+                break;
+              case 22:
+                result +='<span style="color:#6699FF">'+row.status+'</span>';
+                break;
+              case 23:
+                result +='<span style="color:#7FDBFF">'+row.status+'</span>';
+                break;
+              case 31:
+                result +='<span style="color:#FF99CC">'+row.status+'</span>';
+                break;
+              case 32:
+                result +='<span style="color:#F012BE">'+row.status+'</span>';
+                break;
+              case 41:
+                result +='<span style="color:#006633">'+row.status+'</span>';
+                break;
+              case 42:
+                result +='<span style="color:#99CC99">'+row.status+'</span>';
+                break;
+              case 71:
+                result +='<span style="color:#669933">'+row.status+'</span>';
+                break;
+              case 81:
+                result +='<span style="color:#FF4136">'+row.status+'</span>';
+                break;
+              case 82:
+                result +='<span style="color:#FFDC00">'+row.status+'</span>';
+                break;
+
+            }
+            return result;
+          },
+        },
+        {
           field: 'time_percent',
-          title: '项目剩余周期',
-          width: 110,
+          title: '剩余周期',
+          width: 100,
           align: 'center',
           formatter: progressMatter,
-          cellStyle: function(value,row,index){
-            return {css:{"padding-left":"10px","padding-right":"10px"}};
-          },
         },
         {
           field: 'project_type',
@@ -449,6 +502,11 @@
 
   // 给label加上class属性;
   $("[for='id_project_type']").addClass("col-md-4 col-form-label col-form-label-sm");
+  $("[for='id_status']").addClass("col-md-4 col-form-label col-form-label-sm");
+  // 给条件搜索折叠按钮添加转换
+  $('[data-toggle="collapse"]').click(function(){
+    $(this).children().toggle();
+  });
 
   // 初始化datepicker
   $('.input-daterange').datepicker({
@@ -476,6 +534,9 @@
       var start_time = sessionStorage.getItem('start_time');
       var end_time = sessionStorage.getItem('end_time');
       var time_item = sessionStorage.getItem('time_item');
+      //定义项目状态
+      var pro_status = sessionStorage.getItem("pro_status");
+      var status_element = document.getElementById("id_status");
 
       var temp = {      //这里的pageSize、pageNum等必须和Controller改成一样的
         pageSize: pageSize==null?params.limit:pageSize,                      //页面大小
@@ -490,6 +551,8 @@
         start_time:start_time==null?$('#start_time').val():start_time,
         end_time:end_time==null?$('#end_time').val():end_time,
         time_item:time_item==null?$("#time_items").val():time_item,
+        //定义项目状态
+        pro_status:pro_status==null?status_element.options[status_element.selectedIndex].value:pro_status,
 
       };
       //在sessionStorage中清除这几个数据
@@ -503,6 +566,7 @@
       sessionStorage.removeItem("start_time");
       sessionStorage.removeItem("end_time");
       sessionStorage.removeItem("time_item");
+      sessionStorage.removeItem("pro_status");
       return temp;
     }  //.getParams
 
@@ -722,6 +786,9 @@
     $("#id_project_type option").first().attr("selected",true);
     //清除起止时间
     $('.input-daterange').datepicker('clearDates');
+    //设置项目状态
+    $("#id_status option").attr("selected",false);
+    $("#id_status option").first().attr("selected",true);
 
     searchfun();
   }

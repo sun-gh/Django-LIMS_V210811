@@ -66,7 +66,7 @@ class PretreatStageForm(forms.ModelForm):
                                                                 attrs={'type': 'datetime-local',
                                                                        'class': 'form-control',
                                                                        'readonly': 'readonly'}))
-    preexperiment_finish_date = forms.DateTimeField(label="预实验完成时间",
+    preexperiment_finish_date = forms.DateTimeField(label="质控完成时间",
                                                     input_formats=['%Y-%m-%dT%H:%M'],
                                                     required=False,
                                                     widget=forms.DateTimeInput(format='%Y-%m-%dT%H:%M',
@@ -169,7 +169,7 @@ class AnalysisStageForm(forms.ModelForm):
                                                                       attrs={'type': 'datetime-local',
                                                                              'class': 'form-control',
                                                                              'readonly': 'readonly'}))
-    date_send_rawdata = forms.DateTimeField(label="原始数据发送时间",
+    date_send_rawdata = forms.DateTimeField(label="原始数据发送",
                                             input_formats=['%Y-%m-%dT%H:%M'],
                                             required=False,
                                             widget=forms.DateTimeInput(format='%Y-%m-%dT%H:%M',
@@ -181,6 +181,8 @@ class AnalysisStageForm(forms.ModelForm):
                                        widget=forms.DateTimeInput(format='%Y-%m-%dT%H:%M',
                                                                   attrs={'type': 'datetime-local',
                                                                          'class': 'form-control'}))
+    status = forms.IntegerField(label="暂停或终止", widget=forms.Select(
+        choices=SampleRecord.status_choices[-2:], attrs={'class': 'form-control'}))
 
     class Meta:
         model = SampleRecord
@@ -192,6 +194,7 @@ class AnalysisStageForm(forms.ModelForm):
             'date_send_report',
             'date_send_rawdata',
             'pro_deadline',
+            'status',
         ]
 
 
@@ -214,3 +217,6 @@ class SearchForm(forms.Form):
                                           widget=forms.Select(attrs={'class': 'form-control form-control-sm'}))
     sample_type = forms.ModelChoiceField(queryset=SampleType.objects.all(), label="样本类型", required=False,
                                          widget=forms.Select(attrs={'class': 'form-control form-control-sm'}))
+    status = forms.IntegerField(label="状态",
+                                widget=forms.Select(choices=SampleRecord.status_choices,
+                                                    attrs={'class': 'form-control form-control-sm'}))
