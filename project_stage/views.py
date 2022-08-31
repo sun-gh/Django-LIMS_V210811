@@ -429,7 +429,7 @@ def sample_record_edit(request, project_id):
 
 @login_required()
 def sample_record_del(request):
-    # 定义删除项目功能函数
+    # 定义删除项目功能
     if request.method == 'POST':
         project_id = request.POST.get("project_id")
         current_id = json.loads(project_id)

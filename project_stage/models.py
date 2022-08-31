@@ -150,6 +150,23 @@ class ResponsiblePerson(models.Model):
         verbose_name_plural = verbose_name
 
 
+class SpeciesInfo(models.Model):
+    # 定义物种信息
+    database = models.CharField(max_length=200, verbose_name="数据库", unique=True, default="")
+    species = models.CharField(max_length=150, verbose_name="物种", default="")
+    entry_count = models.PositiveIntegerField(verbose_name="条目数", default=0)
+    creator = models.CharField(max_length=20, verbose_name="添加人", default="")
+    c_time = models.DateTimeField(verbose_name="添加时间", auto_now_add=True)
+
+    def __str__(self):
+        return self.species + self.database
+
+    class Meta:
+        ordering = ["database"]
+        verbose_name = "物种信息"
+        verbose_name_plural = verbose_name
+
+
 class SampleRecord(models.Model):
     # 定义样本登记表
     priority_level = (
