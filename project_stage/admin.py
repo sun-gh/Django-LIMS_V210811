@@ -68,4 +68,6 @@ admin.site.register(models.ProjectInterrupt)
 # admin.site.register(models.ProjectInterrupt, ProjectInterruptAdmin)
 admin.site.register(models.Machine)
 admin.site.register(models.ResponsiblePerson)
+admin.site.register(models.SpeciesInfo)
+
 

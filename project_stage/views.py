@@ -167,12 +167,12 @@ def sample_record_table(request):
                 file_display = ""
             # 定义项目剩余周期
             pro_remain_days = project.pro_cyc_remain_days
-            if pro_remain_days:
+            if pro_remain_days is not None:
                 pro_cyc_remain_days = pro_remain_days
             else:
                 pro_cyc_remain_days = "-"
             pro_remain_percent = project.pro_cyc_remain_percent
-            if pro_remain_percent:
+            if pro_remain_percent is not None:
                 pro_cyc_remain_percent = pro_remain_percent
             else:
                 pro_cyc_remain_percent = "-"
@@ -558,12 +558,12 @@ def pretreat_stage_table(request):
                 pretreat_finish_date = "-"
             # 定义当前阶段剩余时间和百分比
             current_remain_days = project.current_stage_remain_days
-            if current_remain_days:
+            if current_remain_days is not None:
                 days_left = current_remain_days
             else:
                 days_left = "-"
             current_remain_percent = project.current_stage_remain_percent
-            if current_remain_percent:
+            if current_remain_percent is not None:
                 time_percent = current_remain_percent
             else:
                 time_percent = "-"
@@ -877,12 +877,12 @@ def test_stage_table(request):
                 editable = False
             # 定义当前阶段剩余时间和百分比
             current_remain_days = project.current_stage_remain_days
-            if current_remain_days:
+            if current_remain_days is not None:
                 days_left = current_remain_days
             else:
                 days_left = "-"
             current_remain_percent = project.current_stage_remain_percent
-            if current_remain_percent:
+            if current_remain_percent is not None:
                 time_percent = current_remain_percent
             else:
                 time_percent = "-"
@@ -1107,12 +1107,12 @@ def analysis_stage_table(request):
                 date_send_report = "-"
             # 定义当前阶段剩余时间和百分比
             current_remain_days = project.current_stage_remain_days
-            if current_remain_days:
+            if current_remain_days is not None:
                 days_left = current_remain_days
             else:
                 days_left = "-"
             current_remain_percent = project.current_stage_remain_percent
-            if current_remain_percent:
+            if current_remain_percent is not None:
                 time_percent = current_remain_percent
             else:
                 time_percent = "-"

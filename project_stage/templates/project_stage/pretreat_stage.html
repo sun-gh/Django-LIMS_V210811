@@ -512,7 +512,7 @@
         value+'%;" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100">'+row.days_left+'</div></div>';
       } else {
         result +='<div class="progress"><div class="progress-bar bg-danger" role="progressbar" style="width:'+
-        value+'%;" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100">'+row.days_left+'</div></div>';
+        value+'%;min-width:1em;" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100">'+row.days_left+'</div></div>';
       }
     }
     return result;

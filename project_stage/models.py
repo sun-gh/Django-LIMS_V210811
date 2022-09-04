@@ -119,7 +119,6 @@ class ProjectInterrupt(models.Model):
         return self.interrupt_type
 
     class Meta:
-        # ordering = ["type_order"]
         verbose_name = "项目中断类型"
         verbose_name_plural = verbose_name
 
