@@ -6,11 +6,11 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse
 import json
 from django.db.models import Q
-from datetime import date, datetime
+from datetime import date, datetime, time
 import django.dispatch
 from django.dispatch import receiver
 from customer.views import customer_edit, project_add_unit, project_add_terminal
-import chinese_calendar
+from chinese_calendar import get_workdays, find_workday
 from guardian.shortcuts import get_objects_for_user
 
 
@@ -245,38 +245,42 @@ def sample_record_add(request):
             if terminal:
                 sample_rec.terminal = terminal
             if 'pro_start_date' in change_list:
-                pro_start_date = sample_rec_form.cleaned_data.get("pro_start_date")
+                pro_start_date = sample_rec_form.cleaned_data.get("pro_start_date").date()
+                pro_start_time = sample_rec_form.cleaned_data.get("pro_start_date").time()
                 pro_type = ProjectType.objects.get(id=request.POST.get("project_type"))
                 # 定义启动截至日期
                 start_days = pro_type.start_deadline
                 if start_days:
-                    sample_rec.start_deadline = chinese_calendar.find_workday(start_days, pro_start_date)
+                    sample_rec.start_deadline = datetime.combine(find_workday(start_days, pro_start_date),pro_start_time)
                 # 定义样本质控截至日期
                 preexperiment_days = pro_type.pre_experiment_cycle
                 pre_process_days = pro_type.pre_process_cycle
                 test_days = pro_type.test_cycle
                 if preexperiment_days:  # 有样本质控，一定有前处理和上机检测；
-                    sample_rec.preexperiment_deadline = chinese_calendar.find_workday(preexperiment_days, pro_start_date)
+                    sample_rec.preexperiment_deadline = datetime.combine(find_workday(preexperiment_days,
+                                                                                      pro_start_date), pro_start_time)
 
-                    sample_rec.pretreat_deadline = chinese_calendar.find_workday(preexperiment_days + pre_process_days,
-                                                                                 pro_start_date)
-                    sample_rec.test_deadline = chinese_calendar.find_workday(preexperiment_days + pre_process_days +
-                                                                             test_days, pro_start_date)
+                    sample_rec.pretreat_deadline = datetime.combine(find_workday(preexperiment_days + pre_process_days,
+                                                                                 pro_start_date), pro_start_time)
+                    sample_rec.test_deadline = datetime.combine(find_workday(preexperiment_days + pre_process_days +
+                                                                             test_days, pro_start_date), pro_start_time)
                     # 定义当前阶段剩余周期，及项目状态
                     sample_rec.current_stage_remain_days = preexperiment_days
                     sample_rec.status = 21
                 else:
                     if pre_process_days and test_days:
                         # 有前处理，且有上机检测的项目
-                        sample_rec.pretreat_deadline = chinese_calendar.find_workday(pre_process_days, pro_start_date)
-                        sample_rec.test_deadline = chinese_calendar.find_workday(pre_process_days+test_days,
-                                                                                 pro_start_date)
+                        sample_rec.pretreat_deadline = datetime.combine(find_workday(pre_process_days, pro_start_date),
+                                                                        pro_start_time)
+                        sample_rec.test_deadline = datetime.combine(find_workday(pre_process_days+test_days,
+                                                                                 pro_start_date), pro_start_time)
                         # 定义当前阶段的剩余周期，及项目状态
                         sample_rec.current_stage_remain_days = pre_process_days
                         sample_rec.status = 21
                     elif pre_process_days and not test_days:
                         # 只有前处理，一般为研发项目
-                        sample_rec.pretreat_deadline = chinese_calendar.find_workday(pre_process_days, pro_start_date)
+                        sample_rec.pretreat_deadline = datetime.combine(find_workday(pre_process_days, pro_start_date),
+                                                                        pro_start_time)
                         # 定义当前阶段剩余天数，及项目状态
                         sample_rec.current_stage_remain_days = pre_process_days
                         sample_rec.status = 21
@@ -287,7 +291,8 @@ def sample_record_add(request):
                 # 定义当前阶段的剩余周期百分比
                 sample_rec.current_stage_remain_percent = 100
                 # 定义项目截至日期
-                sample_rec.pro_deadline = chinese_calendar.find_workday(pro_type.total_cycle, pro_start_date)
+                sample_rec.pro_deadline = datetime.combine(find_workday(pro_type.total_cycle, pro_start_date),
+                                                           pro_start_time)
                 # 定义总周期剩余天数及百分比
                 sample_rec.pro_cyc_remain_days = pro_type.total_cycle
                 sample_rec.pro_cyc_remain_percent = 100
@@ -316,7 +321,7 @@ def sample_record_edit(request, project_id):
     project_info = SampleRecord.objects.get(id=project_id)
     if request.method == 'POST':
         old_anti_fake_number = project_info.anti_fake_number
-        old_pro_start_date = project_info.pro_start_date
+        old_pro_start_datetime = project_info.pro_start_date
         project_info_form = SampleRecordForm(request.POST, instance=project_info)
         if project_info_form.is_valid():
             change_list = project_info_form.changed_data
@@ -344,14 +349,18 @@ def sample_record_edit(request, project_id):
                 else:
                     project_info.terminal = None
             # 以下定义几个截止日期修改(周期以项目启动时间作为起点；时间节点变更条件：添加“项目启动时间”或已启动项目修改“项目类型”；)
-            new_pro_start_date = project_info_form.cleaned_data.get("pro_start_date")
-            if (not old_pro_start_date and new_pro_start_date) or (old_pro_start_date and 'project_type' in change_list):
+            new_pro_start_datetime = project_info_form.cleaned_data.get("pro_start_date")
+            if (not old_pro_start_datetime and new_pro_start_datetime) or (old_pro_start_datetime and
+                                                                           'project_type' in change_list):
                 # 此时项目一定为启动状态；
+                new_pro_start_date = new_pro_start_datetime.date()
+                new_pro_start_time = new_pro_start_datetime.time()
                 pro_type = ProjectType.objects.get(id=request.POST.get("project_type"))
                 # 同时修改启动截止日期
                 start_days = pro_type.start_deadline
                 if start_days:
-                    project_info.start_deadline = chinese_calendar.find_workday(start_days, new_pro_start_date)
+                    project_info.start_deadline = datetime.combine(find_workday(start_days, new_pro_start_date),
+                                                                   new_pro_start_time)
                 else:
                     project_info.start_deadline = None
                 # 定义样本质控截至日期
@@ -359,12 +368,12 @@ def sample_record_edit(request, project_id):
                 pre_process_days = pro_type.pre_process_cycle
                 test_days = pro_type.test_cycle
                 if preexperiment_days:  # 此时一定有前处理和上机检测；
-                    project_info.preexperiment_deadline = chinese_calendar.find_workday(preexperiment_days,
-                                                                                        new_pro_start_date)
-                    project_info.pretreat_deadline = chinese_calendar.find_workday(preexperiment_days+pre_process_days,
-                                                                                   new_pro_start_date)
-                    project_info.test_deadline = chinese_calendar.find_workday(preexperiment_days+pre_process_days +
-                                                                               test_days, new_pro_start_date)
+                    project_info.preexperiment_deadline = datetime.combine(
+                        find_workday(preexperiment_days, new_pro_start_date), new_pro_start_time)
+                    project_info.pretreat_deadline = datetime.combine(find_workday(preexperiment_days+pre_process_days,
+                                                                      new_pro_start_date), new_pro_start_time)
+                    project_info.test_deadline = datetime.combine(find_workday(preexperiment_days+pre_process_days +
+                                                                  test_days, new_pro_start_date), new_pro_start_time)
                     # 定义当前阶段剩余周期，及状态；
                     project_info.current_stage_remain_days = preexperiment_days
                     project_info.status = 21
@@ -372,17 +381,17 @@ def sample_record_edit(request, project_id):
                     project_info.preexperiment_deadline = None
                     # 定义前处理截至日期和下机截止日期
                     if pre_process_days and test_days:  # 有前处理，且有质谱上机的项目；
-                        project_info.pretreat_deadline = chinese_calendar.find_workday(pre_process_days,
-                                                                                       new_pro_start_date)
-                        project_info.test_deadline = chinese_calendar.find_workday(pre_process_days+test_days,
-                                                                                   new_pro_start_date)
+                        project_info.pretreat_deadline = datetime.combine(
+                            find_workday(pre_process_days, new_pro_start_date), new_pro_start_time)
+                        project_info.test_deadline = datetime.combine(
+                            find_workday(pre_process_days+test_days, new_pro_start_date), new_pro_start_time)
                         # 定义当前阶段剩余周期，及状态调整
                         project_info.current_stage_remain_days = pre_process_days
                         project_info.status = 21
                     elif pre_process_days and not test_days:  # 只有样品制备，一般为研发项目；
                         project_info.test_deadline = None
-                        project_info.pretreat_deadline = chinese_calendar.find_workday(pre_process_days,
-                                                                                       new_pro_start_date)
+                        project_info.pretreat_deadline = datetime.combine(
+                            find_workday(pre_process_days, new_pro_start_date), new_pro_start_time)
                         # 定义当前阶段剩余天数，及状态
                         project_info.current_stage_remain_days = pre_process_days
                         project_info.status = 21
@@ -393,7 +402,8 @@ def sample_record_edit(request, project_id):
                         project_info.current_stage_remain_days = pro_type.analysis_cycle
                         project_info.status = 41
                 # 定义项目截至日期
-                project_info.pro_deadline = chinese_calendar.find_workday(pro_type.total_cycle, new_pro_start_date)
+                project_info.pro_deadline = datetime.combine(find_workday(pro_type.total_cycle, new_pro_start_date),
+                                                             new_pro_start_time)
                 # 定义当前阶段剩余百分比
                 project_info.current_stage_remain_percent = 100
                 # 定义项目总周期剩余天数及百分比
@@ -707,12 +717,12 @@ def pretreat_stage_edit(request, project_id):
                 # 此时为添加“前处理完成时间”，要修改状态及当前阶段剩余周期(周期计算要考虑项目按期交付)，要考虑“样本制备”项目；
                 if pro_type.test_cycle:
                     project_info.status = 31
-                    real_cyc_current_stage = len(chinese_calendar.get_workdays(project_info.pretreat_deadline,
-                                                                               project_info.test_deadline))-1
+                    real_cyc_current_stage = len(get_workdays(project_info.pretreat_deadline,
+                                                              project_info.test_deadline))-1
                     if date_today > project_info.test_deadline.date():
-                        work_days = -len(chinese_calendar.get_workdays(project_info.test_deadline.date(), date_today))+1
+                        work_days = -len(get_workdays(project_info.test_deadline.date(), date_today))+1
                     else:  # 此时包括 < 和 =两种情况；
-                        work_days = len(chinese_calendar.get_workdays(date_today, project_info.test_deadline.date()))-1
+                        work_days = len(get_workdays(date_today, project_info.test_deadline.date()))-1
                     project_info.current_stage_remain_days = work_days
                     project_info.current_stage_remain_percent = work_days * 100 // real_cyc_current_stage
                 else:  # 有前处理没有质谱检测，只能是“样本制备”项目；
@@ -720,12 +730,12 @@ def pretreat_stage_edit(request, project_id):
             elif not original_preexperiment_finish_time and preexperiment_finish_date_now and not pretreat_finish_date_now:
                 # 此时为添加“预实验完成时间”，要修改状态及当前剩余周期
                 project_info.status = 23
-                real_cyc_current_stage = len(chinese_calendar.get_workdays(project_info.preexperiment_deadline,
-                                                                           project_info.pretreat_deadline))-1
+                real_cyc_current_stage = len(get_workdays(project_info.preexperiment_deadline,
+                                                          project_info.pretreat_deadline))-1
                 if date_today > project_info.pretreat_deadline.date():
-                    work_days = -len(chinese_calendar.get_workdays(project_info.pretreat_deadline.date(), date_today))+1
+                    work_days = -len(get_workdays(project_info.pretreat_deadline.date(), date_today))+1
                 else:  # 此时包括 < 和 =两种情况；
-                    work_days = len(chinese_calendar.get_workdays(date_today, project_info.pretreat_deadline.date()))-1
+                    work_days = len(get_workdays(date_today, project_info.pretreat_deadline.date()))-1
                 project_info.current_stage_remain_days = work_days
                 project_info.current_stage_remain_percent = work_days * 100 // real_cyc_current_stage
             elif not pretreat_finish_date_now and not preexperiment_finish_date_now and not original_start_time and\
@@ -935,12 +945,11 @@ def test_stage_edit(request, pro_id):
                 # 此时为添加“下机时间”，要修改当前阶段周期和状态；要考虑“质谱检测”项目；
                 if pro_type.analysis_cycle:
                     pro_test.status = 41
-                    real_current_stage_cyc = len(chinese_calendar.get_workdays(pro_test.test_deadline,
-                                                                               pro_test.pro_deadline))-1
+                    real_current_stage_cyc = len(get_workdays(pro_test.test_deadline, pro_test.pro_deadline))-1
                     if date_today > pro_test.pro_deadline.date():
-                        remain_days = -len(chinese_calendar.get_workdays(pro_test.pro_deadline.date(), date_today))+1
+                        remain_days = -len(get_workdays(pro_test.pro_deadline.date(), date_today))+1
                     else:  # 包括 < 和 =两种情况；
-                        remain_days = len(chinese_calendar.get_workdays(date_today, pro_test.pro_deadline.date()))-1
+                        remain_days = len(get_workdays(date_today, pro_test.pro_deadline.date()))-1
                     pro_test.current_stage_remain_days = remain_days
                     pro_test.current_stage_remain_percent = remain_days * 100 // real_current_stage_cyc
                 else:  # 此时无“数据分析”阶段；
@@ -1174,15 +1183,17 @@ def analysis_stage_edit(request, project_id):
                 project_info.status = 42
             if "pro_deadline" in change_list:
                 # 计算实际周期占比(此处只能修改项目截止日期，不能添加项目截止日期；在页面通过js实现；)
-                pro_start_date = project_info.pro_start_date
-                pro_deadline = project_info_form.cleaned_data.get('pro_deadline')
-                real_pro_cycle = len(chinese_calendar.get_workdays(pro_start_date, pro_deadline))-1
+                pro_start_date = project_info.pro_start_date.date()
+                pro_start_time = project_info.pro_start_date.time()
+                pro_deadline = project_info_form.cleaned_data.get('pro_deadline').date()
+                real_pro_cycle = len(get_workdays(pro_start_date, pro_deadline))-1
                 real_in_theory = round(real_pro_cycle / project_info.project_type.total_cycle, 2)
                 # 修改实际实验开始截止日期
                 start_cycle = project_info.project_type.start_deadline
                 if start_cycle:
                     real_start_period = int(start_cycle * real_in_theory)  # 实际实验开始周期
-                    project_info.start_deadline = chinese_calendar.find_workday(real_start_period, pro_start_date)
+                    project_info.start_deadline = datetime.combine(find_workday(real_start_period, pro_start_date),
+                                                                   pro_start_time)
                 # 修改实际样本质控截止日期
                 pre_experiment_cycle = project_info.project_type.pre_experiment_cycle
                 pre_process_cycle = project_info.project_type.pre_process_cycle
@@ -1191,24 +1202,25 @@ def analysis_stage_edit(request, project_id):
                     real_preexperiment_period = int(pre_experiment_cycle * real_in_theory)  # 实际预实验周期
                     real_pre_period = int(pre_process_cycle * real_in_theory)
                     real_test_period = int(test_cycle * real_in_theory)  # 实际检测周期
-                    project_info.preexperiment_deadline = chinese_calendar.find_workday(real_preexperiment_period,
-                                                                                        pro_start_date)
+                    project_info.preexperiment_deadline = datetime.combine(find_workday(real_preexperiment_period,
+                                                                                        pro_start_date), pro_start_time)
                     # 修改实际前处理截止日期和下机截止日期
-                    project_info.pretreat_deadline = chinese_calendar.find_workday(real_preexperiment_period +
-                                                                                   real_pre_period, pro_start_date)
-                    project_info.test_deadline = chinese_calendar.find_workday(real_preexperiment_period+real_pre_period
-                                                                               + real_test_period, pro_start_date)
+                    project_info.pretreat_deadline = datetime.combine(find_workday(real_preexperiment_period +
+                                                                      real_pre_period, pro_start_date), pro_start_time)
+                    project_info.test_deadline = datetime.combine(find_workday(real_preexperiment_period+real_pre_period
+                                                                  + real_test_period, pro_start_date), pro_start_time)
                 else:
                     if pre_process_cycle and test_cycle:  # 此时为“定性项目”；“无前处理有上机”的项目暂无；都没有，则为数据分析项目；
                         real_pre_period = int(pre_process_cycle * real_in_theory)  # 实际前处理周期
                         real_test_period = int(test_cycle * real_in_theory)
-                        project_info.pretreat_deadline = chinese_calendar.find_workday(real_pre_period, pro_start_date)
-                        project_info.test_deadline = chinese_calendar.find_workday(real_pre_period+real_test_period,
-                                                                                   pro_start_date)
+                        project_info.pretreat_deadline = datetime.combine(find_workday(real_pre_period, pro_start_date),
+                                                                          pro_start_time)
+                        project_info.test_deadline = datetime.combine(find_workday(real_pre_period+real_test_period,
+                                                                                   pro_start_date), pro_start_time)
                     elif pre_process_cycle and not test_cycle:  # 此时为“样本制备”项目
                         real_pre_period = int(pre_process_cycle * real_in_theory)
-                        project_info.pretreat_deadline = chinese_calendar.find_workday(real_pre_period, pro_start_date)
-
+                        project_info.pretreat_deadline = datetime.combine(find_workday(real_pre_period, pro_start_date),
+                                                                          pro_start_time)
             if 'status' in change_list:
                 # 此时处理“暂停”或“终止”（分三种情况：1、正常调整为“暂停”或“终止”；2、由“暂停”改为“终止”；3、“暂停”或“终止”恢复为正常）
                 pause_choice = project_info_form.cleaned_data.get('status')
@@ -1225,32 +1237,35 @@ def analysis_stage_edit(request, project_id):
                     original_pretreat_deadline = project_info.pretreat_deadline
                     original_preexperiment_deadline = project_info.preexperiment_deadline
                     if 40 < original_status_code < 50:  # 在数据分析阶段(总周期在后面调整)
-                        pause_date = chinese_calendar.find_workday(current_stage_remain_days, original_pro_deadline)
-                        add_days = len(chinese_calendar.get_workdays(pause_date, date_today))-1  # 起止时间按一天算
+                        pause_date = find_workday(current_stage_remain_days, original_pro_deadline)
+                        add_days = len(get_workdays(pause_date, date_today))-1  # 起止时间按一天算
                     elif 30 < original_status_code < 40:  # 在质谱检测阶段
-                        pause_date = chinese_calendar.find_workday(current_stage_remain_days, original_test_deadline)
-                        add_days = len(chinese_calendar.get_workdays(pause_date, date_today))-1
-                        project_info.test_deadline = chinese_calendar.find_workday(add_days, original_test_deadline)
+                        pause_date = find_workday(current_stage_remain_days, original_test_deadline)
+                        add_days = len(get_workdays(pause_date, date_today))-1
+                        project_info.test_deadline = datetime.combine(find_workday(add_days, original_test_deadline),
+                                                                      original_test_deadline.time())
                     elif 22 < original_status_code < 30:  # 在样本制备阶段
-                        pause_date = chinese_calendar.find_workday(current_stage_remain_days, original_pretreat_deadline)
-                        add_days = len(chinese_calendar.get_workdays(pause_date, date_today))-1
-                        project_info.pretreat_deadline = chinese_calendar.find_workday(add_days,
-                                                                                       original_pretreat_deadline)
+                        pause_date = find_workday(current_stage_remain_days, original_pretreat_deadline)
+                        add_days = len(get_workdays(pause_date, date_today))-1
+                        project_info.pretreat_deadline = datetime.combine(
+                            find_workday(add_days, original_pretreat_deadline), original_pretreat_deadline.time())
                         if original_test_deadline:  # "样本制备"项目没有“质谱检测”阶段；
-                            project_info.test_deadline = chinese_calendar.find_workday(add_days, original_test_deadline)
+                            project_info.test_deadline = datetime.combine(
+                                find_workday(add_days, original_test_deadline), original_test_deadline.time())
                     elif 20 < original_status_code < 23:  # 在样本质控阶段
-                        pause_date = chinese_calendar.find_workday(current_stage_remain_days,
-                                                                   original_preexperiment_deadline)
-                        add_days = len(chinese_calendar.get_workdays(pause_date, date_today))-1
-                        project_info.preexperiment_deadline = chinese_calendar.find_workday(
-                            add_days, original_preexperiment_deadline)
+                        pause_date = find_workday(current_stage_remain_days, original_preexperiment_deadline)
+                        add_days = len(get_workdays(pause_date, date_today))-1
+                        project_info.preexperiment_deadline = datetime.combine(
+                            find_workday(add_days, original_preexperiment_deadline), original_preexperiment_deadline.time())
                         # 同时调整后面的“样本制备”和“质谱检测”截止日期
-                        project_info.pretreat_deadline = chinese_calendar.find_workday(add_days,
-                                                                                       original_pretreat_deadline)
-                        project_info.test_deadline = chinese_calendar.find_workday(add_days, original_test_deadline)
+                        project_info.pretreat_deadline = datetime.combine(
+                            find_workday(add_days, original_pretreat_deadline), original_pretreat_deadline.time())
+                        project_info.test_deadline = datetime.combine(find_workday(add_days, original_test_deadline),
+                                                                      original_test_deadline.time())
                     # 最后调整总周期，和清空原状态编号
                     project_info.original_status = None
-                    project_info.pro_deadline = chinese_calendar.find_workday(add_days, original_pro_deadline)
+                    project_info.pro_deadline = datetime.combine(find_workday(add_days, original_pro_deadline),
+                                                                 original_pro_deadline.time())
             project_info.save()
             project_info_form.save_m2m()
             msg = "edit_success"
