@@ -46,6 +46,7 @@
                       <th>客户来源</th>
                       <th>检测仪器</th>
                       <th>项目负责人</th>
+                      <th>蛋白数量</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -72,7 +73,7 @@
                           <span>-</span>
                         {% endif %}
                       </td>
-
+                      <td>{{ record.protein_amount|default:"-" }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -102,9 +103,30 @@
               </div>  <!--/.col-->
             </div>  <!--/.row-->
             <div class="row">
+              <div class="col-md-8">
+              <h6><b>物种信息:</b></h6>
+              <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
+                <thead>
+                  <tr>
+                    <th>物种</th>
+                    <th>数据库</th>
+                    <th>条目数</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{ record.species.species|default:"-" }}</td>
+                    <td>{{ record.species.database|default:"-" }}</td>
+                    <td>{{ record.species.entry_count|default:"-" }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              </div>  <!--/.col-->
+            </div>  <!--/.row-->
+            <div class="row">
               <div class="col-md-10">
                 <h6><b>时间节点:</b></h6>
-                <table border="1" class="table " style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
+                <table border="1" class="table " style="border-left:3px solid orangered;border-bottom:1px solid orangered" >
                 <thead>
                   <tr>
                       <th>下机时间</th>

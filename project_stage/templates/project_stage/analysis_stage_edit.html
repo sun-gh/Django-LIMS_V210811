@@ -59,7 +59,6 @@
         </div> <!-- /.card-body -->
         </div>
         <div class="card card-info ">
-
               <form class="form-horizontal" method="post" action="{% url 'project_stage:analysis_stage_edit' project_info.id %}">
               <!-- card-body -->
               <div class="row">
@@ -67,15 +66,40 @@
                   <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
                     {% csrf_token %}
                     <div class="row ">
-                      <div class="col">
-
+                      <div class="col-md-6">
                         <!--项目负责人-->
                         <div class="form-group row">
                           {{ form.responsible_person.label_tag }}
-                          <div class="col-md-7">
+                          <div class="col-md-6">
                             {{ form.responsible_person }}
                           </div>
                         </div>
+                      </div>
+                      <div class="col-md-6">
+                        <!--项目截止日期-->
+                        <div class="form-group row">
+                          {{ form.pro_deadline.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.pro_deadline }}
+                          </div>
+                        </div>
+                      </div>    <!-- /.col-->
+                    </div>   <!-- /.row-->
+                    <div class="row">
+                      <div class="col">
+                        <!--物种-->
+                        <div class="form-group row">
+                          {{ form.species.label_tag }}
+                          <div class="col-md-9">
+                            {{ form.species }}
+                          </div>
+                          <div class="col "><a role="button" class="btn btn-sm btn-link" style="color:#2ECC40;" href="{% url 'project_stage:species_add' %}">
+                            <i class="fas fa-plus" ></i></a></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
                         <!--搜库日期-->
                         <div class="form-group row">
                           {{ form.date_searchlib.label_tag }}
@@ -84,6 +108,39 @@
                           </div>
                           <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_searchlib_date">现在</button></div>
                         </div>
+                      </div>
+                      <div class="col-md-6">
+                        <!--优先级-->
+                        <div class="form-group row">
+                          {{ form.priority.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.priority }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <!--蛋白数量-->
+                        <div class="form-group row">
+                          {{ form.protein_amount.label_tag }}
+                          <div class="col-md-6">
+                            {{ form.protein_amount }}
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <!--项目中断类型-->
+                        <div class="form-group row">
+                          {{ form.project_interrupt.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.project_interrupt }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
                         <!--报告发送日期-->
                         <div class="form-group row">
                           {{ form.date_send_report.label_tag }}
@@ -92,6 +149,19 @@
                           </div>
                           <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_report_date">现在</button></div>
                         </div>
+                      </div>
+                      <div class="col-md-6">
+                        <!--暂停或终止-->
+                        <div class="form-group row">
+                          {{ form.status.label_tag }}
+                          <div class="col-md-7">
+                            {{ form.status }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
                         <!--原始数据发送日期-->
                         <div class="form-group row">
                           {{ form.date_send_rawdata.label_tag }}
@@ -101,37 +171,7 @@
                           <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_rawdata_date">现在</button></div>
                         </div>
                       </div>
-                      <div class="col">
-                        <!--项目截止日期-->
-                        <div class="form-group row">
-                          {{ form.pro_deadline.label_tag }}
-                          <div class="col-md-7">
-                            {{ form.pro_deadline }}
-                          </div>
-                        </div>
-                        <!--优先级-->
-                        <div class="form-group row">
-                          {{ form.priority.label_tag }}
-                          <div class="col-md-7">
-                            {{ form.priority }}
-                          </div>
-                        </div>
-                        <!--项目中断类型-->
-                        <div class="form-group row">
-                          {{ form.project_interrupt.label_tag }}
-                          <div class="col-md-7">
-                            {{ form.project_interrupt }}
-                          </div>
-                        </div>
-                        <!--暂停或终止-->
-                        <div class="form-group row">
-                          {{ form.status.label_tag }}
-                          <div class="col-md-7">
-                            {{ form.status }}
-                          </div>
-                        </div>
-                      </div>    <!-- /.col-->
-                      </div>   <!-- /.row-->
+                    </div>
                   </div>  <!-- /.card-body-->
                 </div>   <!-- /.col-->
               </div>  <!-- /.row-->
@@ -167,7 +207,14 @@
   $(document).ready(function() {
 
   // 给label加上class属性;input加上class;
-  $("form label").addClass("col-md-4 col-form-label");
+  $("form .col-md-6 label").addClass("col-md-4 col-form-label");
+  $("[for='id_species']").addClass("col-md-2 col-form-label");
+
+  // 给select添加样式,<!-- Select2 -->
+  $("#id_species").addClass("select2");
+  $("#id_species").attr("style","width:100%;");
+  //Initialize Select2 Elements
+  $('.select2').select2();
 
   // 设置弹出提示框属性
     toastr.options = {

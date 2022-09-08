@@ -9,11 +9,9 @@
   <!-- Select2 -->
   <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/select2/css/select2.min.css' %}" />
   <!--customer css-->
-<!--  <link href="{% static 'project_stage/css/sample_record_add.css'  %}" rel="stylesheet" />-->
 {% endblock  %}
 
 {% block content %}
-
   <!-- Content Header (Page header) -->
   <section class="content-header pb-1">
     <div class="container-fluid">
@@ -27,7 +25,6 @@
       </div>
     </div><!-- /.container-fluid -->
   </section>
-
   <!-- card部分 -->
   <section class="content">
     <div class="row">
@@ -48,104 +45,102 @@
           <!-- card-body -->
           <div class="row">
             <div class="col-md-10 offset-md-1">
-              <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
+              <div class="card-body ">
                 {% csrf_token %}
                 <div class="row ">
-                  <div class="col">
-                      <!--项目类型-->
-                      <div class="form-group row">
-                        {{ form.project_type.label_tag }}
-                        <div class="col-md-7">
-                          {{ form.project_type }}
-                        </div>
+                  <div class="col-md-6">
+                    <!--项目类型-->
+                    <div class="form-group row">
+                      {{ form.project_type.label_tag }}
+                      <div class="col-md-7">
+                        {{ form.project_type }}
                       </div>
-                      <!--样本类型-->
-                      <div class="form-group row">
-                        {{ form.sample_type.label_tag }}
-                        <div class="col-md-7" id="unit">
-                          {{ form.sample_type }}
-                        </div>
+                    </div>
+                    <!--样本类型-->
+                    <div class="form-group row">
+                      {{ form.sample_type.label_tag }}
+                      <div class="col-md-7" id="unit">
+                        {{ form.sample_type }}
                       </div>
-                      <!--机时类型-->
-                      <div class="form-group row">
-                        {{ form.machine_time.label_tag }}
-                        <div class="col-md-7">
-                          {{ form.machine_time }}
-                        </div>
+                    </div>
+                    <!--机时类型-->
+                    <div class="form-group row">
+                      {{ form.machine_time.label_tag }}
+                      <div class="col-md-7">
+                        {{ form.machine_time }}
                       </div>
-                      <!--样本数量-->
-                      <div class="form-group row">
-                        {{ form.sample_amount.label_tag }}
-                        <div class="col-md-7">
-                          {{ form.sample_amount }}
-                        </div>
+                    </div>
+                    <!--样本数量-->
+                    <div class="form-group row">
+                      {{ form.sample_amount.label_tag }}
+                      <div class="col-md-7">
+                        {{ form.sample_amount }}
                       </div>
-                      <!--送样人-->
-                      <div class="form-group row">
-                        {{ form.sample_sender.label_tag }}
-                        <div class="col-md-7">
-                          {{ form.sample_sender }}
-                        </div>
+                    </div>
+                    <!--送样人-->
+                    <div class="form-group row">
+                      {{ form.sample_sender.label_tag }}
+                      <div class="col-md-7">
+                        {{ form.sample_sender }}
                       </div>
-                      <!--收样时间-->
-                      <div class="form-group row">
-                        {{ form.receive_time.label_tag }}
-                        <div class="col-md-6">
-                          {{ form.receive_time }}
-                        </div>
-                        <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_receive_date">现在</button></div>
+                    </div>
+                    <!--收样时间-->
+                    <div class="form-group row">
+                      {{ form.receive_time.label_tag }}
+                      <div class="col-md-6">
+                        {{ form.receive_time }}
                       </div>
-                      <!--样本质量-->
-                      <div class="form-group row">
-                        {{ form.sample_quality.label_tag }}
-                        <div class="col-md-7">
-                          {{ form.sample_quality }}
-                        </div>
+                      <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_receive_date">现在</button></div>
+                    </div>
+                    <!--样本质量-->
+                    <div class="form-group row">
+                      {{ form.sample_quality.label_tag }}
+                      <div class="col-md-7">
+                        {{ form.sample_quality }}
                       </div>
+                    </div>
                   </div>
-
-                  <div class="col">
-                      <!--附加项目-->
-                      <div class="form-group row">
-                        {{ form.addition_item.label_tag }}
-                        <div class="col-md-7">
-                          {{ form.addition_item }}
-                        </div>
+                  <div class="col-md-6">
+                    <!--附加项目-->
+                    <div class="form-group row">
+                      {{ form.addition_item.label_tag }}
+                      <div class="col-md-7">
+                        {{ form.addition_item }}
                       </div>
-                      <!--代理ID-->
-                      <div class="form-group row">
-                        {{ form.agent_id.label_tag }}
-                        <div class="col-md-7">
-                          {{ form.agent_id }}
-                        </div>
+                    </div>
+                    <!--代理ID-->
+                    <div class="form-group row">
+                      {{ form.agent_id.label_tag }}
+                      <div class="col-md-7">
+                        {{ form.agent_id }}
                       </div>
-                      <!--防伪编号-->
-                      <div class="form-group row">
-                        {{ form.anti_fake_number.label_tag }}
-                        <div class="col-md-7">
-                          {{ form.anti_fake_number }}
-                        </div>
+                    </div>
+                    <!--防伪编号-->
+                    <div class="form-group row">
+                      {{ form.anti_fake_number.label_tag }}
+                      <div class="col-md-7">
+                        {{ form.anti_fake_number }}
                       </div>
-                      <!--项目启动时间-->
-                      <div class="form-group row">
-                        {{ form.pro_start_date.label_tag }}
-                        <div class="col-md-6">
-                          {{ form.pro_start_date }}
-                        </div>
-                        <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_start_date">现在</button></div>
+                    </div>
+                    <!--项目启动时间-->
+                    <div class="form-group row">
+                      {{ form.pro_start_date.label_tag }}
+                      <div class="col-md-6">
+                        {{ form.pro_start_date }}
                       </div>
-                      <!--备注-->
-                      <div class="form-group row">
-                        {{ form.note.label_tag }}
-                        <div class="col-md-7">
-                          {{ form.note }}
-                        </div>
+                      <div class="col m-auto"><button type="button" class="btn btn-sm btn-link" id="set_start_date">现在</button></div>
+                    </div>
+                    <!--备注-->
+                    <div class="form-group row">
+                      {{ form.note.label_tag }}
+                      <div class="col-md-7">
+                        {{ form.note }}
                       </div>
-                      <!--登记人-->
-                      <div style="display:none;">{{  form.person_record }}</div>
-
+                    </div>
+                    <!--登记人-->
+                    <div style="display:none;">{{  form.person_record }}</div>
                   </div>    <!-- /.col-->
-                  </div>   <!-- /.row-->
+                </div>   <!-- /.row-->
               </div>  <!-- /.card-body-->
             </div>   <!-- /.col-->
           </div>  <!-- /.row-->

@@ -1,7 +1,7 @@
 {% extends "customer/base.html"  %}
 {% load static %}
 
-{% block title %} 谱度众合&nbsp;|&nbsp;前处理详情页 {% endblock %}
+{% block title %} 谱度众合&nbsp;|&nbsp;样本制备详情页 {% endblock %}
 
 {% block css %}
     <link href="{% static 'project_stage/css/pretreat_stage_detail.css'  %}" rel="stylesheet" />
@@ -13,7 +13,7 @@
     <div class="container-fluid">
       <div class="row ">
         <div class="col-sm-6">
-          <h5>前处理详细信息</h5>
+          <h5>样本制备详细信息</h5>
         </div>
         <div class="col-sm-6">
 
@@ -98,10 +98,10 @@
                   <tr>
                     <th>实验开始时间</th>
                     <th>质控完成时间</th>
-                    <th>前处理完成时间</th>
+                    <th>样本制备完成时间</th>
                     <th>实验开始截止时间</th>
                     <th>质控截止时间</th>
-                    <th>前处理截止时间</th>
+                    <th>样本制备截止时间</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -254,7 +254,7 @@
           <div class="card-footer">
             <div class="row">
               <div class="col-md-12">
-                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'project_stage:pretreat_stage' 'detail_back' %}" style="color:green;"><strong>返回前处理进度表</strong></a>
+                <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'project_stage:pretreat_stage' 'detail_back' %}" style="color:green;"><strong>返回样本制备进度表</strong></a>
               </div>  <!--/.col-->
             </div>
           </div>  <!--/.row-->

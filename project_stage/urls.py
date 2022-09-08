@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .tests import species_import
 
 #  定义项目和开票url
 app_name = 'project_stage'
@@ -29,4 +30,11 @@ urlpatterns = [
     path('analysis_stage_edit/<int:project_id>/', views.analysis_stage_edit, name='analysis_stage_edit'),
     path('analysis_stage_detail/<int:pro_id>/', views.analysis_stage_detail, name='analysis_stage_detail'),
     path('edit_analysis_info/<int:pro_id>/', views.edit_analysis_info, name='edit_analysis_info'),
+    # 定义物种信息导入功能
+    path('species_import/', species_import, name='species_import'),
+    path('species_info_page/<msg>', views.species_info_page, name='species_info_page'),
+    path('species_info_table/', views.species_info_table, name='species_info_table'),
+    path('species_add/', views.species_add, name='species_add'),
+    path('species_edit/<int:species_id>/', views.species_edit, name='species_edit'),
+    path('species_del/', views.species_del, name='species_del'),
     ]

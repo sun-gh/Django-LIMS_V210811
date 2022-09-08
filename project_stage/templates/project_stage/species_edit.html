@@ -1,0 +1,124 @@
+{% extends "customer/base.html"  %}
+{% load static %}
+
+{% block title %} 谱度众合&nbsp;|&nbsp;修改物种信息 {% endblock %}
+
+{% block css %}
+  <!--toastr提示框-->
+  <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.css' %}">
+  <!--customer css-->
+{% endblock  %}
+
+{% block content %}
+  <!-- Content Header (Page header) -->
+  <section class="content-header pb-1">
+    <div class="container-fluid">
+      <div class="row ">
+        <div class="col-sm-6">
+          <h5>修改物种信息</h5>
+        </div>
+        <div class="col-sm-6">
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- card部分 -->
+  <section class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-info ">
+          <form class="form-horizontal" method="post" action="{% url 'project_stage:species_edit' species.id %}">
+          <!-- card-body -->
+          <div class="row">
+            <div class="col-md-6 offset-md-3">
+              <div class="card-body ">
+                {% csrf_token %}
+                  <!--物种-->
+                  <div class="form-group row">
+                    {{ form.species.label_tag }}
+                    <div class="col-md-7">
+                      {{ form.species }}
+                    </div>
+                  </div>
+                  <!--数据库-->
+                  <div class="form-group row">
+                    {{ form.database.label_tag }}
+                    <div class="col-md-7">
+                      {{ form.database }}
+                    </div>
+                  </div>
+                  <!--条目数-->
+                  <div class="form-group row">
+                    {{ form.entry_count.label_tag }}
+                    <div class="col-md-7">
+                      {{ form.entry_count }}
+                    </div>
+                  </div>
+
+                  <!--添加人-->
+                  <div class="row" hidden>
+                      {{ form.creator }}
+                  </div>
+              </div>  <!-- /.card-body-->
+            </div>   <!-- /.col-->
+          </div>  <!-- /.row-->
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card-footer ">
+                <div class="row">
+                  <div class="col-md-2 offset-md-5">
+                    <a href="{% url 'project_stage:species_info_page' 'edit_back' %}" class="btn btn-secondary btn-sm">取消</a>
+                    <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
+                  </div>
+                </div>
+              </div>  <!-- /.card-footer-->
+            </div>  <!-- /.col-->
+          </div>   <!-- /.row-->
+          </form>
+
+        </div>  <!-- /.card-->
+      </div>   <!-- /.col-->
+    </div>  <!-- /.row-->
+  </section>
+
+{% endblock %}
+
+{% block script %}
+<!-- toastr提示框插件 -->
+<script src="{% static 'AdminLTE-3.0.2/plugins/toastr/toastr.min.js' %}"></script>
+
+<script type="text/javascript">
+
+  // 给label加上class属性;input加上class;
+  $("form label").addClass("col-md-5 col-form-label");
+
+  // 设置弹出提示框属性
+    toastr.options = {
+        closeButton: true,
+        debug: true,
+        progressBar: false,
+        positionClass: "toast-center-center",
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: "2000",
+        extendedTimeOut: "1000",
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut"
+    };
+
+  // 定义message显示
+    function msgTip(){
+      var msgs = '{{msg}}';  //此处变量外要加引号，否则显示not defined
+      if (msgs=='edit_failed') {
+        toastr.error('信息有误，验证失败！')
+      }
+    }
+    msgTip();
+
+</script>
+{% endblock %}

@@ -1,6 +1,6 @@
 from django import forms
 from .models import SampleRecord, ProjectType, SampleType, MachineTime, SampleQuality, AdditionalItem, OperatePerson,\
-    SampleStatus, ProjectInterrupt, Machine, ResponsiblePerson
+    SampleStatus, ProjectInterrupt, Machine, ResponsiblePerson, SpeciesInfo
 from customer.models import CustomerInfo
 
 
@@ -183,6 +183,10 @@ class AnalysisStageForm(forms.ModelForm):
                                                                          'class': 'form-control'}))
     status = forms.IntegerField(label="暂停或终止", widget=forms.Select(
         choices=SampleRecord.status_choices[-2:], attrs={'class': 'form-control'}))
+    species = forms.ModelChoiceField(queryset=SpeciesInfo.objects.all(), label="物种", required=False,
+                                     widget=forms.Select(attrs={'class': 'form-control'}))
+    protein_amount = forms.IntegerField(label="蛋白数量", required=False,
+                                        widget=forms.NumberInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = SampleRecord
@@ -195,6 +199,8 @@ class AnalysisStageForm(forms.ModelForm):
             'date_send_rawdata',
             'pro_deadline',
             'status',
+            'species',
+            'protein_amount',
         ]
 
 
@@ -220,3 +226,20 @@ class SearchForm(forms.Form):
     status = forms.IntegerField(label="状态",
                                 widget=forms.Select(choices=SampleRecord.status_choices,
                                                     attrs={'class': 'form-control form-control-sm'}))
+
+
+class SpeciesInfoForm(forms.ModelForm):
+    # 定义物种信息表单
+    species = forms.CharField(label="物种", widget=forms.TextInput(attrs={'class': 'form-control'}))
+    database = forms.CharField(label="数据库", widget=forms.TextInput(attrs={'class': 'form-control'}))
+    entry_count = forms.IntegerField(label="条目数", widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    creator = forms.CharField(label="添加人", widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = SpeciesInfo
+        fields = [
+            'species',
+            'database',
+            'entry_count',
+            'creator',
+        ]

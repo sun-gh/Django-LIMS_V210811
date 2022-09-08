@@ -158,10 +158,10 @@ class SpeciesInfo(models.Model):
     c_time = models.DateTimeField(verbose_name="添加时间", auto_now_add=True)
 
     def __str__(self):
-        return self.species + self.database
+        return self.species + " | " + self.database
 
     class Meta:
-        ordering = ["database"]
+        ordering = ["-c_time"]
         verbose_name = "物种信息"
         verbose_name_plural = verbose_name
 
@@ -238,6 +238,8 @@ class SampleRecord(models.Model):
     responsible_person = models.ForeignKey(ResponsiblePerson, verbose_name="项目负责人", on_delete=models.SET_NULL,
                                            blank=True, null=True)
     date_searchlib = models.DateTimeField(verbose_name="搜库日期", blank=True, null=True)
+    species = models.ForeignKey(SpeciesInfo, verbose_name="物种", on_delete=models.SET_NULL, blank=True, null=True)
+    protein_amount = models.PositiveIntegerField(verbose_name="蛋白数量", null=True, blank=True)
     date_send_report = models.DateTimeField(verbose_name="报告发送日期", blank=True, null=True)
     date_send_rawdata = models.DateTimeField(verbose_name="原始数据发送日期", blank=True, null=True)
     test_deadline = models.DateTimeField(verbose_name="下机截止日期", blank=True, null=True)

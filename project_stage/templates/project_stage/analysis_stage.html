@@ -143,6 +143,8 @@
               {% if perms.project_stage.upload_project_file %}
                 &nbsp;&nbsp;<a class="btn btn-info btn-sm" href="#" role="button" id="edit-analysis-btn" >文件上传</a>
               {% endif %}
+              &nbsp;&nbsp;<a class="btn  btn-outline-success btn-sm" role="button"
+                             href="{% url 'project_stage:species_info_page' 'normal_show' %}" id="species-manage">物种管理</a>
             </div>
           </div>
         </div>
@@ -462,6 +464,24 @@
           field: 'date_send_report',
           title: '报告发送时间',
           width: 135,
+          align: 'center',
+        },
+        {
+          field: 'species',
+          title: '物种',
+          width: 100,
+          align: 'center',
+          formatter: function (value,row,index) {
+            var span=document.createElement('span');
+            span.setAttribute('title',value);
+            span.innerHTML = value;
+            return span.outerHTML;
+          },
+        },
+        {
+          field: 'protein_amount',
+          title: '蛋白数量',
+          width: 90,
           align: 'center',
         },
         {

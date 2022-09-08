@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import SampleRecord, FilesRelated, ProjectType, SampleType, MachineTime
-from .forms import SampleRecordForm, PretreatStageForm, TestStageForm, AnalysisStageForm, EditAnalysisForm, SearchForm
+from .models import SampleRecord, FilesRelated, ProjectType, SampleType, MachineTime, SpeciesInfo
+from .forms import SampleRecordForm, PretreatStageForm, TestStageForm, AnalysisStageForm, EditAnalysisForm, SearchForm,\
+    SpeciesInfoForm
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 import json
@@ -1129,6 +1130,16 @@ def analysis_stage_table(request):
                 date_send_rawdata = project.date_send_rawdata.strftime('%Y-%m-%d %H:%M')
             else:
                 date_send_rawdata = "-"
+            species_choice = project.species
+            if species_choice:
+                species = species_choice.species
+            else:
+                species = "-"
+            protein_count = project.protein_amount
+            if protein_count is not None:
+                protein_amount = protein_count
+            else:
+                protein_amount = "-"
 
             response_data['rows'].append({
                 "project_id": project.id,
@@ -1157,6 +1168,8 @@ def analysis_stage_table(request):
                 "pro_deadline": pro_deadline,
                 "time_percent": time_percent,
                 "days_left": days_left,
+                "species": species,
+                "protein_amount": protein_amount,
             })
 
     return HttpResponse(json.dumps(response_data))  # 需要json处理下数据格式
@@ -1324,3 +1337,105 @@ def edit_analysis_info(request, pro_id):
         project_form = EditAnalysisForm(instance=project_info)
         return render(request, 'project_stage/edit_analysis_info.html', {'form': project_form,
                                                                          'project_info': project_info})
+
+
+@login_required()
+def species_info_page(request, msg="normal_show"):
+    # 定义物种信息页
+
+    return render(request, 'project_stage/species_info.html', {'msg': msg})
+
+
+def species_info_table(request):
+    # 定义物种信息表
+    if request.method == 'GET':
+        limit = request.GET.get('pageSize')  # how many items per page
+        pageNum = request.GET.get('pageNum')  # how many items in total in the DB
+        search = request.GET.get('search')
+
+        if search:  # 判断是否有搜索字
+            all_species = SpeciesInfo.objects.filter(species__contains=search)
+        else:
+            all_species = SpeciesInfo.objects.all()  # must be wirte the line code here
+
+        all_species_count = all_species.count()
+        if not pageNum:
+            pageNum = 1
+        if not limit:
+            limit = 50  # 默认是每页10行的内容，与前端默认行数一致
+        paginator = Paginator(all_species, limit)  # 开始做分页
+
+        response_data = {'total': all_species_count, 'rows': []}  # 必须带有rows和total这2个key
+        for species in paginator.page(pageNum):
+            # 下面这些key，都是我们在前端定义好了的，前后端必须一致，前端才能接受到数据并且请求.
+
+            response_data['rows'].append({
+                "species_id": species.id,
+                "species": species.species,
+                "database": species.database,
+                "entry_count": species.entry_count,
+                "creator": species.creator,
+                "add_time": species.c_time.strftime('%Y-%m-%d'),
+
+            })
+
+    return HttpResponse(json.dumps(response_data))  # 需要json处理下数据格式
+
+
+@login_required()
+def species_add(request):
+    # 定义物种添加功能
+    if request.method == 'POST':
+        species_form = SpeciesInfoForm(request.POST)
+        if species_form.is_valid():
+            species_form.save()
+            msg = "add_success"
+
+            return redirect('project_stage:species_info_page', msg)
+        else:
+            msg = "repeat"
+            return render(request, 'project_stage/species_add.html', {'form': species_form, 'msg': msg})
+    elif request.method == 'GET':
+        species_form = SpeciesInfoForm()
+
+        return render(request, 'project_stage/species_add.html', {'form': species_form, })
+
+
+@login_required()
+def species_edit(request, species_id):
+    # 定义物种信息修改
+    species = SpeciesInfo.objects.get(id=species_id)
+    if request.method == 'POST':
+        edit_form = SpeciesInfoForm(request.POST, instance=species)
+        if edit_form.is_valid():
+
+            edit_form.save()
+            msg = "edit_success"
+            return redirect('project_stage:species_info_page', msg)
+        else:
+            msg = 'edit_failed'
+            edit_form = SpeciesInfoForm(request.POST)
+            return render(request, 'project_stage/species_edit.html', {'form': edit_form, 'msg': msg, 'species': species})
+    elif request.method == 'GET':
+
+        edit_form = SpeciesInfoForm(instance=species)
+        return render(request, 'project_stage/species_edit.html', {'form': edit_form, 'species': species})
+
+
+@login_required()
+def species_del(request):
+    # 定义物种删除功能
+    if request.method == 'POST':
+
+        species_id = request.POST.get("species_id")
+        current_id = json.loads(species_id)
+
+        link_project = SampleRecord.objects.filter(species=current_id)
+        if link_project:
+            return HttpResponse("del_fail")
+        else:
+            species = SpeciesInfo.objects.get(id=current_id)
+            species.delete()
+            return HttpResponse("del_success")
+
+    return HttpResponse("非POST请求！")

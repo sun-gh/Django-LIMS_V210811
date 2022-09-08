@@ -155,14 +155,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="{% url 'customer:unit_list' %}" class="nav-link">
+                <a href="{% url 'customer:unit_list' 'normal_show' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>单位信息</p>
                 </a>
               </li>
               {% if perms.customer.show_customer_info_page%}
               <li class="nav-item">
-                <a href="{% url 'customer:customer_list' %}" class="nav-link">
+                <a href="{% url 'customer:customer_list' 'normal_show' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>客户信息</p>
                 </a>
@@ -189,7 +189,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
               <li class="nav-item">
                 <a href="{% url 'project_stage:pretreat_stage' 'normal_show' %}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>前处理阶段</p>
+                  <p>样本制备阶段</p>
                 </a>
               </li>
               <li class="nav-item">

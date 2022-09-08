@@ -21,10 +21,10 @@ def index(request):
 
 
 @login_required()
-def unit_list(request):
+def unit_list(request, msg="normal_show"):
     # 定义单位信息页面
 
-    return render(request, 'customer/unit_list.html', )
+    return render(request, 'customer/unit_list.html', {'msg': msg})
 
 
 @login_required()
@@ -49,10 +49,8 @@ def unit_list_table(request):
             limit = 50  # 默认是每页10行的内容，与前端默认行数一致
         paginator = Paginator(all_units, limit)  # 开始做分页
 
-        # page = int(int(offset) / int(limit) + 1)
         response_data = {'total': all_units_count, 'rows': []}  # 必须带有rows和total这2个key
         for unit in paginator.page(pageNum):
-
             # 下面这些key，都是我们在前端定义好了的，前后端必须一致，前端才能接受到数据并且请求.
             if unit.duty_paragraph:
                 duty_paragraph = unit.duty_paragraph
@@ -91,16 +89,13 @@ def unit_list_table(request):
 @login_required()
 def unit_add(request):
     # 定义添加单位页面
-
     if request.method == 'POST':
-        print("post请求添加单位！")
         unit_form = forms.UnitForm(request.POST)
         if unit_form.is_valid():
             unit_form.save()
-            # status = "add_success"
             msg = "add_success"
 
-            return render(request, 'customer/unit_list.html', {'msg': msg})
+            return redirect('customer:unit_list', msg)
         else:
             msg = "repeat"
             return render(request, 'customer/unit_add.html', {'form': unit_form, 'msg': msg})
@@ -140,7 +135,7 @@ def unit_edit(request, unit_id):
             unit_form = forms.UnitForm(request.POST, instance=unit)
             unit_form.save()
             msg = "edit_success"
-            return render(request, 'customer/unit_list.html', {'msg': msg})
+            return redirect('customer:unit_list', msg)
         else:
             new_unit = UnitInvoice.objects.filter(unit_name=unit_name)
             if new_unit:
@@ -180,20 +175,15 @@ def unit_import(request):
                                    address=address, phone=phone, person_add=person_add)
             unit_new.save()
         msg = "import_success"
-        # print(str_list)
+
         return HttpResponse(msg)
 
 
 @login_required()
-def customer_list(request):
-    # 定义单位信息页面
+def customer_list(request, msg="normal_show"):
+    # 定义客户信息页面
 
-    units = UnitInvoice.objects.all()
-    unit_dict = {}
-    for unit in units:
-        unit_dict[unit.id] = unit.unit_name
-    # print(unit_dict)
-    return render(request, 'customer/customer_list.html', {'unit_dict': unit_dict})
+    return render(request, 'customer/customer_list.html', {'msg': msg})
 
 
 @login_required()
@@ -208,9 +198,8 @@ def customer_list_table(request):
 
         if search:  # 判断是否有搜索字
             all_customers = customers_get_perm.filter(Q(customer_name__contains=search) |
-                                                        Q(unit__unit_name__contains=search))
+                                                      Q(unit__unit_name__contains=search))
         else:
-            # all_customers = CustomerInfo.objects.all()
             all_customers = customers_get_perm.all()
 
         all_customers_count = all_customers.count()
@@ -220,16 +209,13 @@ def customer_list_table(request):
             limit = 50  # 默认是每页20行的内容，与前端默认行数一致
         paginator = Paginator(all_customers, limit)  # 开始做分页
 
-        # page = int(int(offset) / int(limit) + 1)
         response_data = {'total': all_customers_count, 'rows': []}  # 必须带有rows和total这2个key
         for customer in paginator.page(pageNum):
 
             if customer.unit:
                 unit_name = customer.unit.unit_name
-                unit_id = customer.unit.id
             else:
                 unit_name = "-"
-                unit_id = 0  # id从1开始
             if customer.phone:
                 phone = customer.phone
             else:
@@ -259,12 +245,11 @@ def customer_list_table(request):
 
             # 下面这些key，都是我们在前端定义好了的，前后端必须一致，前端才能接受到数据并且请求.
             response_data['rows'].append({
-                # "num": 1,
                 "customer_id": customer.id,
                 "customer_name": customer.customer_name,
                 "phone": phone,
                 "mail": mail,
-                "unit_id": unit_id,
+                # "unit_id": unit_id,
                 "unit_name": unit_name,
                 "department": department,
                 "leading_official": leading_official,
@@ -278,15 +263,14 @@ def customer_list_table(request):
 
 @login_required()
 def customer_add(request):
-    # 定义添加单位页面
-
+    # 定义添加客户页面
     if request.method == 'POST':
 
         customer_info_form = forms.CustomerInfoForm(request.POST)
         if customer_info_form.is_valid():
             customer_info_form.save()
             msg = "add_success"
-            return render(request, 'customer/customer_list.html', {'msg': msg})
+            return redirect('customer:customer_list', msg)
         else:
             msg = "repeat"
             return render(request, 'customer/customer_add.html', {'form': customer_info_form, 'msg': msg})
@@ -343,7 +327,7 @@ def customer_edit(request, customer_id):
                 msg = "edit_project_terminal"
                 project_add_terminal.send(customer_edit, msg=msg, customer_id=customer_info.id, terminal_name=terminal)
             msg = "edit_success"
-            return render(request, 'customer/customer_list.html', {'msg': msg})
+            return redirect('customer:customer_list', msg)
         else:
             customer_info_form = forms.CustomerInfoForm(request.POST)
             msg = 'failed'

@@ -9,7 +9,6 @@
   <!-- Select2 -->
   <link rel="stylesheet" href="{% static 'AdminLTE-3.0.2/plugins/select2/css/select2.min.css' %}" />
   <!--customer css-->
-  <!--  <link href="{% static 'css/unit_add.css'  %}" rel="stylesheet" />-->
 {% endblock  %}
 
 {% block content %}
@@ -38,7 +37,7 @@
               <!-- card-body -->
               <div class="row">
                 <div class="col-md-10 offset-md-1">
-                  <div class="card-body ">  <!--<div class="card-body pt-0 pb-1 pl-1 pr-1">-->
+                  <div class="card-body ">
                     {% csrf_token %}
                     <div class="row">
                       <div class="col">
@@ -118,7 +117,7 @@
                   <div class="card-footer ">
                     <div class="row">
                       <div class="col-md-2 offset-md-5">
-                        <a href="{% url 'customer:customer_list' %}" class="btn btn-secondary btn-sm">取消</a>
+                        <a href="{% url 'customer:customer_list' 'add_back' %}" class="btn btn-secondary btn-sm">取消</a>
                         <input type="submit" value="提交" class="btn btn-success btn-sm float-right">
                       </div>
                     </div>
