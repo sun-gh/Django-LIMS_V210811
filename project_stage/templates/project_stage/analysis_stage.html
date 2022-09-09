@@ -143,8 +143,10 @@
               {% if perms.project_stage.upload_project_file %}
                 &nbsp;&nbsp;<a class="btn btn-info btn-sm" href="#" role="button" id="edit-analysis-btn" >文件上传</a>
               {% endif %}
+              {% if perms.project_stage.view_speciesinfo %}
               &nbsp;&nbsp;<a class="btn  btn-outline-success btn-sm" role="button"
                              href="{% url 'project_stage:species_info_page' 'normal_show' %}" id="species-manage">物种管理</a>
+              {% endif %}
             </div>
           </div>
         </div>
