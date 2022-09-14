@@ -155,6 +155,7 @@ class SpeciesInfo(models.Model):
     species = models.CharField(max_length=150, verbose_name="物种", default="")
     entry_count = models.PositiveIntegerField(verbose_name="条目数", default=0)
     creator = models.CharField(max_length=20, verbose_name="添加人", default="")
+    order_num = models.PositiveSmallIntegerField(verbose_name="序号", default=999)
     c_time = models.DateTimeField(verbose_name="添加时间", auto_now_add=True)
 
     def __str__(self):

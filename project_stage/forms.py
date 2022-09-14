@@ -183,7 +183,7 @@ class AnalysisStageForm(forms.ModelForm):
                                                                          'class': 'form-control'}))
     status = forms.IntegerField(label="暂停或终止", widget=forms.Select(
         choices=SampleRecord.status_choices[-2:], attrs={'class': 'form-control'}))
-    species = forms.ModelChoiceField(queryset=SpeciesInfo.objects.all(), label="物种", required=False,
+    species = forms.ModelChoiceField(queryset=SpeciesInfo.objects.order_by('order_num'), label="物种", required=False,
                                      widget=forms.Select(attrs={'class': 'form-control'}))
     protein_amount = forms.IntegerField(label="蛋白数量", required=False,
                                         widget=forms.NumberInput(attrs={'class': 'form-control'}))
